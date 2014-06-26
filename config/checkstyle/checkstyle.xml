@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<module name="Checker">
+
+    <!-- Tidak boleh ada karakter tab, harus dalam bentuk spasi -->
+    <module name="FileTabCharacter" />
+
+    <!-- File harus diakhir ganti baris -->
+    <module name="NewlineAtEndOfFile" />
+
+    <module name="TreeWalker">
+
+        <!-- Tidak perlu memberikan import bila tidak dibutuhkan -->
+        <module name="RedundantImport" />
+
+        <!-- Hindari import * -->
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="true" />
+        </module>
+
+        <!-- Periksa Javadoc pada method atau constructor -->
+        <module name="JavadocMethod">
+            <property name="allowUndeclaredRTE" value="true" />
+        </module>
+
+        <!-- Periksa Javadoc pada class atau interface -->
+        <module name="JavadocType" />
+        
+        <!-- Komentar pada baris pertama Javadoc harus diakhir tanda titik, tanda tanya atau tanda seru) -->
+        <module name="JavadocStyle" />
+
+        <!-- Nama konstanta harus huruf kapital semua -->
+        <module name="ConstantNameCheck" />
+
+        <!-- Jumlah karakter per baris maksimal adalah 120 karakter -->
+        <module name="LineLength">
+            <property name="max" value="120" />
+        </module>
+
+        <!-- Posisi '{' harus diakhir baris -->
+        <module name="LeftCurly" />
+
+        <!-- Posisi '}' harus pada baris yang sama dengan perintah yang mengikutinya (bila ada) -->
+        <module name="RightCurly" />
+
+        <!-- Setiap 'if' harus memiliki '{' dan '}' -->
+        <module name="NeedBraces" />
+
+        <!-- Nilai seperti '5L' harus memakai L kapital, bukan '5l' -->
+        <module name="UpperEll" />
+
+        <!-- Setiap 'case' pada 'switch' harus memiliki 'break'.
+             Tambahkan komentar '//continue' bila memang ingin lanjut ke 'case' berikutnya. -->
+        <module name="FallThrough">
+            <property name="reliefPattern" value="continue|lanjut" />
+        </module>
+
+        <!-- Tidak boleh ada whitespace yang tidak dibutuhkan pada token -->
+        <module name="WhitespaceAround" />
+
+        <!-- Koma dan titik koma harus diikuti oleh whitespace -->
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI" />
+        </module>
+
+        <!-- Periksa pada token tertentu seperti inisialisasi array, bitwise not, dsb tidak diakhiri whitespace -->
+        <module name="NoWhitespaceAfter" />
+
+        <!-- Periksa pada token tertentu seperti titik koma, titik, dsb tidak diawali oleh whitespace -->
+        <module name="NoWhitespaceBefore" />
+
+        <!-- Ekspresi dalam '(...)' tidak diawali atau diakhiri oleh whitespace -->
+        <module name="ParenPad" />
+
+        <!-- Tidak boleh ada block yang kosong atau hanya berisi komentar -->
+        <module name="EmptyBlock" />
+
+        <!-- Tidak boleh ada statement yang tidak mengerjakan apa-apa -->
+        <module name="EmptyStatement" />
+
+        <!-- Tidak boleh ada nested block yang berdiri sendiri -->
+        <module name="AvoidNestedBlocks" />
+
+        <!-- Kode seperti 'nama.equals("nama")' harus diganti menjadi '"nama".equals(nama)' -->
+        <module name="EqualsAvoidNull" />
+
+        <!-- Setiap penggunaan angka selain -1, 0, 1, dan 2 harus dibuat dalam konstanta -->
+        <module name="MagicNumber" />
+
+        <!-- Ganti 'if(b==true)' menjadi 'if(b)', dan sejenisnya -->
+        <module name="SimplifyBooleanExpression" />
+
+        <!-- Ganti 'if(b) return false else return true' menjadi 'return !b', dan sejenisnya. -->
+        <module name="SimplifyBooleanReturn" />
+
+    </module>
+
+</module>
