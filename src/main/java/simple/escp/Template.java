@@ -16,7 +16,10 @@
 
 package simple.escp;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,15 +29,15 @@ import java.util.regex.Pattern;
  */
 public abstract class Template {
 
-    private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-z]+)\\}");
+    private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9]+)\\}");
 
     protected Map<String, Placeholder> placeholders = new HashMap<>();
 
     /**
      * Get declared placeholders in this template.  This method should be called after parsing template
-     * or otherwise it will always return an empty <code>Collection</code>.
+     * or otherwise it will always return an empty <code>Map</code>.
      *
-     * @return declared placeholders or an empty <code>Collection</code> if none are found.
+     * @return declared placeholders or an empty <code>Map</code> if none are found.
      */
     public Map<String, Placeholder> getPlaceholders() {
         return this.placeholders;
@@ -81,7 +84,20 @@ public abstract class Template {
      * @param map contains data for this template.
      * @return text that will be printed and may contains ESC/P code.
      */
-    public abstract String fill(Map map);
+    public String fill(Map map) {
+        String parsedText = parse();
+        StringBuffer result = new StringBuffer();
+
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(parsedText);
+        while (matcher.find()) {
+            Placeholder placeholder = getPlaceholders().get(matcher.group(1));
+            Object value = map.get(placeholder.getName());
+            matcher.appendReplacement(result, placeholder.forValue(value));
+        }
+        matcher.appendTail(result);
+
+        return result.toString();
+    }
 
     /**
      * Fill this template with data from an <code>Object</code>.  Every getter in the object
@@ -91,6 +107,9 @@ public abstract class Template {
      * @param object contains data for this template.
      * @return text that will be printed and may contains ESC/P.
      */
-    public abstract String fill(Object object);
+    public String fill(Object object) {
+        return null;
+    }
+
 
 }

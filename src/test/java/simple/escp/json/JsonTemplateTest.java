@@ -19,7 +19,9 @@ package simple.escp.json;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import simple.escp.exception.InvalidPlaceholder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsonTemplateTest {
 
@@ -119,6 +121,25 @@ public class JsonTemplateTest {
         assertEquals(2, results.size());
         assertTrue(results.contains("id"));
         assertTrue(results.contains("name"));
+    }
+
+    @Test
+    public void fillMap() {
+        String jsonString =
+            "{" +
+                "\"placeholder\": [" +
+                    "\"id\"," +
+                    "\"nickname\"" +
+                "]," +
+                "\"template\": [" +
+                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
+                "]" +
+            "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> dataSource = new HashMap<>();
+        dataSource.put("id", "007");
+        dataSource.put("nickname", "Solid Snake");
+        assertEquals("Your id is 007, Mr. Solid Snake.\n", jsonTemplate.fill(dataSource));
     }
 
 }

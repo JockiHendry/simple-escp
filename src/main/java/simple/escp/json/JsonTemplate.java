@@ -134,22 +134,6 @@ public class JsonTemplate extends Template {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String fill(Map map) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String fill(Object object) {
-        return null;
-    }
-
-    /**
      * Retrieve the text that represent this template before it is parsed.
      *
      * @return JSON string.

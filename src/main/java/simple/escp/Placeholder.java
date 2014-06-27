@@ -16,6 +16,8 @@
 
 package simple.escp;
 
+import simple.escp.exception.InvalidPlaceholder;
+
 /**
  *  <code>Placeholder</code> represent a placeholder in template, such as <code>${name}</code>.
  */
@@ -49,6 +51,19 @@ public class Placeholder {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Retrieve formatted value for this placeholder.
+     *
+     * @param value the source value that will be used as replacement.
+     * @return formatted value that will be used for printing.
+     */
+    public String forValue(Object value) {
+        if (value == null) {
+            throw new InvalidPlaceholder("Null value is not supported for " + getName());
+        }
+        return value.toString();
     }
 
 }
