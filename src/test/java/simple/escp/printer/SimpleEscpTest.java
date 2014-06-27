@@ -27,13 +27,15 @@ public class SimpleEscpTest {
     @Test
     public void printString() {
         SimpleEscp simpleEscp = new SimpleEscp("EPSON LX-310 ESC/P");
-        simpleEscp.print("Executing SimpleEscpTest.printString()\nAnd this this a second line.\n");
+        simpleEscp.print("printString(): Executing SimpleEscpTest.printString()\n" +
+            "printString(): And this this a second line.\n");
     }
 
     @Test
     public void printStringFromDefaultPrinter() {
         SimpleEscp simpleEscp = new SimpleEscp();
-        simpleEscp.print("Executing SimpleEscpTest.printStringFromDefaultPrinter()\nAnd this this a second line.\n");
+        simpleEscp.print("printStringFromDefaultPrinter(): Executing SimpleEscpTest.printStringFromDefaultPrinter()\n" +
+            "printStringFromDefaultPrinter(): And this this a second line.\n");
     }
-
+    
 }
