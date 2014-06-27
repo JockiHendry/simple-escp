@@ -27,7 +27,6 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import java.io.StringReader;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -66,11 +65,12 @@ import java.util.logging.Logger;
  *              "lineSpacing": "1/8"
  *          },
  *          "placeholder": [
- *              {"name": "id"},
+ *              "id",
  *              "nickname"
  *          ],
  *          "template": [
- *              "Your id is ${id}, Mr. ${nickname}."
+ *              "Your id is ${id}.",
+ *              "Mr. ${nickname}."
  *          ]
  *      }
  *  </pre>
@@ -92,6 +92,83 @@ public class JsonTemplate extends Template {
     }
 
     /**
+     * Parse <code>"pageFormat"</code> section from this JSON template.
+     *
+     * @param json the root JSON of this template.
+     */
+    private void parsePageFormat(JsonObject json) {
+        JsonObject parsedPageFormat = json.getJsonObject("pageFormat");
+        if (parsedPageFormat != null) {
+
+            // Line spacing
+            if (parsedPageFormat.containsKey("lineSpacing")) {
+                pageFormat.setLineSpacing(parsedPageFormat.getString("lineSpacing"));
+            }
+
+        }
+    }
+
+    /**
+     * Parse <code>"placeholder"</code> section from this JSON template.
+     *
+     * @param json the root JSON of this template.
+     */
+    private void parsePlaceholder(JsonObject json) {
+        JsonArray placeholdersDefinitions = json.getJsonArray("placeholder");
+        if (placeholdersDefinitions != null) {
+            for (JsonValue placeholderDefinition : placeholdersDefinitions) {
+                if (placeholderDefinition instanceof JsonObject) {
+
+                    JsonObject placeholderObject = (JsonObject) placeholderDefinition;
+
+                    // Process name
+                    if (placeholderObject.getJsonString("name") == null) {
+                        throw new IllegalArgumentException("Object inside placeholder must has 'name'");
+                    }
+                    String name = placeholderObject.getString("name");
+                    Placeholder placeholder = new Placeholder(name);
+                    placeholders.put(name, placeholder);
+
+                } else if (placeholderDefinition instanceof JsonString) {
+
+                    String name = ((JsonString) placeholderDefinition).getString();
+                    placeholders.put(name, new Placeholder(name));
+
+                }
+            }
+        }
+    }
+
+    /**
+     * Parse <code>"template"</code> section from this JSON template.
+     * @param json the root JSON of this template.
+     * @return result in <code>String</code>.
+     */
+    public String parseTemplateText(JsonObject json) {
+        StringBuffer tmp = new StringBuffer();
+        JsonArray templateLines = json.getJsonArray("template");
+        if (templateLines == null) {
+            throw new IllegalArgumentException("JSON Template must contains 'template'.");
+        }
+        for (JsonValue line : templateLines) {
+            if (line instanceof JsonString) {
+
+                // Check for undefined placeholder name
+                for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
+                    if (!hasPlaceholder(placeHolderName)) {
+                        throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
+                    }
+                }
+
+                tmp.append(((JsonString) line).getString());
+                tmp.append('\n');
+
+            }
+        }
+        return tmp.toString();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public String parse() {
@@ -102,64 +179,14 @@ public class JsonTemplate extends Template {
                 JsonObject json = reader.readObject();
 
                 // Parse page format
-                JsonObject parsedPageFormat = json.getJsonObject("pageFormat");
-                if (parsedPageFormat != null) {
-
-                    // Line spacing
-                    if (parsedPageFormat.containsKey("lineSpacing")) {
-                        pageFormat.setLineSpacing(parsedPageFormat.getString("lineSpacing"));
-                    }
-
-                }
-
-                // Build page format
+                parsePageFormat(json);
                 tmp.append(pageFormat.build());
 
                 // Parse placeholders
-                JsonArray placeholdersDefinitions = json.getJsonArray("placeholder");
-                if (placeholdersDefinitions != null) {
-                    for (JsonValue placeholderDefinition : placeholdersDefinitions) {
-                        if (placeholderDefinition instanceof JsonObject) {
-
-                            JsonObject placeholderObject = (JsonObject) placeholderDefinition;
-
-                            // Process name
-                            if (placeholderObject.getJsonString("name") == null) {
-                                throw new IllegalArgumentException("Object inside placeholder must has 'name'");
-                            }
-                            String name = placeholderObject.getString("name");
-                            Placeholder placeholder = new Placeholder(name);
-                            placeholders.put(name, placeholder);
-
-                        } else if (placeholderDefinition instanceof JsonString) {
-
-                            String name = ((JsonString) placeholderDefinition).getString();
-                            placeholders.put(name, new Placeholder(name));
-
-                        }
-                    }
-                }
+                parsePlaceholder(json);
 
                 // Parse the template text
-                JsonArray templateLines = json.getJsonArray("template");
-                if (templateLines == null) {
-                    throw new IllegalArgumentException("JSON Template must contains 'template'.");
-                }
-                for (JsonValue line : templateLines) {
-                    if (line instanceof JsonString) {
-
-                        // Check for undefined placeholder name
-                        for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
-                            if (!hasPlaceholder(placeHolderName)) {
-                                throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
-                            }
-                        }
-
-                        tmp.append(((JsonString) line).getString());
-                        tmp.append('\n');
-
-                    }
-                }
+                tmp.append(parseTemplateText(json));
 
                 // Add ESC @ at the end
                 tmp.append(EscpUtil.escInitalize());
