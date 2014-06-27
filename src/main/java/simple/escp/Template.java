@@ -32,6 +32,7 @@ public abstract class Template {
     private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9]+)\\}");
 
     protected Map<String, Placeholder> placeholders = new HashMap<>();
+    protected PageFormat pageFormat = new PageFormat();
 
     /**
      * Get declared placeholders in this template.  This method should be called after parsing template

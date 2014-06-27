@@ -18,9 +18,13 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import simple.escp.util.EscpUtil;
+
 import java.util.List;
 
 public class JsonTemplateBasicTest {
+
+    private final String INIT = EscpUtil.escInitalize();
 
     @Test
     public void parseString() {
@@ -31,7 +35,7 @@ public class JsonTemplateBasicTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         jsonTemplate.parse();
         assertEquals(jsonString, jsonTemplate.getOriginalText());
-        assertEquals("This is the first line\nThis is the second line\n", jsonTemplate.getParsedText());
+        assertEquals(INIT + "This is the first line\nThis is the second line\n" + INIT, jsonTemplate.getParsedText());
     }
 
     @Test
@@ -56,6 +60,28 @@ public class JsonTemplateBasicTest {
         assertEquals(2, results.size());
         assertTrue(results.contains("id"));
         assertTrue(results.contains("name"));
+    }
+
+    @Test
+    public void pageFormatLineSpacing() {
+        String jsonString =
+            "{" +
+                "\"pageFormat\": {" +
+                    "\"lineSpacing\": \"1/8\"" +
+                "}," +
+                "\"placeholder\": [" +
+                    "\"id\"," +
+                    "\"nickname\"" +
+                "]," +
+                "\"template\": [" +
+                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
+                "]" +
+            "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
+            jsonTemplate.parse()
+        );
     }
 
 }

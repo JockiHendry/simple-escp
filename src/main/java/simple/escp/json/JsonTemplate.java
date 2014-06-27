@@ -19,6 +19,7 @@ package simple.escp.json;
 import simple.escp.Placeholder;
 import simple.escp.Template;
 import simple.escp.exception.InvalidPlaceholder;
+import simple.escp.util.EscpUtil;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -56,6 +57,23 @@ import java.util.logging.Logger;
  *          ]
  *      }
  *  </pre>
+ *
+ *  <p>Example of JSON template with page format:
+ *
+ *  <pre>
+ *      {
+ *          "pageFormat": {
+ *              "lineSpacing": "1/8"
+ *          },
+ *          "placeholder": [
+ *              {"name": "id"},
+ *              "nickname"
+ *          ],
+ *          "template": [
+ *              "Your id is ${id}, Mr. ${nickname}."
+ *          ]
+ *      }
+ *  </pre>
  */
 public class JsonTemplate extends Template {
 
@@ -79,7 +97,23 @@ public class JsonTemplate extends Template {
     public String parse() {
         if (parsedText == null) {
             try (JsonReader reader = Json.createReader(new StringReader(originalText))) {
+
+                StringBuffer tmp = new StringBuffer();
                 JsonObject json = reader.readObject();
+
+                // Parse page format
+                JsonObject parsedPageFormat = json.getJsonObject("pageFormat");
+                if (parsedPageFormat != null) {
+
+                    // Line spacing
+                    if (parsedPageFormat.containsKey("lineSpacing")) {
+                        pageFormat.setLineSpacing(parsedPageFormat.getString("lineSpacing"));
+                    }
+
+                }
+
+                // Build page format
+                tmp.append(pageFormat.build());
 
                 // Parse placeholders
                 JsonArray placeholdersDefinitions = json.getJsonArray("placeholder");
@@ -111,7 +145,6 @@ public class JsonTemplate extends Template {
                 if (templateLines == null) {
                     throw new IllegalArgumentException("JSON Template must contains 'template'.");
                 }
-                StringBuffer tmp = new StringBuffer();
                 for (JsonValue line : templateLines) {
                     if (line instanceof JsonString) {
 
@@ -127,7 +160,12 @@ public class JsonTemplate extends Template {
 
                     }
                 }
+
+                // Add ESC @ at the end
+                tmp.append(EscpUtil.escInitalize());
+
                 this.parsedText = tmp.toString();
+
             }
         }
         return this.parsedText;

@@ -18,6 +18,7 @@ package simple.escp.json;
 
 import org.junit.Before;
 import org.junit.Test;
+import simple.escp.util.EscpUtil;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.*;
@@ -25,6 +26,7 @@ import static org.junit.Assert.*;
 public class JsonTemplateFillTest {
 
     private String jsonString;
+    private final String INIT = EscpUtil.escInitalize();
 
     @Before
     public void setup() {
@@ -45,7 +47,7 @@ public class JsonTemplateFillTest {
         Map<String, String> dataSource = new HashMap<>();
         dataSource.put("id", "007");
         dataSource.put("nickname", "Solid Snake");
-        assertEquals("Your id is 007, Mr. Solid Snake.\n", jsonTemplate.fill(dataSource));
+        assertEquals(INIT + "Your id is 007, Mr. Solid Snake.\n" + INIT, jsonTemplate.fill(dataSource));
     }
 
 }

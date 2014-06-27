@@ -62,4 +62,23 @@ public class SimpleEscpTest {
         data.put("nickname", "The Solid Snake");
         simpleEscp.print(template, data);
     }
+
+    @Test
+    public void printLineSpacingOneEight() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"lineSpacing\": \"1/8\"" +
+            "}," +
+            "\"template\": [" +
+                "\"LineSpace 1/8: First Line\"," +
+                "\"LineSpace 1/8: Second Line\"," +
+                "\"LineSpace 1/8: Third Line\"," +
+                "\"LineSpace 1/8: Fourth Line\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
 }
