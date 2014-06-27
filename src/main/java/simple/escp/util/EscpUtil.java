@@ -23,6 +23,8 @@ public class EscpUtil {
 
     public static final char ESC = (char) 27;
     public static final int COMMAND_INITIALIZE = 64;
+    public static final int COMMAND_ONE_PER_SIX_INCH_LINE_SPACING = 50;
+    public static final int COMMAND_ONE_PER_EIGHT_LINE_SPACING = 48;
 
     /**
      * Create an ESC/P code.
@@ -62,4 +64,21 @@ public class EscpUtil {
         return esc(COMMAND_INITIALIZE);
     }
 
+    /**
+     * Generate ESC 2 to select 1/6-inch line spacing.
+     *
+     * @return string of ESC 2 command.
+     */
+    public static String escOnePerSixInchLineSpacing() {
+        return esc(COMMAND_ONE_PER_SIX_INCH_LINE_SPACING);
+    }
+
+    /**
+     * Generate ESC 0 to select 1/8-inch line spacing.
+     *
+     * @return string of ESC 0 command.
+     */
+    public static String escOnePerEightInchLineSpacing() {
+        return esc(COMMAND_ONE_PER_EIGHT_LINE_SPACING);
+    }
 }

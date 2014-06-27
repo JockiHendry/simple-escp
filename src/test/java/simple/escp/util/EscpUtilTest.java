@@ -51,4 +51,18 @@ public class EscpUtilTest {
         assertEquals((char) 64, result.charAt(1));
     }
 
+    @Test
+    public void escOnePerSixInchLineSpacing() {
+        String result = EscpUtil.escOnePerSixInchLineSpacing();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 50, result.charAt(1));
+    }
+
+    @Test
+    public void escOnePerEightInchLineSpacing() {
+        String result = EscpUtil.escOnePerEightInchLineSpacing();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 48, result.charAt(1));
+    }
+
 }
