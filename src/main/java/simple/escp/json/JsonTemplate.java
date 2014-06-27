@@ -16,8 +16,9 @@
 
 package simple.escp.json;
 
+import simple.escp.Placeholder;
 import simple.escp.Template;
-
+import simple.escp.exception.InvalidPlaceholder;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -26,7 +27,6 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import java.io.StringReader;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -42,8 +42,22 @@ import java.util.logging.Logger;
  *          ]
  *      }
  *  </pre>
+ *
+ *  <p>Example of JSON template with placeholder:
+ *
+ *  <pre>
+ *      {
+ *          "placeholder": [
+ *              {"name": "id"},
+ *              "nickname"
+ *          ],
+ *          "template": [
+ *              "Your id is ${id}, Mr. ${nickname}."
+ *          ]
+ *      }
+ *  </pre>
  */
-public class JsonTemplate implements Template {
+public class JsonTemplate extends Template {
 
     private static Logger logger = Logger.getLogger("simple.escp.json.JsonTemplate");
 
@@ -64,23 +78,55 @@ public class JsonTemplate implements Template {
      */
     public String parse() {
         if (parsedText == null) {
-            JsonReader reader = Json.createReader(new StringReader(originalText));
-            JsonObject json = reader.readObject();
+            try (JsonReader reader = Json.createReader(new StringReader(originalText))) {
+                JsonObject json = reader.readObject();
 
-            // Parse the template text
-            JsonArray templateLines = json.getJsonArray("template");
-            if (templateLines == null) {
-                logger.log(Level.SEVERE, "JSON Template must contains 'template'.");
-                throw new IllegalArgumentException("JSON Template must contains 'template'.");
-            }
-            StringBuffer tmp = new StringBuffer();
-            for (JsonValue line: templateLines) {
-                if (line instanceof JsonString) {
-                    tmp.append(((JsonString) line).getString());
-                    tmp.append('\n');
+                // Parse placeholders
+                JsonArray placeholdersDefinitions = json.getJsonArray("placeholder");
+                if (placeholdersDefinitions != null) {
+                    for (JsonValue placeholderDefinition : placeholdersDefinitions) {
+                        if (placeholderDefinition instanceof JsonObject) {
+
+                            JsonObject placeholderObject = (JsonObject) placeholderDefinition;
+
+                            // Process name
+                            if (placeholderObject.getJsonString("name") == null) {
+                                throw new IllegalArgumentException("Object inside placeholder must has 'name'");
+                            }
+                            Placeholder placeholder = new Placeholder(placeholderObject.getString("name"));
+                            placeholders.add(placeholder);
+
+                        } else if (placeholderDefinition instanceof JsonString) {
+
+                            placeholders.add(new Placeholder(((JsonString) placeholderDefinition).getString()));
+
+                        }
+                    }
                 }
+
+                // Parse the template text
+                JsonArray templateLines = json.getJsonArray("template");
+                if (templateLines == null) {
+                    throw new IllegalArgumentException("JSON Template must contains 'template'.");
+                }
+                StringBuffer tmp = new StringBuffer();
+                for (JsonValue line : templateLines) {
+                    if (line instanceof JsonString) {
+
+                        // Check for undefined placeholder name
+                        for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
+                            if (!hasPlaceholder(placeHolderName)) {
+                                throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
+                            }
+                        }
+
+                        tmp.append(((JsonString) line).getString());
+                        tmp.append('\n');
+
+                    }
+                }
+                this.parsedText = tmp.toString();
             }
-            this.parsedText = tmp.toString();
         }
         return this.parsedText;
     }

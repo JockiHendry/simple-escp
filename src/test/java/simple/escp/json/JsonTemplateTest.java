@@ -18,6 +18,8 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import simple.escp.exception.InvalidPlaceholder;
+import java.util.List;
 
 public class JsonTemplateTest {
 
@@ -31,6 +33,93 @@ public class JsonTemplateTest {
         jsonTemplate.parse();
         assertEquals(jsonString, jsonTemplate.getOriginalText());
         assertEquals("This is the first line\nThis is the second line\n", jsonTemplate.getParsedText());
+    }
+
+    @Test
+    public void objectPlaceholders() {
+        String jsonString =
+            "{" +
+                "\"placeholder\": [" +
+                    "{\"name\": \"id\"}," +
+                    "{\"name\": \"nickname\"}" +
+                "]," +
+                "\"template\": [" +
+                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
+                "]" +
+            "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertTrue(jsonTemplate.getPlaceholders().isEmpty());
+        jsonTemplate.parse();
+
+        assertTrue(!jsonTemplate.getPlaceholders().isEmpty());
+        assertEquals(2, jsonTemplate.getPlaceholders().size());
+        assertEquals("id", jsonTemplate.getPlaceholders().get(0).getName());
+        assertEquals("nickname", jsonTemplate.getPlaceholders().get(1).getName());
+    }
+
+    @Test
+    public void stringPlaceholders() {
+        String jsonString =
+            "{" +
+                "\"placeholder\": [" +
+                    "\"id\"," +
+                    "\"nickname\"" +
+                "]," +
+                "\"template\": [" +
+                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
+                "]" +
+            "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertTrue(jsonTemplate.getPlaceholders().isEmpty());
+        jsonTemplate.parse();
+
+        assertTrue(!jsonTemplate.getPlaceholders().isEmpty());
+        assertEquals(2, jsonTemplate.getPlaceholders().size());
+        assertEquals("id", jsonTemplate.getPlaceholders().get(0).getName());
+        assertEquals("nickname", jsonTemplate.getPlaceholders().get(1).getName());
+    }
+
+    @Test(expected = InvalidPlaceholder.class)
+    public void invalidPlaceholders() {
+        String jsonString =
+            "{" +
+                "\"placeholder\": [" +
+                    "\"id\"," +
+                    "\"foobar\"" +
+                "]," +
+                "\"template\": [" +
+                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
+                "]" +
+            "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertTrue(jsonTemplate.getPlaceholders().isEmpty());
+
+        jsonTemplate.parse();
+    }
+
+    @Test
+    public void findPlaceholderName() {
+        String jsonString =
+            "{" +
+                "\"placeholder\": [" +
+                    "\"id\"," +
+                    "\"nickname\"" +
+                "]," +
+                "\"template\": [" +
+                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
+                "]" +
+            "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+
+        List<String> results = jsonTemplate.findPlaceholderIn("Your id is ${id}");
+        assertEquals(1, results.size());
+        assertEquals("id", results.get(0));
+
+        results = jsonTemplate.findPlaceholderIn("Your id is ${id} and your name is ${name}");
+        assertEquals(2, results.size());
+        assertTrue(results.contains("id"));
+        assertTrue(results.contains("name"));
+
     }
 
 }

@@ -16,20 +16,70 @@
 
 package simple.escp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *  <code>Template</code> represent a template used for printing.  A single <code>Template</code>
  *  can be printed many times with different values.
  */
-public interface Template {
+public abstract class Template {
+
+    private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-z]+)\\}");
+
+    protected List<Placeholder> placeholders = new ArrayList<>();
+
+    /**
+     * Get declared placeholders in this template.  This method should be called after parsing template
+     * or otherwise it will always return an empty <code>List</code>.
+     *
+     * @return declared placeholders or an empty <code>List</code> if none are found.
+     */
+    public List<Placeholder> getPlaceholders() {
+        return placeholders;
+    }
+
+    /**
+     * Find the name of placeholder, such as <code>${name}</code>, in a string.
+     *
+     * @param text search placeholder definition in this string.
+     * @return <code>List</code> that contains one or more placeholder's name.  If no placeholder is
+     *         declared in the string, this method will return an empty <code>List</code>.
+     */
+    public List<String> findPlaceholderIn(String text) {
+        List<String> results = new ArrayList<>();
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
+        while (matcher.find()) {
+            String match = matcher.group(1);
+            results.add(match);
+        }
+        return results;
+    }
+
+    /**
+     * Find if a placeholder name is declared in this template.
+     *
+     * @param name placehoder name to search for.
+     * @return <code>true</code> if placeholder name is declared or <code>false</code> if otherwise.
+     */
+    public boolean hasPlaceholder(String name) {
+        for (Placeholder placeholder: this.placeholders) {
+            if (placeholder.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Parse the template into a text.  This is usually executed only once.
      *
      * @return a parsed <code>String</code>.
      */
-    public String parse();
+    public abstract String parse();
 
     /**
      * Fill this template with data from a <code>Map</code>.  This template must be parsed
@@ -38,7 +88,7 @@ public interface Template {
      * @param map contains data for this template.
      * @return text that will be printed and may contains ESC/P code.
      */
-    public String fill(Map map);
+    public abstract String fill(Map map);
 
     /**
      * Fill this template with data from an <code>Object</code>.  Every getter in the object
@@ -48,6 +98,6 @@ public interface Template {
      * @param object contains data for this template.
      * @return text that will be printed and may contains ESC/P.
      */
-    public String fill(Object object);
+    public abstract String fill(Object object);
 
 }
