@@ -26,6 +26,13 @@ checkstyle {
     sourceSets = [sourceSets.main]
 }
 
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
 test {
     useJUnit {
         excludeCategories 'simple.escp.category.RequirePrinterCategory'
