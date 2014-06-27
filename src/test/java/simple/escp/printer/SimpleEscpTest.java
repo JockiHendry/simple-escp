@@ -19,7 +19,11 @@ package simple.escp.printer;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import simple.escp.SimpleEscp;
+import simple.escp.Template;
 import simple.escp.category.RequirePrinterCategory;
+import simple.escp.json.JsonTemplate;
+import java.util.HashMap;
+import java.util.Map;
 
 @Category(RequirePrinterCategory.class)
 public class SimpleEscpTest {
@@ -37,5 +41,25 @@ public class SimpleEscpTest {
         simpleEscp.print("printStringFromDefaultPrinter(): Executing SimpleEscpTest.printStringFromDefaultPrinter()\n" +
             "printStringFromDefaultPrinter(): And this this a second line.\n");
     }
-    
+
+    @Test
+    public void printTemplateBasedOnMap() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": [" +
+                "\"From  : printTemplateBasedOnMap()\"," +
+                "\"ID    : ${id}\"," +
+                "\"Name  : Mr. ${nickname}.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        Map<String, String> data = new HashMap<>();
+        data.put("id", "007");
+        data.put("nickname", "The Solid Snake");
+        simpleEscp.print(template, data);
+    }
 }

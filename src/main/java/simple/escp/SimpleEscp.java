@@ -29,6 +29,7 @@ import javax.print.attribute.standard.PrinterName;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +42,16 @@ import java.util.logging.Logger;
  * <pre>
  *     SimpleEscp simpleEscp = new SimpleEscp();
  *     simpleEscp.print("This is the first line\nThis is the second line\n\f");
+ * </pre>
+ *
+ * <p>To print based on JSON template, use the following code:
+ *
+ * <pre>
+ *     Template template = new JsonTemplate(...);
+ *     Map data = new HashMap();
+ *     data.put("name", "Solid Snake");
+ *     SimpleEscp simpleEscp = new SimpleEscp();
+ *     simpleEscp.print(template, data);
  * </pre>
  */
 public class SimpleEscp {
@@ -109,6 +120,17 @@ public class SimpleEscp {
             throw new RuntimeException("Error during printing", e);
         }
         return job;
+    }
+
+    /**
+     * Fill a template based on value from <code>Map</code> and print it to current printer.
+     *
+     * @param template an instance of <code>Template</code>.
+     * @param map contains values that will replace placeholders in template.
+     * @return a <code>DocPrintJob</code> that is associated with this operation.
+     */
+    public DocPrintJob print(Template template, Map map) {
+        return print(template.fill(map));
     }
 
     /**
