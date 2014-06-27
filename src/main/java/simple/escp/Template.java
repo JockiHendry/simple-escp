@@ -16,9 +16,7 @@
 
 package simple.escp;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,16 +28,16 @@ public abstract class Template {
 
     private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-z]+)\\}");
 
-    protected List<Placeholder> placeholders = new ArrayList<>();
+    protected Map<String, Placeholder> placeholders = new HashMap<>();
 
     /**
      * Get declared placeholders in this template.  This method should be called after parsing template
-     * or otherwise it will always return an empty <code>List</code>.
+     * or otherwise it will always return an empty <code>Collection</code>.
      *
-     * @return declared placeholders or an empty <code>List</code> if none are found.
+     * @return declared placeholders or an empty <code>Collection</code> if none are found.
      */
-    public List<Placeholder> getPlaceholders() {
-        return placeholders;
+    public Map<String, Placeholder> getPlaceholders() {
+        return this.placeholders;
     }
 
     /**
@@ -66,12 +64,7 @@ public abstract class Template {
      * @return <code>true</code> if placeholder name is declared or <code>false</code> if otherwise.
      */
     public boolean hasPlaceholder(String name) {
-        for (Placeholder placeholder: this.placeholders) {
-            if (placeholder.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
+        return this.placeholders.containsKey(name);
     }
 
     /**

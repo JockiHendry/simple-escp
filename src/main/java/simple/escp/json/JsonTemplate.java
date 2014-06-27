@@ -93,12 +93,14 @@ public class JsonTemplate extends Template {
                             if (placeholderObject.getJsonString("name") == null) {
                                 throw new IllegalArgumentException("Object inside placeholder must has 'name'");
                             }
-                            Placeholder placeholder = new Placeholder(placeholderObject.getString("name"));
-                            placeholders.add(placeholder);
+                            String name = placeholderObject.getString("name");
+                            Placeholder placeholder = new Placeholder(name);
+                            placeholders.put(name, placeholder);
 
                         } else if (placeholderDefinition instanceof JsonString) {
 
-                            placeholders.add(new Placeholder(((JsonString) placeholderDefinition).getString()));
+                            String name = ((JsonString) placeholderDefinition).getString();
+                            placeholders.put(name, new Placeholder(name));
 
                         }
                     }

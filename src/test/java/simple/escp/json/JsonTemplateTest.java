@@ -53,8 +53,8 @@ public class JsonTemplateTest {
 
         assertTrue(!jsonTemplate.getPlaceholders().isEmpty());
         assertEquals(2, jsonTemplate.getPlaceholders().size());
-        assertEquals("id", jsonTemplate.getPlaceholders().get(0).getName());
-        assertEquals("nickname", jsonTemplate.getPlaceholders().get(1).getName());
+        assertEquals("id", jsonTemplate.getPlaceholders().get("id").getName());
+        assertEquals("nickname", jsonTemplate.getPlaceholders().get("nickname").getName());
     }
 
     @Test
@@ -75,8 +75,8 @@ public class JsonTemplateTest {
 
         assertTrue(!jsonTemplate.getPlaceholders().isEmpty());
         assertEquals(2, jsonTemplate.getPlaceholders().size());
-        assertEquals("id", jsonTemplate.getPlaceholders().get(0).getName());
-        assertEquals("nickname", jsonTemplate.getPlaceholders().get(1).getName());
+        assertEquals("id", jsonTemplate.getPlaceholders().get("id").getName());
+        assertEquals("nickname", jsonTemplate.getPlaceholders().get("nickname").getName());
     }
 
     @Test(expected = InvalidPlaceholder.class)
@@ -119,7 +119,6 @@ public class JsonTemplateTest {
         assertEquals(2, results.size());
         assertTrue(results.contains("id"));
         assertTrue(results.contains("name"));
-
     }
 
 }
