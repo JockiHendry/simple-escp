@@ -101,7 +101,7 @@ public class JsonTemplateBasicTest {
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + EscpUtil.escMasterSelect(0) + "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
+            INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
             jsonTemplate.parse()
         );
     }

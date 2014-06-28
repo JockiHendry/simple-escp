@@ -21,17 +21,14 @@ package simple.escp.util;
  */
 public class EscpUtil {
 
+    public static final int MAX_PAGE_LENGTH = 127;
+    public static final int MAX_PAGE_WIDTH = 255;
+
     public static final int ESC = 27;
     public static final int COMMAND_INITIALIZE = 64;
     public static final int COMMAND_ONE_PER_SIX_INCH_LINE_SPACING = 50;
     public static final int COMMAND_ONE_PER_EIGHT_LINE_SPACING = 48;
     public static final int COMMAND_MASTER_SELECT = 33;
-    public static final int MASTER_SELECT_CPI_5 = 32;
-    public static final int MASTER_SELECT_CPI_6 = 33;
-    public static final int MASTER_SELECT_CPI_10 = 0;
-    public static final int MASTER_SELECT_CPI_12 = 1;
-    public static final int MASTER_SELECT_CPI_17 = 4;
-    public static final int MASTER_SELECT_CPI_20 = 5;
     public static final int COMMAND_PAGE_LENGTH = 67;
     public static final int COMMAND_RIGHT_MARGIN = 81;
 
@@ -94,30 +91,69 @@ public class EscpUtil {
     /**
      * Generate ESC ! for master select.
      *
-     * @param value parameter for ESC !
+     * @param characterPitch parameter for ESC !
      * @return string of ESC ! command.
      */
-    public static String escMasterSelect(int value) {
-        return esc(COMMAND_MASTER_SELECT, value);
+    public static String escMasterSelect(CHARACTER_PITCH characterPitch) {
+        return esc(COMMAND_MASTER_SELECT, characterPitch.getValue());
     }
 
     /**
      * Generate ESC C for setting page length.
      *
-     * @param value parameter of ESC C (number of lines).
+     * <p>Note that some printer drivers will ignore this value and use the page length setting
+     * stored in printer's ROM.  For example, in Epson LX-310, you can change page length by
+     * pressing <em>LF/FF</em> and <em>Load/Eject</em> button in the same time.
+     *
+     * @param value number of lines in 1 to 127 lines.
      * @return string of ESC C command.
      */
     public static String escPageLength(int value) {
+        if ((value < 1) || (value > MAX_PAGE_LENGTH)) {
+            throw new IllegalArgumentException("Invalid value for page length: " + value + " (valid: 1 to " +
+                MAX_PAGE_LENGTH + ")");
+        }
         return esc(COMMAND_PAGE_LENGTH, value);
     }
 
     /**
      * Generate ESC Q for setting right margin.
      *
-     * @param value parameter for ESC Q (number of characters).
+     * @param value number of characters in 1 to 255 character per line.
      * @return string of ESC Q command.
      */
     public static String escRightMargin(int value) {
+        if ((value < 1) || (value > MAX_PAGE_WIDTH)) {
+            throw new IllegalArgumentException("Invalid value for page width: " + value + " (valid: 1 to " +
+                MAX_PAGE_WIDTH + ")");
+        }
         return esc(COMMAND_RIGHT_MARGIN, value);
+    }
+
+    /**
+     * This enum represents available character pitchs.
+     */
+    public enum CHARACTER_PITCH {
+        CPI_5(32), CPI_6(33), CPI_10(0), CPI_12(1), CPI_17(4), CPI_20(5);
+
+        private int value;
+
+        /**
+         * Create new instance of CHARACTER_PITCH.
+         *
+         * @param value a Master Select command's parameter to select this CPI.
+         */
+        CHARACTER_PITCH(int value) {
+            this.value = value;
+        }
+
+        /**
+         * Get the parameter value for this CPI.
+         *
+         * @return a parameter for Master Select command.
+         */
+        public int getValue() {
+            return value;
+        }
     }
 }

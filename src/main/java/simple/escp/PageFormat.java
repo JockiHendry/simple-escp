@@ -26,11 +26,8 @@ import simple.escp.util.EscpUtil;
  */
 public class PageFormat {
 
-    public static final int MAX_PAGE_LENGTH = 127;
-    public static final int MAX_PAGE_WIDTH = 255;
-
     private LINE_SPACING lineSpacing;
-    private CHARACTER_PITCH characterPitch;
+    private EscpUtil.CHARACTER_PITCH characterPitch;
     private Integer pageLength;
     private Integer pageWidth;
 
@@ -70,17 +67,17 @@ public class PageFormat {
      */
     public void setCharacterPitch(String value) {
         if ("5".equals(value) || "5 cpi".equals(value)) {
-            this.characterPitch = CHARACTER_PITCH.CPI_5;
+            this.characterPitch = EscpUtil.CHARACTER_PITCH.CPI_5;
         } else if ("6".equals(value) || "6 cpi".equals(value)) {
-            this.characterPitch = CHARACTER_PITCH.CPI_6;
+            this.characterPitch = EscpUtil.CHARACTER_PITCH.CPI_6;
         } else if ("10".equals(value) || "10 cpi".equals(value)) {
-            this.characterPitch = CHARACTER_PITCH.CPI_10;
+            this.characterPitch = EscpUtil.CHARACTER_PITCH.CPI_10;
         } else if ("12".equals(value) || "12 cpi".equals(value)) {
-            this.characterPitch = CHARACTER_PITCH.CPI_12;
+            this.characterPitch = EscpUtil.CHARACTER_PITCH.CPI_12;
         } else if ("17".equals(value) || "17 cpi".equals(value)) {
-            this.characterPitch = CHARACTER_PITCH.CPI_17;
+            this.characterPitch = EscpUtil.CHARACTER_PITCH.CPI_17;
         } else if ("20".equals(value) || "20 cpi".equals(value)) {
-            this.characterPitch = CHARACTER_PITCH.CPI_20;
+            this.characterPitch = EscpUtil.CHARACTER_PITCH.CPI_20;
         } else {
             throw new IllegalArgumentException("Invalid value for character pitch: " + value);
         }
@@ -91,24 +88,16 @@ public class PageFormat {
      *
      * @return character pitch, by default, it is <code>CHARACTER_PITCH.CPI_10</code>.
      */
-    public CHARACTER_PITCH getCharacterPitch() {
-        return (this.characterPitch != null) ? this.characterPitch : CHARACTER_PITCH.CPI_10;
+    public EscpUtil.CHARACTER_PITCH getCharacterPitch() {
+        return (this.characterPitch != null) ? this.characterPitch : EscpUtil.CHARACTER_PITCH.CPI_10;
     }
 
     /**
      * Set page length in number of lines.
      *
-     * <p>Note that some printer drivers will ignore this value and use the page length setting
-     * stored in printer's ROM.  For example, in Epson LX-310, you can change page length by
-     * pressing <em>LF/FF</em> and <em>Load/Eject</em> button in the same time.
-     *
-     * @param pageLength number of lines that count as a page (must be in 1..127).
+     * @param pageLength number of lines that count as a page.
      */
     public void setPageLength(Integer pageLength) {
-        if ((pageLength < 1) || (pageLength > MAX_PAGE_LENGTH)) {
-            throw new IllegalArgumentException("Invalid value for page length: " + pageLength + " (valid: 1 to " +
-                MAX_PAGE_LENGTH + ")");
-        }
         this.pageLength = pageLength;
     }
 
@@ -125,13 +114,9 @@ public class PageFormat {
      * Set page width in number of characters.  You must make sure that this number is within printable area
      * width.
      *
-     * @param pageWidth number of characters measured from the left-most printable column (must be in 1..255).
+     * @param pageWidth number of characters measured from the left-most printable column.
      */
     public void setPageWidth(Integer pageWidth) {
-        if ((pageWidth < 1) || (pageWidth > MAX_PAGE_WIDTH)) {
-            throw new IllegalArgumentException("Invalid value for page width: " + pageWidth + " (valid: 1 to " +
-                MAX_PAGE_WIDTH + ")");
-        }
         this.pageWidth = pageWidth;
     }
 
@@ -164,26 +149,7 @@ public class PageFormat {
 
         // set character pitch
         if (characterPitch != null) {
-            switch (characterPitch) {
-                case CPI_5:
-                    result.append(EscpUtil.escMasterSelect(EscpUtil.MASTER_SELECT_CPI_5));
-                    break;
-                case CPI_6:
-                    result.append(EscpUtil.escMasterSelect(EscpUtil.MASTER_SELECT_CPI_6));
-                    break;
-                case CPI_10:
-                    result.append(EscpUtil.escMasterSelect(EscpUtil.MASTER_SELECT_CPI_10));
-                    break;
-                case CPI_12:
-                    result.append(EscpUtil.escMasterSelect(EscpUtil.MASTER_SELECT_CPI_12));
-                    break;
-                case CPI_17:
-                    result.append(EscpUtil.escMasterSelect(EscpUtil.MASTER_SELECT_CPI_17));
-                    break;
-                case CPI_20:
-                    result.append(EscpUtil.escMasterSelect(EscpUtil.MASTER_SELECT_CPI_20));
-                    break;
-            }
+            result.append(EscpUtil.escMasterSelect(characterPitch));
         }
 
         // set page length
@@ -205,13 +171,6 @@ public class PageFormat {
      */
     public enum LINE_SPACING {
         ONE_PER_EIGHT_INCH, ONE_PER_SIX_INCH
-    }
-
-    /**
-     * This enum represents available character pitchs.
-     */
-    public enum CHARACTER_PITCH {
-        CPI_5, CPI_6, CPI_10, CPI_12, CPI_17, CPI_20
     }
 
 }
