@@ -22,6 +22,7 @@ import simple.escp.exception.InvalidPlaceholder;
 import simple.escp.util.EscpUtil;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
@@ -109,6 +110,16 @@ public class JsonTemplate extends Template {
             // Character pitch
             if (parsedPageFormat.containsKey("characterPitch")) {
                 pageFormat.setCharacterPitch(parsedPageFormat.getString("characterPitch"));
+            }
+
+            // Page length
+            if (parsedPageFormat.containsKey("pageLength")) {
+                JsonValue pageLength = parsedPageFormat.get("pageLength");
+                if (pageLength.getValueType() == JsonValue.ValueType.NUMBER) {
+                    pageFormat.setPageLength(((JsonNumber) pageLength).intValue());
+                } else if (pageLength.getValueType() == JsonValue.ValueType.STRING) {
+                    pageFormat.setPageLength(Integer.valueOf(((JsonString) pageLength).getString()));
+                }
             }
 
         }

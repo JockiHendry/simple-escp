@@ -65,4 +65,12 @@ public class EscpUtilTest {
         assertEquals((char) 48, result.charAt(1));
     }
 
+    @Test
+    public void escPageLength() {
+        String result = EscpUtil.escPageLength(10);
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 67, result.charAt(1));
+        assertEquals((char) 10, result.charAt(2));
+    }
+
 }

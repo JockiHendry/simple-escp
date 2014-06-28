@@ -46,4 +46,17 @@ public class PageFormatTest {
         assertEquals((char)  4, result.charAt(4));
     }
 
+    @Test
+    public void pageFormatPageLength() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(10);
+        String result = pageFormat.build();
+        assertEquals(5, result.length());
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals('@', result.charAt(1));
+        assertEquals((char) 27, result.charAt(2));
+        assertEquals((char) 67, result.charAt(3));
+        assertEquals((char) 10, result.charAt(4));
+    }
+
 }

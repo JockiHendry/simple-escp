@@ -32,6 +32,7 @@ public class EscpUtil {
     public static final int MASTER_SELECT_CPI_12 = 1;
     public static final int MASTER_SELECT_CPI_17 = 4;
     public static final int MASTER_SELECT_CPI_20 = 5;
+    public static final int COMMAND_PAGE_LENGTH = 67;
 
     /**
      * Create an ESC/P code.
@@ -97,5 +98,15 @@ public class EscpUtil {
      */
     public static String escMasterSelect(int value) {
         return esc(COMMAND_MASTER_SELECT, value);
+    }
+
+    /**
+     * Generate ESC C for setting page length.
+     *
+     * @param value parameter of ESC C (number of lines).
+     * @return string of ESC C command.
+     */
+    public static String escPageLength(int value) {
+        return esc(COMMAND_PAGE_LENGTH, value);
     }
 }

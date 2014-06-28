@@ -26,15 +26,17 @@ import simple.escp.util.EscpUtil;
  */
 public class PageFormat {
 
+    public static final int MAX_PAGE_LENGTH = 127;
+
     private LINE_SPACING lineSpacing;
     private CHARACTER_PITCH characterPitch;
+    private Integer pageLength;
 
     /**
      * Set vertical line spacing.
      *
      * @param value a String value that can be one of <code>"1/8"</code>, <code>"ONE_PER_EIGHT_INCH"</code>,
      *              <code>"1/6"</code>, or <code>"ONE_PER_SIX_INCH"</code>.
-     * @throws java.lang.IllegalArgumentException if <code>value</code> is not valid.
      */
     public void setLineSpacing(String value) {
         if ("1/8".equals(value) || "ONE_PER_EIGHT_INCH".equals(value)) {
@@ -92,6 +94,32 @@ public class PageFormat {
     }
 
     /**
+     * Set page length in number of lines.
+     *
+     * <p>Note that some printer drivers will ignore this value and use the page length setting
+     * stored in printer's ROM.  For example, in Epson LX-310, you can change page length by
+     * pressing <em>LF/FF</em> and <em>Load/Eject</em> button in the same time.
+     *
+     * @param pageLength number of lines that count as a page (must be in 1..127).
+     */
+    public void setPageLength(Integer pageLength) {
+        if ((pageLength < 1) || (pageLength > MAX_PAGE_LENGTH)) {
+            throw new IllegalArgumentException("Invalid value for page length: " + pageLength + " (valid: 1 to " +
+                MAX_PAGE_LENGTH + ")");
+        }
+        this.pageLength = pageLength;
+    }
+
+    /**
+     * Get specified page length in number of lines.
+     *
+     * @return number of lines for a page.
+     */
+    public Integer getPageLength() {
+        return pageLength;
+    }
+
+    /**
      * Build a string that represent ESC/P commands for this page format.
      *
      * @return a string that contains ESC/P commands.
@@ -131,6 +159,11 @@ public class PageFormat {
                     result.append(EscpUtil.escMasterSelect(EscpUtil.MASTER_SELECT_CPI_20));
                     break;
             }
+        }
+
+        // set page length
+        if (pageLength != null) {
+            result.append(EscpUtil.escPageLength(pageLength));
         }
 
         return result.toString();
