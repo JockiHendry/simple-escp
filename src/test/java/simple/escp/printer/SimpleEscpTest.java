@@ -156,4 +156,21 @@ public class SimpleEscpTest {
         simpleEscp.print(template, new HashMap());
     }
 
+    @Test
+    public void printPageWidth() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"pageWidth\": \"10\"" +
+            "}," +
+            "\"template\": [" +
+                "\"Page Width 10: 1234567890.\"," +
+                "\"Page Width 10: 1234567890.\"," +
+                "\"Page Width 10: 1234567890.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
 }

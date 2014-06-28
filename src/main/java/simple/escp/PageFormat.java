@@ -27,10 +27,12 @@ import simple.escp.util.EscpUtil;
 public class PageFormat {
 
     public static final int MAX_PAGE_LENGTH = 127;
+    public static final int MAX_PAGE_WIDTH = 255;
 
     private LINE_SPACING lineSpacing;
     private CHARACTER_PITCH characterPitch;
     private Integer pageLength;
+    private Integer pageWidth;
 
     /**
      * Set vertical line spacing.
@@ -120,6 +122,29 @@ public class PageFormat {
     }
 
     /**
+     * Set page width in number of characters.  You must make sure that this number is within printable area
+     * width.
+     *
+     * @param pageWidth number of characters measured from the left-most printable column (must be in 1..255).
+     */
+    public void setPageWidth(Integer pageWidth) {
+        if ((pageWidth < 1) || (pageWidth > MAX_PAGE_WIDTH)) {
+            throw new IllegalArgumentException("Invalid value for page width: " + pageWidth + " (valid: 1 to " +
+                MAX_PAGE_WIDTH + ")");
+        }
+        this.pageWidth = pageWidth;
+    }
+
+    /**
+     * Get specified page width in number of characters.
+     *
+     * @return number of characters for a line.
+     */
+    public Integer getPageWidth() {
+        return pageWidth;
+    }
+
+    /**
      * Build a string that represent ESC/P commands for this page format.
      *
      * @return a string that contains ESC/P commands.
@@ -164,6 +189,12 @@ public class PageFormat {
         // set page length
         if (pageLength != null) {
             result.append(EscpUtil.escPageLength(pageLength));
+        }
+
+        // set page width
+        if (pageWidth != null) {
+            // Use right margin because ESC/P doesn't have page width setting.
+            result.append(EscpUtil.escRightMargin(pageWidth));
         }
 
         return result.toString();

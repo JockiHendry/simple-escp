@@ -64,7 +64,8 @@ import java.util.logging.Logger;
  *      {
  *          "pageFormat": {
  *              "lineSpacing": "1/8",
- *              "characterPitch": "17"
+ *              "characterPitch": "17",
+ *              "pageWidth": 30
  *          },
  *          "placeholder": [
  *              "id",
@@ -119,6 +120,16 @@ public class JsonTemplate extends Template {
                     pageFormat.setPageLength(((JsonNumber) pageLength).intValue());
                 } else if (pageLength.getValueType() == JsonValue.ValueType.STRING) {
                     pageFormat.setPageLength(Integer.valueOf(((JsonString) pageLength).getString()));
+                }
+            }
+
+            // Page width
+            if (parsedPageFormat.containsKey("pageWidth")) {
+                JsonValue pageWidth = parsedPageFormat.get("pageWidth");
+                if (pageWidth.getValueType() == JsonValue.ValueType.NUMBER) {
+                    pageFormat.setPageWidth(((JsonNumber) pageWidth).intValue());
+                } else if (pageWidth.getValueType() == JsonValue.ValueType.STRING) {
+                    pageFormat.setPageWidth(Integer.valueOf(((JsonString) pageWidth).getString()));
                 }
             }
 

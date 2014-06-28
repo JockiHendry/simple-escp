@@ -33,6 +33,7 @@ public class EscpUtil {
     public static final int MASTER_SELECT_CPI_17 = 4;
     public static final int MASTER_SELECT_CPI_20 = 5;
     public static final int COMMAND_PAGE_LENGTH = 67;
+    public static final int COMMAND_RIGHT_MARGIN = 81;
 
     /**
      * Create an ESC/P code.
@@ -108,5 +109,15 @@ public class EscpUtil {
      */
     public static String escPageLength(int value) {
         return esc(COMMAND_PAGE_LENGTH, value);
+    }
+
+    /**
+     * Generate ESC Q for setting right margin.
+     *
+     * @param value parameter for ESC Q (number of characters).
+     * @return string of ESC Q command.
+     */
+    public static String escRightMargin(int value) {
+        return esc(COMMAND_RIGHT_MARGIN, value);
     }
 }

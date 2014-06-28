@@ -73,4 +73,12 @@ public class EscpUtilTest {
         assertEquals((char) 10, result.charAt(2));
     }
 
+    @Test
+    public void escRightMargin() {
+        String result = EscpUtil.escRightMargin(50);
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 81, result.charAt(1));
+        assertEquals((char) 50, result.charAt(2));
+    }
+
 }

@@ -150,4 +150,26 @@ public class JsonTemplateBasicTest {
         );
     }
 
+    @Test
+    public void pageFormatPageWidth() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageWidth\": \"25\"" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": [" +
+                "\"Your id is ${id}, Mr. ${nickname}.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + EscpUtil.escRightMargin(25) + "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
 }
