@@ -28,6 +28,7 @@ public class PageFormat {
 
     private LINE_SPACING lineSpacing;
     private EscpUtil.CHARACTER_PITCH characterPitch;
+    private EscpUtil.TYPEFACE typeface;
     private Integer pageLength;
     private Integer pageWidth;
     private Integer leftMargin;
@@ -93,6 +94,22 @@ public class PageFormat {
      */
     public EscpUtil.CHARACTER_PITCH getCharacterPitch() {
         return (this.characterPitch != null) ? this.characterPitch : EscpUtil.CHARACTER_PITCH.CPI_10;
+    }
+
+    /**
+     * Set font's type face.
+     *
+     * @param value possible value is <code>"roman"</code> or <code>"0"</code> for Roman's type face
+     *              and <code>"sans-serif"</code> or <code>"1"</code> for Sans serif's type face.
+     */
+    public void setTypeface(String value) {
+        if ("roman".equals(value) || "0".equals(value)) {
+            this.typeface = EscpUtil.TYPEFACE.ROMAN;
+        } else if ("sans-serif".equals(value) || "1".equals(value)) {
+            this.typeface = EscpUtil.TYPEFACE.SANS_SERIF;
+        } else {
+            throw new IllegalArgumentException("Invalid value for type face: " + value);
+        }
     }
 
     /**
@@ -238,6 +255,11 @@ public class PageFormat {
         // set bottom margin
         if (bottomMargin != null) {
             result.append(EscpUtil.escBottomMargin(bottomMargin));
+        }
+
+        // set typeface
+        if (typeface != null) {
+            result.append(EscpUtil.escSelectTypeface(typeface));
         }
 
         return result.toString();

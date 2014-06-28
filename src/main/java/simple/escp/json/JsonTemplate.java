@@ -155,6 +155,11 @@ public class JsonTemplate extends Template {
                 pageFormat.setBottomMargin(parseJsonNumber(parsedPageFormat.get("bottomMargin")));
             }
 
+            // Type face
+            if (parsedPageFormat.containsKey("typeface")) {
+                pageFormat.setTypeface(parsedPageFormat.getString("typeface"));
+            }
+
         }
     }
 

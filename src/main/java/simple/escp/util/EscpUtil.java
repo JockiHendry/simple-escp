@@ -33,6 +33,7 @@ public class EscpUtil {
     public static final int COMMAND_RIGHT_MARGIN = 81;
     public static final int COMMAND_LEFT_MARGIN = 108;
     public static final int COMMAND_BOTTOM_MARGIN = 78;
+    public static final int COMMAND_SELECTTYPEFACE = 107;
 
     /**
      * Create an ESC/P code.
@@ -161,6 +162,16 @@ public class EscpUtil {
     }
 
     /**
+     * Generate ESC k for select typeface.
+     *
+     * @param typeface a typeface to select.
+     * @return string of ESC k command.
+     */
+    public static String escSelectTypeface(TYPEFACE typeface) {
+        return esc(COMMAND_SELECTTYPEFACE, typeface.getValue());
+    }
+
+    /**
      * This enum represents available character pitchs.
      */
     public enum CHARACTER_PITCH {
@@ -186,4 +197,32 @@ public class EscpUtil {
             return value;
         }
     }
+
+    /**
+     * This enum represents available typeface.
+     */
+    public enum TYPEFACE {
+        ROMAN(0), SANS_SERIF(1);
+
+        private int value;
+
+        /**
+         * Create new instance of TYPEFACE.
+         *
+         * @param value a parameter for Select type face command.
+         */
+        TYPEFACE(int value) {
+            this.value = value;
+        }
+
+        /**
+         * Get the parameter value for this typeface.
+         *
+         * @return a parameter for Select type face command.
+         */
+        public int getValue() {
+            return value;
+        }
+    }
+
 }

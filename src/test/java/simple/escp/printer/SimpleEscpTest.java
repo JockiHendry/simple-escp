@@ -192,4 +192,34 @@ public class SimpleEscpTest {
         simpleEscp.print(template, new HashMap());
     }
 
+    @Test
+    public void printInRomanTypeface() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"typeface\": \"roman\"" +
+            "}," +
+            "\"template\": [" +
+                "\"printInRomanTypeface: This should be in roman typeface.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
+    @Test
+    public void printInSansSerifTypeface() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"typeface\": \"sans-serif\"" +
+            "}," +
+            "\"template\": [" +
+                "\"printInRomanTypeface: This should be in sans-serif typeface.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
 }

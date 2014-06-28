@@ -198,4 +198,27 @@ public class JsonTemplateBasicTest {
         );
     }
 
+    @Test
+    public void pageFormatTypeface() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"typeface\": \"sans-serif\"" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": [" +
+                "\"Your id is ${id}, Mr. ${nickname}.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + EscpUtil.escSelectTypeface(EscpUtil.TYPEFACE.SANS_SERIF) +
+                "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
 }

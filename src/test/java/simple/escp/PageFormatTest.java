@@ -103,4 +103,30 @@ public class PageFormatTest {
         assertEquals((char) 80, result.charAt(4));
     }
 
+    @Test
+    public void pageFormatTypefaceRoman() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setTypeface("roman");
+        String result = pageFormat.build();
+        assertEquals(5, result.length());
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals('@', result.charAt(1));
+        assertEquals((char) 27, result.charAt(2));
+        assertEquals((char) 107, result.charAt(3));
+        assertEquals((char) 0, result.charAt(4));
+    }
+
+    @Test
+    public void pageFormatTypefaceSansSerif() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setTypeface("sans-serif");
+        String result = pageFormat.build();
+        assertEquals(5, result.length());
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals('@', result.charAt(1));
+        assertEquals((char) 27, result.charAt(2));
+        assertEquals((char) 107, result.charAt(3));
+        assertEquals((char) 1, result.charAt(4));
+    }
+
 }

@@ -97,4 +97,17 @@ public class EscpUtilTest {
         assertEquals((char) 70, result.charAt(2));
     }
 
+    @Test
+    public void escSelectTypeFace() {
+        String result = EscpUtil.escSelectTypeface(EscpUtil.TYPEFACE.ROMAN);
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 107, result.charAt(1));
+        assertEquals((char) 0, result.charAt(2));
+
+        result = EscpUtil.escSelectTypeface(EscpUtil.TYPEFACE.SANS_SERIF);
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 107, result.charAt(1));
+        assertEquals((char) 1, result.charAt(2));
+    }
+
 }
