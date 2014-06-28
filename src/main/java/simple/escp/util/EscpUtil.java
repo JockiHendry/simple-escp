@@ -32,6 +32,7 @@ public class EscpUtil {
     public static final int COMMAND_PAGE_LENGTH = 67;
     public static final int COMMAND_RIGHT_MARGIN = 81;
     public static final int COMMAND_LEFT_MARGIN = 108;
+    public static final int COMMAND_BOTTOM_MARGIN = 78;
 
     /**
      * Create an ESC/P code.
@@ -143,6 +144,20 @@ public class EscpUtil {
                 MAX_PAGE_WIDTH + ")");
         }
         return esc(COMMAND_RIGHT_MARGIN, value);
+    }
+
+    /**
+     * Generate ESC N for setting bottom margin.
+     *
+     * @param value number of lines from top-of-form position.  Valid values is in range of 1 to 127 lines.
+     * @return string of ESC N command.
+     */
+    public static String escBottomMargin(int value) {
+        if ((value < 1) || (value > MAX_PAGE_LENGTH)) {
+            throw new IllegalArgumentException("Invalid value for bototm margin: " + value + " (valid: 1 to " +
+                MAX_PAGE_LENGTH + ")");
+        }
+        return esc(COMMAND_BOTTOM_MARGIN, value);
     }
 
     /**

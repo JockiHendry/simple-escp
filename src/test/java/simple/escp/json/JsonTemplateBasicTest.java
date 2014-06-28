@@ -173,13 +173,14 @@ public class JsonTemplateBasicTest {
     }
 
     @Test
-    public void pageFormatLeftAndRightMargin() {
+    public void pageFormatLeftAndRightAndBottomMargin() {
         String jsonString =
         "{" +
             "\"pageFormat\": {" +
                 "\"pageWidth\": \"30\"," +
                 "\"leftMargin\": \"5\"," +
-                "\"rightMargin\": \"3\"" +
+                "\"rightMargin\": \"3\"," +
+                "\"bottomMargin\": \"70\"" +
             "}," +
             "\"placeholder\": [" +
                 "\"id\"," +
@@ -191,7 +192,8 @@ public class JsonTemplateBasicTest {
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + EscpUtil.escLeftMargin(5) + EscpUtil.escRightMargin(27) + "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
+            INIT + EscpUtil.escLeftMargin(5) + EscpUtil.escRightMargin(27) + EscpUtil.escBottomMargin(70) +
+            "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
             jsonTemplate.parse()
         );
     }

@@ -90,4 +90,17 @@ public class PageFormatTest {
         assertEquals((char) 70, result.charAt(7));
     }
 
+    @Test
+    public void pageFormatButtonMargin() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setBottomMargin(80);
+        String result = pageFormat.build();
+        assertEquals(5, result.length());
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals('@', result.charAt(1));
+        assertEquals((char) 27, result.charAt(2));
+        assertEquals((char) 78, result.charAt(3));
+        assertEquals((char) 80, result.charAt(4));
+    }
+
 }

@@ -150,6 +150,11 @@ public class JsonTemplate extends Template {
                 pageFormat.setRightMargin(parseJsonNumber(parsedPageFormat.get("rightMargin")));
             }
 
+            // Bottom margin
+            if (parsedPageFormat.containsKey("bottomMargin")) {
+                pageFormat.setBottomMargin(parseJsonNumber(parsedPageFormat.get("bottomMargin")));
+            }
+
         }
     }
 

@@ -32,6 +32,7 @@ public class PageFormat {
     private Integer pageWidth;
     private Integer leftMargin;
     private Integer rightMargin;
+    private Integer bottomMargin;
 
     /**
      * Set vertical line spacing.
@@ -169,6 +170,25 @@ public class PageFormat {
     }
 
     /**
+     * Set bottom margin in number of lines.  The bottom margin is calculated as number of lines above
+     * top-of-form position of the next page.
+     *
+     * @param bottomMargin number of line above top-of-form position of the next page.
+     */
+    public void setBottomMargin(Integer bottomMargin) {
+        this.bottomMargin = bottomMargin;
+    }
+
+    /**
+     * Get specified bottom margin.
+     *
+     * @return bottom margin in number of lines above top-of-form position of the next page.
+     */
+    public Integer getBottomMargin() {
+        return bottomMargin;
+    }
+
+    /**
      * Build a string that represent ESC/P commands for this page format.
      *
      * @return a string that contains ESC/P commands.
@@ -213,6 +233,11 @@ public class PageFormat {
                 throw new UnsupportedOperationException("Can't set right margin if page width is not specified.");
             }
             result.append(EscpUtil.escRightMargin(pageWidth - rightMargin));
+        }
+
+        // set bottom margin
+        if (bottomMargin != null) {
+            result.append(EscpUtil.escBottomMargin(bottomMargin));
         }
 
         return result.toString();

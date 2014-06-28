@@ -89,4 +89,12 @@ public class EscpUtilTest {
         assertEquals((char) 50, result.charAt(2));
     }
 
+    @Test
+    public void escBottomMargin() {
+        String result = EscpUtil.escBottomMargin(70);
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 78, result.charAt(1));
+        assertEquals((char) 70, result.charAt(2));
+    }
+
 }
