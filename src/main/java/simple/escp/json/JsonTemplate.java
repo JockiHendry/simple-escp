@@ -95,6 +95,21 @@ public class JsonTemplate extends Template {
     }
 
     /**
+     * Get number from JSON number or JSON string.
+     *
+     * @param jsonValue <code>JsonValue</code> that will be parsed.
+     * @return a number represented by <code>jsonValue</code>.
+     */
+    private Integer parseJsonNumber(JsonValue jsonValue) {
+        if (jsonValue.getValueType() == JsonValue.ValueType.NUMBER) {
+            return ((JsonNumber) jsonValue).intValue();
+        } else if (jsonValue.getValueType() == JsonValue.ValueType.STRING) {
+            return Integer.valueOf(((JsonString) jsonValue).getString());
+        }
+        throw new IllegalArgumentException("Can't convert " + jsonValue.toString() + " to number.");
+    }
+
+    /**
      * Parse <code>"pageFormat"</code> section from this JSON template.
      *
      * @param json the root JSON of this template.
@@ -115,22 +130,12 @@ public class JsonTemplate extends Template {
 
             // Page length
             if (parsedPageFormat.containsKey("pageLength")) {
-                JsonValue pageLength = parsedPageFormat.get("pageLength");
-                if (pageLength.getValueType() == JsonValue.ValueType.NUMBER) {
-                    pageFormat.setPageLength(((JsonNumber) pageLength).intValue());
-                } else if (pageLength.getValueType() == JsonValue.ValueType.STRING) {
-                    pageFormat.setPageLength(Integer.valueOf(((JsonString) pageLength).getString()));
-                }
+                pageFormat.setPageLength(parseJsonNumber(parsedPageFormat.get("pageLength")));
             }
 
             // Page width
             if (parsedPageFormat.containsKey("pageWidth")) {
-                JsonValue pageWidth = parsedPageFormat.get("pageWidth");
-                if (pageWidth.getValueType() == JsonValue.ValueType.NUMBER) {
-                    pageFormat.setPageWidth(((JsonNumber) pageWidth).intValue());
-                } else if (pageWidth.getValueType() == JsonValue.ValueType.STRING) {
-                    pageFormat.setPageWidth(Integer.valueOf(((JsonString) pageWidth).getString()));
-                }
+                pageFormat.setPageWidth(parseJsonNumber(parsedPageFormat.get("pageWidth")));
             }
 
         }
