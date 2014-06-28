@@ -72,4 +72,22 @@ public class PageFormatTest {
         assertEquals((char) 40, result.charAt(4));
     }
 
+    @Test
+    public void pageFormatLeftAndRightMargin() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageWidth(80);
+        pageFormat.setLeftMargin(5);
+        pageFormat.setRightMargin(10);
+        String result = pageFormat.build();
+        assertEquals(8, result.length());
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals('@', result.charAt(1));
+        assertEquals((char) 27, result.charAt(2));
+        assertEquals((char) 108, result.charAt(3));
+        assertEquals((char) 5, result.charAt(4));
+        assertEquals((char) 27, result.charAt(5));
+        assertEquals((char) 81, result.charAt(6));
+        assertEquals((char) 70, result.charAt(7));
+    }
+
 }

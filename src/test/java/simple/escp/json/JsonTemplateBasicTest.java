@@ -172,4 +172,28 @@ public class JsonTemplateBasicTest {
         );
     }
 
+    @Test
+    public void pageFormatLeftAndRightMargin() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageWidth\": \"30\"," +
+                "\"leftMargin\": \"5\"," +
+                "\"rightMargin\": \"3\"" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": [" +
+                "\"Your id is ${id}, Mr. ${nickname}.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + EscpUtil.escLeftMargin(5) + EscpUtil.escRightMargin(27) + "Your id is ${id}, Mr. ${nickname}.\n" + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
 }

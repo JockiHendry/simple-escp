@@ -173,4 +173,23 @@ public class SimpleEscpTest {
         simpleEscp.print(template, new HashMap());
     }
 
+    @Test
+    public void printLeftAndRightMargin() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"pageWidth\": \"70\"," +
+                "\"leftMargin\": \"50\"," +
+                "\"rightMargin\": \"10\"" +
+            "}," +
+            "\"template\": [" +
+                "\"Margin 70,50,10: 1234567890.\"," +
+                "\"Margin 70,50,10: 1234567890.\"," +
+                "\"Margin 70,50,10: 1234567890.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
 }

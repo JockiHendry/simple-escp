@@ -65,7 +65,9 @@ import java.util.logging.Logger;
  *          "pageFormat": {
  *              "lineSpacing": "1/8",
  *              "characterPitch": "17",
- *              "pageWidth": 30
+ *              "pageWidth": 30,
+ *              "leftMargin": 5,
+ *              "rightMargin": 5
  *          },
  *          "placeholder": [
  *              "id",
@@ -136,6 +138,16 @@ public class JsonTemplate extends Template {
             // Page width
             if (parsedPageFormat.containsKey("pageWidth")) {
                 pageFormat.setPageWidth(parseJsonNumber(parsedPageFormat.get("pageWidth")));
+            }
+
+            // Left margin
+            if (parsedPageFormat.containsKey("leftMargin")) {
+                pageFormat.setLeftMargin(parseJsonNumber(parsedPageFormat.get("leftMargin")));
+            }
+
+            // Right margin
+            if (parsedPageFormat.containsKey("rightMargin")) {
+                pageFormat.setRightMargin(parseJsonNumber(parsedPageFormat.get("rightMargin")));
             }
 
         }

@@ -30,6 +30,8 @@ public class PageFormat {
     private EscpUtil.CHARACTER_PITCH characterPitch;
     private Integer pageLength;
     private Integer pageWidth;
+    private Integer leftMargin;
+    private Integer rightMargin;
 
     /**
      * Set vertical line spacing.
@@ -130,6 +132,43 @@ public class PageFormat {
     }
 
     /**
+     * Set left margin.
+     *
+     * @param leftMargin number of characters measured from the left-most printable column.
+     */
+    public void setLeftMargin(Integer leftMargin) {
+        this.leftMargin = leftMargin;
+    }
+
+    /**
+     * Get specified left margin.
+     *
+     * @return left margin in number of characters measured from the left-most printable column.
+     */
+    public Integer getLeftMargin() {
+        return leftMargin;
+    }
+
+    /**
+     *  Set right margin.  You <strong>must</strong> set page width if you want to set right margin because
+     *  right margin will be calculated based on page width.
+     *
+     * @param rightMargin number of characters before reaching page width.
+     */
+    public void setRightMargin(Integer rightMargin) {
+        this.rightMargin = rightMargin;
+    }
+
+    /**
+     * Get specified right margin.
+     *
+     * @return right margin in number of characters before reaching page width.
+     */
+    public Integer getRightMargin() {
+        return rightMargin;
+    }
+
+    /**
      * Build a string that represent ESC/P commands for this page format.
      *
      * @return a string that contains ESC/P commands.
@@ -158,9 +197,22 @@ public class PageFormat {
         }
 
         // set page width
-        if (pageWidth != null) {
+        if ((pageWidth != null) && (rightMargin == null)) {
             // Use right margin because ESC/P doesn't have page width setting.
             result.append(EscpUtil.escRightMargin(pageWidth));
+        }
+
+        // set left margin
+        if (leftMargin != null) {
+            result.append(EscpUtil.escLeftMargin(leftMargin));
+        }
+
+        // set right margin
+        if (rightMargin != null) {
+            if (pageWidth == null) {
+                throw new UnsupportedOperationException("Can't set right margin if page width is not specified.");
+            }
+            result.append(EscpUtil.escRightMargin(pageWidth - rightMargin));
         }
 
         return result.toString();

@@ -31,6 +31,7 @@ public class EscpUtil {
     public static final int COMMAND_MASTER_SELECT = 33;
     public static final int COMMAND_PAGE_LENGTH = 67;
     public static final int COMMAND_RIGHT_MARGIN = 81;
+    public static final int COMMAND_LEFT_MARGIN = 108;
 
     /**
      * Create an ESC/P code.
@@ -117,6 +118,20 @@ public class EscpUtil {
     }
 
     /**
+     * Generate ESC l for setting left margin.
+     *
+     * @param value number of characters in 1 to 255 character per line.
+     * @return string of ESC l command.
+     */
+    public static String escLeftMargin(int value) {
+        if ((value < 1) || (value > MAX_PAGE_WIDTH)) {
+            throw new IllegalArgumentException("Invalid value for left margin: " + value + " (valid: 1 to " +
+                MAX_PAGE_WIDTH + ")");
+        }
+        return esc(COMMAND_LEFT_MARGIN, value);
+    }
+
+    /**
      * Generate ESC Q for setting right margin.
      *
      * @param value number of characters in 1 to 255 character per line.
@@ -124,7 +139,7 @@ public class EscpUtil {
      */
     public static String escRightMargin(int value) {
         if ((value < 1) || (value > MAX_PAGE_WIDTH)) {
-            throw new IllegalArgumentException("Invalid value for page width: " + value + " (valid: 1 to " +
+            throw new IllegalArgumentException("Invalid value for right margin: " + value + " (valid: 1 to " +
                 MAX_PAGE_WIDTH + ")");
         }
         return esc(COMMAND_RIGHT_MARGIN, value);
