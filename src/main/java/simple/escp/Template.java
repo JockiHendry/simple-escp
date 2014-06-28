@@ -72,6 +72,15 @@ public abstract class Template {
     }
 
     /**
+     * Retrieve current <code>PageFormat</code> associated with this template.
+     *
+     * @return an instance of <code>PageFormat</code> for this template.
+     */
+    public PageFormat getPageFormat() {
+        return pageFormat;
+    }
+
+    /**
      * Parse the template into a text.  This is usually executed only once.
      *
      * @return a parsed <code>String</code>.

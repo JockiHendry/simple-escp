@@ -34,7 +34,8 @@ public class PageFormat {
     private Integer leftMargin;
     private Integer rightMargin;
     private Integer bottomMargin;
-    private boolean autoLineFeed;
+    private boolean autoLineFeed = false;
+    private boolean autoFormFeed = true;
 
     /**
      * Set vertical line spacing.
@@ -210,19 +211,39 @@ public class PageFormat {
      * Use this configuration to tell simple-escp if auto line-feed is enabled or not.  If auto line-feed
      * is disabled, all lines will end with CRLF.  If auto line-feed is enabled, all lines will end with only CR.
      *
-     * @param autoLineFeed current auto line-feed status.  Default value is false.
+     * @param autoLineFeed current auto line-feed status.  Default value is <code>false</code>.
      */
     public void setAutoLineFeed(boolean autoLineFeed) {
         this.autoLineFeed = autoLineFeed;
     }
 
     /**
-     * Get auto line-feed value.
+     * Get auto line-feed value.  Default value is <code>false</code>.
      *
-     * @return <code>true</code> is auto line-feed is enabled or <code>false</code> if otherwise.
+     * @return <code>true</code> if auto line-feed is enabled or <code>false</code> if otherwise.
      */
     public boolean isAutoLineFeed() {
         return autoLineFeed;
+    }
+
+    /**
+     * Use this configuration to enable or disable auto form-feed.  If this configuration is enabled,
+     * CRFF will be appended to the last page.  This will cause print position to advance to the
+     * top-of-form position of the next page.
+     *
+     * @param autoFormFeed enable or disable auto form-feed.  Default value is <code>true</code>.
+     */
+    public void setAutoFormFeed(boolean autoFormFeed) {
+        this.autoFormFeed = autoFormFeed;
+    }
+
+    /**
+     * Get auto form-feed value.  Default value is <code>true</code>.
+     *
+     * @return <code>true</code> if auto form-feed is enabled or <code>false</code> if otherwise.
+     */
+    public boolean isAutoFormFeed() {
+        return autoFormFeed;
     }
 
     /**

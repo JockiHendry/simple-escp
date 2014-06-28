@@ -57,6 +57,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
         data.put("nickname", "The Solid Snake");
@@ -78,6 +79,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -93,6 +95,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -108,6 +111,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -123,6 +127,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -138,6 +143,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -153,6 +159,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -170,6 +177,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -189,6 +197,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -204,6 +213,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 
@@ -219,6 +229,7 @@ public class SimpleEscpTest {
             "]" +
         "}";
         Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, new HashMap());
     }
 

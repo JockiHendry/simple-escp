@@ -39,6 +39,7 @@ public class EscpUtil {
 
     public static final String CR = new String(new byte[]{13}, StandardCharsets.US_ASCII);
     public static final String CRLF = new String(new byte[]{13, 10}, StandardCharsets.US_ASCII);
+    public static final String CRFF = new String(new byte[]{13, 12}, StandardCharsets.US_ASCII);
 
     /**
      * Create an ESC/P code.

@@ -19,14 +19,13 @@ package simple.escp.json;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import simple.escp.util.EscpUtil;
+import static simple.escp.util.EscpUtil.*;
 
 import java.util.List;
 
 public class JsonTemplateBasicTest {
 
     private final String INIT = EscpUtil.escInitalize();
-    private final String CR = EscpUtil.CR;
-    private final String CRLF = EscpUtil.CRLF;
 
     @Test
     public void parseString() {
@@ -37,7 +36,7 @@ public class JsonTemplateBasicTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         jsonTemplate.parse();
         assertEquals(jsonString, jsonTemplate.getOriginalText());
-        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + INIT, jsonTemplate.getParsedText());
+        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + CRFF + INIT, jsonTemplate.getParsedText());
     }
 
     @Test
@@ -81,7 +80,7 @@ public class JsonTemplateBasicTest {
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is ${id}, Mr. ${nickname}." + CRLF  + INIT,
+            INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is ${id}, Mr. ${nickname}." + CRLF  + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -103,7 +102,7 @@ public class JsonTemplateBasicTest {
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
+            INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -125,7 +124,7 @@ public class JsonTemplateBasicTest {
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
+            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -147,7 +146,7 @@ public class JsonTemplateBasicTest {
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
+            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -169,7 +168,7 @@ public class JsonTemplateBasicTest {
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + EscpUtil.escRightMargin(25) + "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
+            INIT + EscpUtil.escRightMargin(25) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -195,7 +194,7 @@ public class JsonTemplateBasicTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
             INIT + EscpUtil.escLeftMargin(5) + EscpUtil.escRightMargin(27) + EscpUtil.escBottomMargin(70) +
-            "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
+            "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -218,7 +217,7 @@ public class JsonTemplateBasicTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
             INIT + EscpUtil.escSelectTypeface(EscpUtil.TYPEFACE.SANS_SERIF) +
-                "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
+                "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -240,10 +239,31 @@ public class JsonTemplateBasicTest {
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + "Your id is ${id}, Mr. ${nickname}." + CR + INIT,
+            INIT + "Your id is ${id}, Mr. ${nickname}." + CR + CRFF + INIT,
             jsonTemplate.parse()
         );
+    }
 
+    @Test
+    public void pageFormatAutoFormFeed() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"autoFormFeed\": false" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": [" +
+                "\"Your id is ${id}, Mr. ${nickname}.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
+            jsonTemplate.parse()
+        );
     }
 
 }

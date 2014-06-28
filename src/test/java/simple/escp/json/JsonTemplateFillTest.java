@@ -22,13 +22,12 @@ import simple.escp.util.EscpUtil;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.*;
+import static simple.escp.util.EscpUtil.*;
 
 public class JsonTemplateFillTest {
 
     private String jsonString;
     private final String INIT = EscpUtil.escInitalize();
-    private final String CR = EscpUtil.CR;
-    private final String CRLF = EscpUtil.CRLF;
 
     @Before
     public void setup() {
@@ -49,7 +48,7 @@ public class JsonTemplateFillTest {
         Map<String, String> dataSource = new HashMap<>();
         dataSource.put("id", "007");
         dataSource.put("nickname", "Solid Snake");
-        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + INIT, jsonTemplate.fill(dataSource));
+        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(dataSource));
     }
 
 }

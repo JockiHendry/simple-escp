@@ -165,6 +165,11 @@ public class JsonTemplate extends Template {
                 pageFormat.setAutoLineFeed(parsedPageFormat.getBoolean("autoLineFeed"));
             }
 
+            // Auto form-feed
+            if (parsedPageFormat.containsKey("autoFormFeed")) {
+                pageFormat.setAutoFormFeed(parsedPageFormat.getBoolean("autoFormFeed"));
+            }
+
         }
     }
 
@@ -248,7 +253,10 @@ public class JsonTemplate extends Template {
                 // Parse the template text
                 tmp.append(parseTemplateText(json));
 
-                // Add ESC @ at the end
+                // Add at the end
+                if (pageFormat.isAutoFormFeed()) {
+                    tmp.append(EscpUtil.CRFF);
+                }
                 tmp.append(EscpUtil.escInitalize());
 
                 this.parsedText = tmp.toString();
