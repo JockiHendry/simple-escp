@@ -16,6 +16,8 @@
 
 package simple.escp.util;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  *  This is a helper class to generate ESC/P string from number that represent ASCII code.
  */
@@ -34,6 +36,9 @@ public class EscpUtil {
     public static final int COMMAND_LEFT_MARGIN = 108;
     public static final int COMMAND_BOTTOM_MARGIN = 78;
     public static final int COMMAND_SELECTTYPEFACE = 107;
+
+    public static final String CR = new String(new byte[]{13}, StandardCharsets.US_ASCII);
+    public static final String CRLF = new String(new byte[]{13, 10}, StandardCharsets.US_ASCII);
 
     /**
      * Create an ESC/P code.

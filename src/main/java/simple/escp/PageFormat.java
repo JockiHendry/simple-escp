@@ -34,6 +34,7 @@ public class PageFormat {
     private Integer leftMargin;
     private Integer rightMargin;
     private Integer bottomMargin;
+    private boolean autoLineFeed;
 
     /**
      * Set vertical line spacing.
@@ -203,6 +204,25 @@ public class PageFormat {
      */
     public Integer getBottomMargin() {
         return bottomMargin;
+    }
+
+    /**
+     * Use this configuration to tell simple-escp if auto line-feed is enabled or not.  If auto line-feed
+     * is disabled, all lines will end with CRLF.  If auto line-feed is enabled, all lines will end with only CR.
+     *
+     * @param autoLineFeed current auto line-feed status.  Default value is false.
+     */
+    public void setAutoLineFeed(boolean autoLineFeed) {
+        this.autoLineFeed = autoLineFeed;
+    }
+
+    /**
+     * Get auto line-feed value.
+     *
+     * @return <code>true</code> is auto line-feed is enabled or <code>false</code> if otherwise.
+     */
+    public boolean isAutoLineFeed() {
+        return autoLineFeed;
     }
 
     /**

@@ -110,4 +110,16 @@ public class EscpUtilTest {
         assertEquals((char) 1, result.charAt(2));
     }
 
+    @Test
+    public void crlf() {
+        String result = EscpUtil.CR;
+        assertEquals(1, result.length());
+        assertEquals((char) 13, result.charAt(0));
+
+        result = EscpUtil.CRLF;
+        assertEquals(2, result.length());
+        assertEquals((char) 13, result.charAt(0));
+        assertEquals((char) 10, result.charAt(1));
+    }
+
 }

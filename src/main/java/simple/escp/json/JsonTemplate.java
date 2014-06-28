@@ -160,6 +160,11 @@ public class JsonTemplate extends Template {
                 pageFormat.setTypeface(parsedPageFormat.getString("typeface"));
             }
 
+            // Auto line-feed
+            if (parsedPageFormat.containsKey("autoLineFeed")) {
+                pageFormat.setAutoLineFeed(parsedPageFormat.getBoolean("autoLineFeed"));
+            }
+
         }
     }
 
@@ -216,7 +221,7 @@ public class JsonTemplate extends Template {
                 }
 
                 tmp.append(((JsonString) line).getString());
-                tmp.append('\n');
+                tmp.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
 
             }
         }
