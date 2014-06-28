@@ -21,10 +21,17 @@ package simple.escp.util;
  */
 public class EscpUtil {
 
-    public static final char ESC = (char) 27;
+    public static final int ESC = 27;
     public static final int COMMAND_INITIALIZE = 64;
     public static final int COMMAND_ONE_PER_SIX_INCH_LINE_SPACING = 50;
     public static final int COMMAND_ONE_PER_EIGHT_LINE_SPACING = 48;
+    public static final int COMMAND_MASTER_SELECT = 33;
+    public static final int MASTER_SELECT_CPI_5 = 32;
+    public static final int MASTER_SELECT_CPI_6 = 33;
+    public static final int MASTER_SELECT_CPI_10 = 0;
+    public static final int MASTER_SELECT_CPI_12 = 1;
+    public static final int MASTER_SELECT_CPI_17 = 4;
+    public static final int MASTER_SELECT_CPI_20 = 5;
 
     /**
      * Create an ESC/P code.
@@ -35,7 +42,7 @@ public class EscpUtil {
      */
     public static String esc(int command, int... value) {
         StringBuffer result = new StringBuffer();
-        result.append(ESC);
+        result.append((char) ESC);
         result.append((char) command);
         if (value != null) {
             for (int i: value) {
@@ -80,5 +87,15 @@ public class EscpUtil {
      */
     public static String escOnePerEightInchLineSpacing() {
         return esc(COMMAND_ONE_PER_EIGHT_LINE_SPACING);
+    }
+
+    /**
+     * Generate ESC ! for master select.
+     *
+     * @param value parameter for ESC !
+     * @return string of ESC ! command.
+     */
+    public static String escMasterSelect(int value) {
+        return esc(COMMAND_MASTER_SELECT, value);
     }
 }

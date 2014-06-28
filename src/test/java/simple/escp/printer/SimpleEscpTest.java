@@ -81,4 +81,79 @@ public class SimpleEscpTest {
         simpleEscp.print(template, new HashMap());
     }
 
+    @Test
+    public void print5Cpi() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"characterPitch\": \"5\"" +
+            "}," +
+            "\"template\": [" +
+                "\"5 cpi: This is an example text in 5 cpi.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
+    @Test
+    public void print10Cpi() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"characterPitch\": \"10\"" +
+            "}," +
+            "\"template\": [" +
+                "\"10 cpi: This is an example text in 10 cpi.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
+    @Test
+    public void print12Cpi() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"characterPitch\": \"12\"" +
+            "}," +
+            "\"template\": [" +
+                "\"12 cpi: This is an example text in 12 cpi.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
+    @Test
+    public void print17Cpi() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"characterPitch\": \"17\"" +
+            "}," +
+            "\"template\": [" +
+                "\"17 cpi: This is an example text in 17 cpi.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
+    @Test
+    public void print20Cpi() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"pageFormat\": {" +
+                "\"characterPitch\": \"20\"" +
+            "}," +
+            "\"template\": [" +
+                "\"20 cpi: This is an example text in 20 cpi.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        simpleEscp.print(template, new HashMap());
+    }
+
 }

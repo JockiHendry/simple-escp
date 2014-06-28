@@ -62,7 +62,8 @@ import java.util.logging.Logger;
  *  <pre>
  *      {
  *          "pageFormat": {
- *              "lineSpacing": "1/8"
+ *              "lineSpacing": "1/8",
+ *              "characterPitch": "17"
  *          },
  *          "placeholder": [
  *              "id",
@@ -103,6 +104,11 @@ public class JsonTemplate extends Template {
             // Line spacing
             if (parsedPageFormat.containsKey("lineSpacing")) {
                 pageFormat.setLineSpacing(parsedPageFormat.getString("lineSpacing"));
+            }
+
+            // Character pitch
+            if (parsedPageFormat.containsKey("characterPitch")) {
+                pageFormat.setCharacterPitch(parsedPageFormat.getString("characterPitch"));
             }
 
         }

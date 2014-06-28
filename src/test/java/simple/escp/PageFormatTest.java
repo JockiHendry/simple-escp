@@ -33,4 +33,17 @@ public class PageFormatTest {
         assertEquals((char) 48, result.charAt(3));
     }
 
+    @Test
+    public void pageFormatCharacterPitch() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setCharacterPitch("17");
+        String result = pageFormat.build();
+        assertEquals(5, result.length());
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals('@', result.charAt(1));
+        assertEquals((char) 27, result.charAt(2));
+        assertEquals((char) 33, result.charAt(3));
+        assertEquals((char)  4, result.charAt(4));
+    }
+
 }
