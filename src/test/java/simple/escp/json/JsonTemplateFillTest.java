@@ -51,4 +51,34 @@ public class JsonTemplateFillTest {
         assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(dataSource));
     }
 
+    @Test
+    public void fillObject() throws Exception {
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Person person = new Person();
+        person.setId("007");
+        person.setNickname("Solid Snake");
+        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(person));
+    }
+
+    public static class Person {
+        private String id;
+        private String nickname;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
+        }
+    }
+
 }

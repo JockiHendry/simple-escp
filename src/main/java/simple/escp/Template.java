@@ -16,6 +16,11 @@
 
 package simple.escp;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,9 +121,34 @@ public abstract class Template {
      *
      * @param object contains data for this template.
      * @return text that will be printed and may contains ESC/P.
+     * @throws java.beans.IntrospectionException if can't find methods in object.
+     * @throws java.lang.IllegalAccessException if can't access methods in object.
+     * @throws java.lang.reflect.InvocationTargetException if can't execute methods of object.
      */
-    public String fill(Object object) {
-        return null;
+    public String fill(Object object) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+        String parsedText = parse();
+        StringBuffer result = new StringBuffer();
+
+        BeanInfo beanInfo = Introspector.getBeanInfo(object.getClass());
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(parsedText);
+        while (matcher.find()) {
+            Placeholder placeholder = getPlaceholders().get(matcher.group(1));
+
+            // Find value
+            for (PropertyDescriptor propertyDescriptor: propertyDescriptors) {
+                if (propertyDescriptor.getName().equals(placeholder.getName())) {
+                    Object value = propertyDescriptor.getReadMethod().invoke(object);
+                    matcher.appendReplacement(result, placeholder.forValue(value));
+                    break;
+                }
+            }
+
+        }
+        matcher.appendTail(result);
+
+        return result.toString();
     }
 
 

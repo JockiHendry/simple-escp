@@ -30,6 +30,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.IntrospectionException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Vector;
 
@@ -55,13 +57,31 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
 
     /**
      * Create a new instance of <code>PrintPreviewPane</code> based on a <code>Template</code> and its
-     * value.  Template <strong>must</strong> have a valid value for <code>pageLength</code> and
-     * <code>pageWidth</code> in its <code>pageFormat</code>.
+     * value (a <code>Map</code>).  Template <strong>must</strong> have a valid value for <code>pageLength</code>
+     * and <code>pageWidth</code> in its <code>pageFormat</code>.
      *
      * @param template an instance of <code>Template</code>.
      * @param value to fill placholders in the <code>Template</code>.
      */
     public PrintPreviewPane(Template template, Map value) {
+        this(template.fill(value),
+            template.getPageFormat().getPageLength(),
+            template.getPageFormat().getPageWidth());
+    }
+
+    /**
+     * Create a new instance of <code>PrintPreviewPane</code> based on a <code>Template</code> and its
+     * value (an object).  Template <strong>must</strong> have a valid value for <code>pageLength</code> and
+     * <code>pageWidth</code> in its <code>pageFormat</code>.
+     *
+     * @param template an instance of <code>Template</code>.
+     * @param value to fill placholders in the <code>Template</code>.
+     * @throws java.beans.IntrospectionException if can't find methods in object.
+     * @throws java.lang.IllegalAccessException if can't access methods in object.
+     * @throws java.lang.reflect.InvocationTargetException if can't execute methods of object.
+     */
+    public PrintPreviewPane(Template template, Object value) throws IllegalAccessException, IntrospectionException,
+                                                                    InvocationTargetException {
         this(template.fill(value),
             template.getPageFormat().getPageLength(),
             template.getPageFormat().getPageWidth());
