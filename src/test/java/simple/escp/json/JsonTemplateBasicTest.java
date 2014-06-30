@@ -21,7 +21,12 @@ import org.junit.Test;
 import simple.escp.util.EscpUtil;
 import static simple.escp.util.EscpUtil.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsonTemplateBasicTest {
 
@@ -265,5 +270,42 @@ public class JsonTemplateBasicTest {
             jsonTemplate.parse()
         );
     }
+
+    @Test
+    public void fromFile() throws IOException {
+        File file = Paths.get("src/test/resources/user.json").toFile();
+        JsonTemplate jsonTemplate = new JsonTemplate(file);
+        String LS = System.getProperty("line.separator");
+        assertEquals("{" + LS +
+            "    \"pageFormat\": {" + LS +
+            "        \"pageLength\": 30," + LS +
+            "        \"pageWith\": 20" + LS +
+            "    }," + LS +
+            "    \"placeholder\": [" + LS +
+            "        \"id\", \"nickname\"" + LS +
+            "    ]," + LS +
+            "    \"template\": [" + LS +
+            "        \"User Report\"," + LS +
+            "        \"===========\"," + LS +
+            "        \"ID    : ${id}\"," + LS +
+            "        \"Name  : ${nickname}\"" + LS +
+            "    ]" + LS +
+            "}", jsonTemplate.getOriginalText());
+
+        Map<String, String> data = new HashMap<>();
+        data.put("id", "007");
+        data.put("nickname", "The Solid Snake");
+        String result = jsonTemplate.fill(data);
+        assertEquals(
+            EscpUtil.escInitalize() + EscpUtil.escPageLength(30) +
+            "User Report" + CRLF +
+            "===========" + CRLF +
+            "ID    : 007" + CRLF +
+            "Name  : The Solid Snake" + CRLF +
+            CRFF + EscpUtil.escInitalize(),
+            result
+        );
+    }
+
 
 }

@@ -27,7 +27,12 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.logging.Logger;
 
 /**
@@ -94,6 +99,27 @@ public class JsonTemplate extends Template {
      */
     public JsonTemplate(String json) {
         this.originalText = json;
+    }
+
+    /**
+     * Create a new template from a JSON file with UTF-8 character set.
+     *
+     * @param file the file that will be read.
+     * @throws IOException if error occured when reading the file.
+     */
+    public JsonTemplate(File file) throws IOException {
+        this.originalText = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Create a new template from a JSON file with custom character set.
+     *
+     * @param file the file that will be read.
+     * @param charset character set of the file.
+     * @throws IOException if error occured when reading the file.
+     */
+    public JsonTemplate(File file, Charset charset) throws IOException {
+        this.originalText = new String(Files.readAllBytes(file.toPath()), charset);
     }
 
     /**
