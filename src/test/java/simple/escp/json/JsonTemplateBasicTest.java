@@ -23,6 +23,7 @@ import static simple.escp.util.EscpUtil.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
@@ -307,5 +308,39 @@ public class JsonTemplateBasicTest {
         );
     }
 
+    @Test
+    public void fromURI() throws IOException, URISyntaxException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/user.json").toURI());
+        String LS = System.getProperty("line.separator");
+        assertEquals("{" + LS +
+                "    \"pageFormat\": {" + LS +
+                "        \"pageLength\": 30," + LS +
+                "        \"pageWith\": 20" + LS +
+                "    }," + LS +
+                "    \"placeholder\": [" + LS +
+                "        \"id\", \"nickname\"" + LS +
+                "    ]," + LS +
+                "    \"template\": [" + LS +
+                "        \"User Report\"," + LS +
+                "        \"===========\"," + LS +
+                "        \"ID    : ${id}\"," + LS +
+                "        \"Name  : ${nickname}\"" + LS +
+                "    ]" + LS +
+                "}", jsonTemplate.getOriginalText());
+
+        Map<String, String> data = new HashMap<>();
+        data.put("id", "007");
+        data.put("nickname", "The Solid Snake");
+        String result = jsonTemplate.fill(data);
+        assertEquals(
+                EscpUtil.escInitalize() + EscpUtil.escPageLength(30) +
+                        "User Report" + CRLF +
+                        "===========" + CRLF +
+                        "ID    : 007" + CRLF +
+                        "Name  : The Solid Snake" + CRLF +
+                        CRFF + EscpUtil.escInitalize(),
+                result
+        );
+    }
 
 }

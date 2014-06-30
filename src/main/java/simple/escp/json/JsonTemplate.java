@@ -30,6 +30,7 @@ import javax.json.JsonValue;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -120,6 +121,16 @@ public class JsonTemplate extends Template {
      */
     public JsonTemplate(File file, Charset charset) throws IOException {
         this.originalText = new String(Files.readAllBytes(file.toPath()), charset);
+    }
+
+    /**
+     * Create a new template from an URI.
+     *
+     * @param uri the URI to file that will be read.
+     * @throws IOException if error occured when reading the file.
+     */
+    public JsonTemplate(URI uri) throws IOException {
+        this(new File(uri));
     }
 
     /**
