@@ -52,10 +52,6 @@ public class JsonTemplateBasicTest {
                 "\"pageFormat\": {" +
                     "\"lineSpacing\": \"1/8\"" +
                 "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
@@ -74,10 +70,6 @@ public class JsonTemplateBasicTest {
                 "\"pageFormat\": {" +
                     "\"characterPitch\": \"10\"" +
                 "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
@@ -97,10 +89,6 @@ public class JsonTemplateBasicTest {
                     "\"pageLength\": \"10\"," +
                     "\"usePageLengthFromPrinter\": false" +
                     "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
@@ -120,10 +108,6 @@ public class JsonTemplateBasicTest {
                     "\"pageLength\": 10," +
                     "\"usePageLengthFromPrinter\": false" +
                 "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
@@ -142,10 +126,6 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"pageWidth\": \"25\"" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
@@ -167,10 +147,6 @@ public class JsonTemplateBasicTest {
                 "\"rightMargin\": \"3\"," +
                 "\"bottomMargin\": \"70\"" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
@@ -190,10 +166,6 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"typeface\": \"sans-serif\"" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
@@ -213,10 +185,6 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"autoLineFeed\": true" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
@@ -235,10 +203,6 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"autoFormFeed\": false" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
@@ -260,9 +224,6 @@ public class JsonTemplateBasicTest {
             "        \"pageLength\": 30," + LS +
             "        \"pageWith\": 20" + LS +
             "    }," + LS +
-            "    \"placeholder\": [" + LS +
-            "        \"id\", \"nickname\"" + LS +
-            "    ]," + LS +
             "    \"template\": [" + LS +
             "        \"User Report\"," + LS +
             "        \"===========\"," + LS +
@@ -274,7 +235,7 @@ public class JsonTemplateBasicTest {
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
         data.put("nickname", "The Solid Snake");
-        String result = jsonTemplate.fill(data);
+        String result = jsonTemplate.fill(data, null);
         assertEquals(
             EscpUtil.escInitalize() +
             "User Report" + CRLF +
@@ -295,9 +256,6 @@ public class JsonTemplateBasicTest {
                 "        \"pageLength\": 30," + LS +
                 "        \"pageWith\": 20" + LS +
                 "    }," + LS +
-                "    \"placeholder\": [" + LS +
-                "        \"id\", \"nickname\"" + LS +
-                "    ]," + LS +
                 "    \"template\": [" + LS +
                 "        \"User Report\"," + LS +
                 "        \"===========\"," + LS +
@@ -309,7 +267,7 @@ public class JsonTemplateBasicTest {
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
         data.put("nickname", "The Solid Snake");
-        String result = jsonTemplate.fill(data);
+        String result = jsonTemplate.fill(data, null);
         assertEquals(
                 EscpUtil.escInitalize() +
                         "User Report" + CRLF +

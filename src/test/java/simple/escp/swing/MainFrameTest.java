@@ -36,7 +36,7 @@ public class MainFrameTest extends JFrame {
         value.put("id", "007");
         value.put("nickname", "The Solid Snake");
 
-        PrintPreviewPane printPreview = new PrintPreviewPane(template, value);
+        PrintPreviewPane printPreview = new PrintPreviewPane(template, value, null);
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(printPreview, BorderLayout.CENTER);
 

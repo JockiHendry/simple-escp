@@ -19,65 +19,31 @@ package simple.escp.json;
 import org.junit.Before;
 import org.junit.Test;
 import simple.escp.exception.InvalidPlaceholder;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class JsonTemplatePlaceholderTest {
 
     private String jsonString;
-    private String invalidJsonString;
 
     @Before
     public void setup() {
         jsonString = "{" +
-            "\"placeholder\": [" +
-                "{\"name\": \"id\"}," +
-                "{\"name\": \"nickname\"}" +
-            "]," +
-                "\"template\": [" +
+            "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
         "}";
-
-        invalidJsonString = "{" +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"foobar\"" +
-            "]," +
-                "\"template\": [" +
-                "\"Your id is ${id}, Mr. ${nickname}.\"" +
-            "]" +
-        "}";
-    }
-
-    @Test
-    public void objectPlaceholders() {
-        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
-        assertTrue(jsonTemplate.getPlaceholders().isEmpty());
-        jsonTemplate.parse();
-
-        assertTrue(!jsonTemplate.getPlaceholders().isEmpty());
-        assertEquals(2, jsonTemplate.getPlaceholders().size());
-        assertEquals("id", jsonTemplate.getPlaceholders().get("id").getName());
-        assertEquals("nickname", jsonTemplate.getPlaceholders().get("nickname").getName());
-    }
-
-    @Test
-    public void stringPlaceholders() {
-        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
-        assertTrue(jsonTemplate.getPlaceholders().isEmpty());
-        jsonTemplate.parse();
-
-        assertTrue(!jsonTemplate.getPlaceholders().isEmpty());
-        assertEquals(2, jsonTemplate.getPlaceholders().size());
-        assertEquals("id", jsonTemplate.getPlaceholders().get("id").getName());
-        assertEquals("nickname", jsonTemplate.getPlaceholders().get("nickname").getName());
     }
 
     @Test(expected = InvalidPlaceholder.class)
     public void invalidPlaceholders() {
-        JsonTemplate jsonTemplate = new JsonTemplate(invalidJsonString);
-        assertTrue(jsonTemplate.getPlaceholders().isEmpty());
-        jsonTemplate.parse();
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> data = new HashMap<>();
+        data.put("id", "007");
+        jsonTemplate.fill(data, null);
     }
 
 }

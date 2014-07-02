@@ -17,14 +17,10 @@
 package simple.escp.json;
 
 import simple.escp.PageFormat;
-import simple.escp.Template;
 import simple.escp.util.EscpUtil;
 import javax.json.JsonArray;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
 
 /**
  * A helper class for parsing.
@@ -41,7 +37,6 @@ public class Parser {
     private JsonArray header;
     private JsonArray footer;
     private JsonArray detail;
-    private Set<String> placeholderNames;
 
     /**
      * Create a new instance of this class.
@@ -58,7 +53,6 @@ public class Parser {
             this.pageBreak = 0;
         }
         this.lineNumber = 1;
-        this.placeholderNames = new HashSet<>();
     }
 
     /**
@@ -127,34 +121,6 @@ public class Parser {
     }
 
     /**
-     * Return placeholder names found during parsed.
-     *
-     * @return a <code>Set</code> that contains string of placeholder name.
-     */
-    public Set<String> getPlaceholderNames() {
-        return placeholderNames;
-    }
-
-    /**
-     * Find the name of placeholder, such as <code>${name}</code>, in a string.  This method will also stores
-     * found placeholders that can be retrieved later by using <code>getPlaceholderNames()</code>.
-     *
-     * @param text search placeholder definition in this string.
-     * @return <code>Set</code> that contains one or more placeholder's name.  If no placeholder is
-     *         declared in the string, this method will return an empty <code>Set</code>.
-     */
-    public Set<String> findPlaceholderIn(String text) {
-        Set<String> results = new HashSet<>();
-        Matcher matcher = Template.PLACEHOLDER_PATTERN.matcher(text);
-        while (matcher.find()) {
-            String match = matcher.group(1);
-            results.add(match);
-        }
-        placeholderNames.addAll(results);
-        return results;
-    }
-
-    /**
      * A helper method to parse <code>JsonArray</code>.
      *
      * @param detail the <code>JsonArray</code> that will be parsed.
@@ -174,7 +140,6 @@ public class Parser {
             // parse line
             if (line instanceof JsonString) {
                 String text = ((JsonString) line).getString();
-                findPlaceholderIn(text);
                 result.append(text);
                 result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
                 if ((pageLength > 0) && (lineNumber == pageBreak)) {

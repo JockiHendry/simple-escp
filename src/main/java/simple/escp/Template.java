@@ -16,14 +16,7 @@
 
 package simple.escp;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,26 +31,6 @@ public abstract class Template {
 
     protected Map<String, Placeholder> placeholders = new HashMap<>();
     protected PageFormat pageFormat = new PageFormat();
-
-    /**
-     * Get declared placeholders in this template.  This method should be called after parsing template
-     * or otherwise it will always return an empty <code>Map</code>.
-     *
-     * @return declared placeholders or an empty <code>Map</code> if none are found.
-     */
-    public Map<String, Placeholder> getPlaceholders() {
-        return this.placeholders;
-    }
-
-    /**
-     * Find if a placeholder name is declared in this template.
-     *
-     * @param name placehoder name to search for.
-     * @return <code>true</code> if placeholder name is declared or <code>false</code> if otherwise.
-     */
-    public boolean hasPlaceholder(String name) {
-        return this.placeholders.containsKey(name);
-    }
 
     /**
      * Retrieve current <code>PageFormat</code> associated with this template.
@@ -76,63 +49,33 @@ public abstract class Template {
     public abstract String parse();
 
     /**
-     * Fill this template with data from a <code>Map</code>.  This template must be parsed
-     * if it hasn't been parsed previously.
+     * Fill this template with data from <code>Map</code> and/or an object.  This template must be parsed if
+     * it hasn't been parsed previously.
      *
-     * @param map contains data for this template.
+     * @param map contains data for this template in form of <code>Map</code>.  This argument has a
+     *            higher priority than <code>object</code>.  If no data from <code>Map</code> is required,
+     *            set this as <code>null</code>.
+     * @param object contains data for this template in form of <code>Object</code>.  If no data from object
+     *               is required, set this as <code>null</code>.
      * @return text that will be printed and may contains ESC/P code.
      */
-    public String fill(Map map) {
+    public String fill(Map map, Object object) {
         String parsedText = parse();
         StringBuffer result = new StringBuffer();
 
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(parsedText);
         while (matcher.find()) {
-            Placeholder placeholder = getPlaceholders().get(matcher.group(1));
-            Object value = map.get(placeholder.getName());
-            matcher.appendReplacement(result, placeholder.forValue(value));
-        }
-        matcher.appendTail(result);
-
-        return result.toString();
-    }
-
-    /**
-     * Fill this template with data from an <code>Object</code>.  Every getter in the object
-     * will be treated as a value.  For example, <code>getName()</code> will return a value
-     * for <code>name</code> placeholder.
-     *
-     * @param object contains data for this template.
-     * @return text that will be printed and may contains ESC/P.
-     * @throws java.beans.IntrospectionException if can't find methods in object.
-     * @throws java.lang.IllegalAccessException if can't access methods in object.
-     * @throws java.lang.reflect.InvocationTargetException if can't execute methods of object.
-     */
-    public String fill(Object object) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
-        String parsedText = parse();
-        StringBuffer result = new StringBuffer();
-
-        BeanInfo beanInfo = Introspector.getBeanInfo(object.getClass());
-        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(parsedText);
-        while (matcher.find()) {
-            Placeholder placeholder = getPlaceholders().get(matcher.group(1));
-
-            // Find value
-            for (PropertyDescriptor propertyDescriptor: propertyDescriptors) {
-                if (propertyDescriptor.getName().equals(placeholder.getName())) {
-                    Object value = propertyDescriptor.getReadMethod().invoke(object);
-                    matcher.appendReplacement(result, placeholder.forValue(value));
-                    break;
-                }
+            String placeholderText = matcher.group(1);
+            Placeholder placeholder = placeholders.get(placeholderText);
+            if (placeholder == null) {
+                placeholder = new Placeholder(placeholderText, map, object);
+                placeholders.put(placeholderText, placeholder);
             }
-
+            matcher.appendReplacement(result, placeholder.value());
         }
         matcher.appendTail(result);
 
         return result.toString();
     }
-
 
 }

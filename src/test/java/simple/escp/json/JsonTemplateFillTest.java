@@ -32,10 +32,6 @@ public class JsonTemplateFillTest {
     @Before
     public void setup() {
         this.jsonString = "{" +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
@@ -48,7 +44,7 @@ public class JsonTemplateFillTest {
         Map<String, String> dataSource = new HashMap<>();
         dataSource.put("id", "007");
         dataSource.put("nickname", "Solid Snake");
-        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(dataSource));
+        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(dataSource, null));
     }
 
     @Test
@@ -57,7 +53,7 @@ public class JsonTemplateFillTest {
         Person person = new Person();
         person.setId("007");
         person.setNickname("Solid Snake");
-        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(person));
+        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(null, person));
     }
 
     public static class Person {

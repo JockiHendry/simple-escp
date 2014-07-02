@@ -123,14 +123,17 @@ public class SimpleEscp {
     }
 
     /**
-     * Fill a template based on value from <code>Map</code> and print it to current printer.
+     * Fill a template based on value and print it to current printer.
      *
      * @param template an instance of <code>Template</code>.
-     * @param map contains values that will replace placeholders in template.
+     * @param mapSource contains values that will replace placeholders in template.  This value has the highest
+     *                  priority.  If no value in <code>Map</code> is required, set this to <code>null</code>.
+     * @param objectSource contains value that will replace placeholders in template.  If no value in an object
+     *                     is required, set this to <code>null</code>.
      * @return a <code>DocPrintJob</code> that is associated with this operation.
      */
-    public DocPrintJob print(Template template, Map map) {
-        return print(template.fill(map));
+    public DocPrintJob print(Template template, Map mapSource, Object objectSource) {
+        return print(template.fill(mapSource, objectSource));
     }
 
     /**

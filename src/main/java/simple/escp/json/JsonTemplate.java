@@ -243,37 +243,6 @@ public class JsonTemplate extends Template {
     }
 
     /**
-     * Parse <code>"placeholder"</code> section from this JSON template.
-     *
-     * @param json the root JSON of this template.
-     */
-    private void parsePlaceholder(JsonObject json) {
-        JsonArray placeholdersDefinitions = json.getJsonArray("placeholder");
-        if (placeholdersDefinitions != null) {
-            for (JsonValue placeholderDefinition : placeholdersDefinitions) {
-                if (placeholderDefinition instanceof JsonObject) {
-
-                    JsonObject placeholderObject = (JsonObject) placeholderDefinition;
-
-                    // Process name
-                    if (placeholderObject.getJsonString("name") == null) {
-                        throw new IllegalArgumentException("Object inside placeholder must has 'name'");
-                    }
-                    String name = placeholderObject.getString("name");
-                    Placeholder placeholder = new Placeholder(name);
-                    placeholders.put(name, placeholder);
-
-                } else if (placeholderDefinition instanceof JsonString) {
-
-                    String name = ((JsonString) placeholderDefinition).getString();
-                    placeholders.put(name, new Placeholder(name));
-
-                }
-            }
-        }
-    }
-
-    /**
      * Parse <code>"template"</code> section from this JSON template.
      * @param json the root JSON of this template.
      * @return result in <code>String</code>.
@@ -316,16 +285,7 @@ public class JsonTemplate extends Template {
             throw new IllegalArgumentException("Invalid value for 'template'.");
         }
 
-        parser.parse();
-
-        // Check for invalid placeholder
-        for (String placeholderName: parser.getPlaceholderNames()) {
-            if (!hasPlaceholder(placeholderName)) {
-                throw new InvalidPlaceholder("[" + placeholderName + "] is not defined.");
-            }
-        }
-
-        return parser.getResult();
+        return parser.parse();
     }
 
     /**
@@ -341,9 +301,6 @@ public class JsonTemplate extends Template {
                 // Parse page format
                 parsePageFormat(json);
                 tmp.append(pageFormat.build());
-
-                // Parse placeholders
-                parsePlaceholder(json);
 
                 // Parse the template text
                 tmp.append(parseTemplateText(json));
