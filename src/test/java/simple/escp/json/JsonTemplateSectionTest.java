@@ -126,4 +126,68 @@ public class JsonTemplateSectionTest {
         );
     }
 
+    @Test
+    public void parseHeader() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"header\": [\"This is header.\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "This is header." + CRLF + "Line1" + CRLF + "Line2" + CRLF + CRFF +
+            "This is header." + CRLF + "Line3" + CRLF +  "Your id is ${id}" + CRLF + CRFF +
+            "This is header." + CRLF + "Mr. ${nickname}." + CRLF +
+            CRFF + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
+    @Test
+    public void parseFirstPageAndHeader() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"firstPage\": [\"This is first page only.\"]," +
+                "\"header\": [\"This is header.\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + "This is first page only." + CRLF + "This is header." + CRLF + "Line1" + CRLF + CRFF +
+            "This is header." + CRLF + "Line2" + CRLF+ "Line3" + CRLF + CRFF +
+            "This is header." + CRLF + "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF +
+            CRFF + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
 }

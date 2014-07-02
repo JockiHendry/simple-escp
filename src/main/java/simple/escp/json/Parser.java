@@ -37,6 +37,7 @@ public class Parser {
     private PageFormat pageFormat;
     private JsonArray firstPage;
     private JsonArray lastPage;
+    private JsonArray header;
     private JsonArray detail;
     private Set<String> placeholderNames;
 
@@ -63,6 +64,22 @@ public class Parser {
      */
     public void setFirstPage(JsonArray firstPage) {
         this.firstPage = firstPage;
+    }
+
+    /**
+     * Set the "header" section.
+     *
+     * @param header a <code>JsonArray</code> or <code>null</code> if it is not available.
+     */
+    public void setHeader(JsonArray header) {
+        if (pageLength == 0) {
+            throw new IllegalArgumentException("Can't use 'header' if 'pageLength' is 0.");
+        }
+        if (header.size() >= pageLength) {
+            throw new IllegalArgumentException("Number of lines of 'header' (" + header.size() +
+                    ") can't be greater than 'pageLength' (" + pageLength + ")");
+        }
+        this.header = header;
     }
 
     /**
@@ -125,16 +142,28 @@ public class Parser {
      */
     private void parseHelper(JsonArray detail, boolean basic) {
         for (JsonValue line : detail) {
+
+            // print header if necessary
+            if ((header != null) && (lineNumber == 1) && !basic) {
+                parseHelper(header, true);
+            }
+
+            // parse line
             if (line instanceof JsonString) {
                 String text = ((JsonString) line).getString();
                 findPlaceholderIn(text);
                 result.append(text);
                 result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
-                if ((pageLength > 0) && ((lineNumber % pageLength) == 0)) {
+                if ((pageLength > 0) && (lineNumber == pageLength)) {
                     result.append(EscpUtil.CRFF);
                 }
             }
+
+            // increase line number
             lineNumber++;
+            if (lineNumber > pageLength) {
+                lineNumber = 1;
+            }
         }
     }
 
@@ -150,6 +179,9 @@ public class Parser {
         lineNumber = 1;
         if (firstPage != null) {
             parseHelper(firstPage, true);
+            if ((lineNumber != 1) && (header != null)) {
+                parseHelper(header, true);
+            }
         }
         if (detail != null) {
             parseHelper(detail, false);
