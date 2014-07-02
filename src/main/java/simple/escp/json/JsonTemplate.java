@@ -270,93 +270,52 @@ public class JsonTemplate extends Template {
     }
 
     /**
-     * Parse basic JSON array.
-     *
-     * @param basic the <code>JsonArray</code> to be parsed.
-     * @return result in <code>String</code>.
-     */
-    public String parseTemplateBasic(JsonArray basic) {
-        StringBuffer result = new StringBuffer();
-        for (JsonValue line : basic) {
-            if (line instanceof JsonString) {
-                // Check for undefined placeholder name
-                for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
-                    if (!hasPlaceholder(placeHolderName)) {
-                        throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
-                    }
-                }
-                result.append(((JsonString) line).getString());
-                result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
-            }
-        }
-        return result.toString();
-    }
-
-    /**
-     * Parse <code>"detail"</code> section of <code>"template"</code>.
-     *
-     * @param detail the <code>JsonArray</code> to be parsed.
-     * @param firstPage the parsed result of <code>"firstPage"</code> section. Set <code>null</code> if it is
-     *                  not defined.
-     * @param lastPage the parsed result of <code>"lastPage</code> section. Set <code>null</code> if it is
-     *                 not defined.
-     * @return result in <code>String</code>.
-     */
-    public String parseTemplateDetail(JsonArray detail, String firstPage, String lastPage) {
-        StringBuffer result = new StringBuffer();
-        if (firstPage != null) {
-            result.append(firstPage);
-        }
-        for (JsonValue line : detail) {
-            if (line instanceof JsonString) {
-                // Check for undefined placeholder name
-                for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
-                    if (!hasPlaceholder(placeHolderName)) {
-                        throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
-                    }
-                }
-                result.append(((JsonString) line).getString());
-                result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
-            }
-        }
-        if (lastPage != null) {
-            result.append(lastPage);
-        }
-        return result.toString();
-    }
-
-    /**
      * Parse <code>"template"</code> section from this JSON template.
      * @param json the root JSON of this template.
      * @return result in <code>String</code>.
      */
     public String parseTemplateText(JsonObject json) {
-        StringBuffer tmp = new StringBuffer();
         JsonValue template = json.get("template");
         if (template == null) {
             throw new IllegalArgumentException("JSON Template must contains 'template'.");
-        } else if (template.getValueType() == JsonValue.ValueType.ARRAY) {
-            // "template" is a JSON array
-            tmp.append(parseTemplateBasic(json.getJsonArray("template")));
+        }
+        Parser parser = new Parser(getPageFormat());
+
+        if (template.getValueType() == JsonValue.ValueType.ARRAY) {
+
+            parser.setDetail(json.getJsonArray("template"));
+
         } else if (template.getValueType() == JsonValue.ValueType.OBJECT) {
-            // "template" is a JSON object
+
             if (getPageFormat().getPageLength() == null) {
                 throw new IllegalArgumentException("Using object on 'template' require 'pageLength' " +
                         "to be defined in 'pageFormat'.");
             }
             JsonObject templateObject = json.getJsonObject("template");
-            String firstPage = null, lastPage = null;
             if (templateObject.containsKey("firstPage")) {
-                firstPage = parseTemplateBasic(templateObject.getJsonArray("firstPage"));
+                parser.setFirstPage(templateObject.getJsonArray("firstPage"));
             }
             if (templateObject.containsKey("lastPage")) {
-                lastPage = parseTemplateBasic(templateObject.getJsonArray("lastPage"));
+                parser.setLastPage(templateObject.getJsonArray("lastPage"));
             }
             if (templateObject.containsKey("detail")) {
-                tmp.append(parseTemplateDetail(templateObject.getJsonArray("detail"), firstPage, lastPage));
+                parser.setDetail(templateObject.getJsonArray("detail"));
+            }
+
+        } else {
+            throw new IllegalArgumentException("Invalid value for 'template'.");
+        }
+
+        parser.parse();
+
+        // Check for invalid placeholder
+        for (String placeholderName: parser.getPlaceholderNames()) {
+            if (!hasPlaceholder(placeholderName)) {
+                throw new InvalidPlaceholder("[" + placeholderName + "] is not defined.");
             }
         }
-        return tmp.toString();
+
+        return parser.getResult();
     }
 
     /**

@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 public abstract class Template {
 
-    private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9]+)\\}");
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9]+)\\}");
 
     protected Map<String, Placeholder> placeholders = new HashMap<>();
     protected PageFormat pageFormat = new PageFormat();
@@ -47,23 +47,6 @@ public abstract class Template {
      */
     public Map<String, Placeholder> getPlaceholders() {
         return this.placeholders;
-    }
-
-    /**
-     * Find the name of placeholder, such as <code>${name}</code>, in a string.
-     *
-     * @param text search placeholder definition in this string.
-     * @return <code>List</code> that contains one or more placeholder's name.  If no placeholder is
-     *         declared in the string, this method will return an empty <code>List</code>.
-     */
-    public List<String> findPlaceholderIn(String text) {
-        List<String> results = new ArrayList<>();
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
-        while (matcher.find()) {
-            String match = matcher.group(1);
-            results.add(match);
-        }
-        return results;
     }
 
     /**

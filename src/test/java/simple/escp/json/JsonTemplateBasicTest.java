@@ -46,30 +46,6 @@ public class JsonTemplateBasicTest {
     }
 
     @Test
-    public void findPlaceholderName() {
-        String jsonString =
-            "{" +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
-                "\"template\": [" +
-                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
-                "]" +
-            "}";
-        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
-
-        List<String> results = jsonTemplate.findPlaceholderIn("Your id is ${id}");
-        assertEquals(1, results.size());
-        assertEquals("id", results.get(0));
-
-        results = jsonTemplate.findPlaceholderIn("Your id is ${id} and your name is ${name}");
-        assertEquals(2, results.size());
-        assertTrue(results.contains("id"));
-        assertTrue(results.contains("name"));
-    }
-
-    @Test
     public void pageFormatLineSpacing() {
         String jsonString =
             "{" +
