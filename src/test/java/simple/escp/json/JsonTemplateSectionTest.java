@@ -29,18 +29,18 @@ public class JsonTemplateSectionTest {
     @Test(expected = IllegalArgumentException.class)
     public void parseNoPageLength() {
         String jsonString =
-                "{" +
-                        "\"pageFormat\": {" +
-                        "\"autoFormFeed\": false" +
-                        "}," +
-                        "\"placeholder\": [" +
-                        "\"id\"," +
-                        "\"nickname\"" +
-                        "]," +
-                        "\"template\": {" +
-                        "\"detail\": [\"Your id is ${id}\",  \"Mr. ${nickname}.\"]" +
-                        "}" +
-                        "}";
+        "{" +
+            "\"pageFormat\": {" +
+                "\"autoFormFeed\": false" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"detail\": [\"Your id is ${id}\",  \"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         jsonTemplate.parse();
     }
@@ -48,81 +48,81 @@ public class JsonTemplateSectionTest {
     @Test
     public void parseDetail() {
         String jsonString =
-                "{" +
-                        "\"pageFormat\": {" +
-                        "\"pageLength\": 10" +
-                        "}," +
-                        "\"placeholder\": [" +
-                        "\"id\"," +
-                        "\"nickname\"" +
-                        "]," +
-                        "\"template\": {" +
-                        "\"detail\": [\"Your id is ${id}\",  \"Mr. ${nickname}.\"]" +
-                        "}" +
-                        "}";
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 10" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"detail\": [\"Your id is ${id}\",  \"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-                INIT + EscpUtil.escPageLength(10) + "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
-                jsonTemplate.parse()
+            INIT + "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
+            jsonTemplate.parse()
         );
     }
 
     @Test
     public void parseFirstPage() {
         String jsonString =
-                "{" +
-                        "\"pageFormat\": {" +
-                        "\"pageLength\": 3" +
-                        "}," +
-                        "\"placeholder\": [" +
-                        "\"id\"," +
-                        "\"nickname\"" +
-                        "]," +
-                        "\"template\": {" +
-                        "\"firstPage\": [\"This should appear in first page only\"]," +
-                        "\"detail\": [" +
-                        "\"Line1\"," +
-                        "\"Line2\"," +
-                        "\"Line3\"," +
-                        "\"Your id is ${id}\"," +
-                        "\"Mr. ${nickname}.\"]" +
-                        "}" +
-                        "}";
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"firstPage\": [\"This should appear in first page only\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-                INIT + EscpUtil.escPageLength(3) + "This should appear in first page only" + CRLF + "Line1" + CRLF +
-                        "Line2" + CRLF+ "Line3" + CRLF+  "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
-                jsonTemplate.parse()
+            INIT + "This should appear in first page only" + CRLF + "Line1" + CRLF +
+                   "Line2" + CRLF+ "Line3" + CRLF+  "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
+            jsonTemplate.parse()
         );
     }
 
     @Test
     public void parseLastPage() {
         String jsonString =
-                "{" +
-                        "\"pageFormat\": {" +
-                        "\"pageLength\": 3" +
-                        "}," +
-                        "\"placeholder\": [" +
-                        "\"id\"," +
-                        "\"nickname\"" +
-                        "]," +
-                        "\"template\": {" +
-                        "\"lastPage\": [\"This should appear in last page only\"]," +
-                        "\"detail\": [" +
-                        "\"Line1\"," +
-                        "\"Line2\"," +
-                        "\"Line3\"," +
-                        "\"Your id is ${id}\"," +
-                        "\"Mr. ${nickname}.\"]" +
-                        "}" +
-                        "}";
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"lastPage\": [\"This should appear in last page only\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-                INIT + EscpUtil.escPageLength(3) + "Line1" + CRLF + "Line2" + CRLF+ "Line3" + CRLF +
-                        "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF +
-                        "This should appear in last page only" + CRLF + CRFF + INIT,
-                jsonTemplate.parse()
+            INIT + "Line1" + CRLF + "Line2" + CRLF+ "Line3" + CRLF +
+            "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF +
+            "This should appear in last page only" + CRLF + CRFF + INIT,
+            jsonTemplate.parse()
         );
     }
 

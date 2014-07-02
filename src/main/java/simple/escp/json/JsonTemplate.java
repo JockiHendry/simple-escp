@@ -235,6 +235,10 @@ public class JsonTemplate extends Template {
                 pageFormat.setAutoFormFeed(parsedPageFormat.getBoolean("autoFormFeed"));
             }
 
+            // Use page length from printer
+            if (parsedPageFormat.containsKey("usePageLengthFromPrinter")) {
+                pageFormat.setUsePrinterPageLength(parsedPageFormat.getBoolean("usePageLengthFromPrinter"));
+            }
         }
     }
 

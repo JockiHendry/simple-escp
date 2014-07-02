@@ -50,6 +50,7 @@ public class PageFormatTest {
     public void pageFormatPageLength() {
         PageFormat pageFormat = new PageFormat();
         pageFormat.setPageLength(10);
+        pageFormat.setUsePrinterPageLength(false);
         String result = pageFormat.build();
         assertEquals(5, result.length());
         assertEquals((char) 27, result.charAt(0));
@@ -57,6 +58,17 @@ public class PageFormatTest {
         assertEquals((char) 27, result.charAt(2));
         assertEquals((char) 67, result.charAt(3));
         assertEquals((char) 10, result.charAt(4));
+    }
+
+    @Test
+    public void usePrinterPageLength() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(10);
+        pageFormat.setUsePrinterPageLength(true);
+        String result = pageFormat.build();
+        assertEquals(2, result.length());
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals('@', result.charAt(1));
     }
 
     @Test

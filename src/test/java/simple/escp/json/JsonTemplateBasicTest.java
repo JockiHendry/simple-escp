@@ -94,7 +94,8 @@ public class JsonTemplateBasicTest {
         String jsonString =
             "{" +
                 "\"pageFormat\": {" +
-                    "\"pageLength\": \"10\"" +
+                    "\"pageLength\": \"10\"," +
+                    "\"usePageLengthFromPrinter\": false" +
                     "}," +
                 "\"placeholder\": [" +
                     "\"id\"," +
@@ -116,7 +117,8 @@ public class JsonTemplateBasicTest {
         String jsonString =
             "{" +
                 "\"pageFormat\": {" +
-                    "\"pageLength\": 10" +
+                    "\"pageLength\": 10," +
+                    "\"usePageLengthFromPrinter\": false" +
                 "}," +
                 "\"placeholder\": [" +
                     "\"id\"," +
@@ -274,7 +276,7 @@ public class JsonTemplateBasicTest {
         data.put("nickname", "The Solid Snake");
         String result = jsonTemplate.fill(data);
         assertEquals(
-            EscpUtil.escInitalize() + EscpUtil.escPageLength(30) +
+            EscpUtil.escInitalize() +
             "User Report" + CRLF +
             "===========" + CRLF +
             "ID    : 007" + CRLF +
@@ -309,7 +311,7 @@ public class JsonTemplateBasicTest {
         data.put("nickname", "The Solid Snake");
         String result = jsonTemplate.fill(data);
         assertEquals(
-                EscpUtil.escInitalize() + EscpUtil.escPageLength(30) +
+                EscpUtil.escInitalize() +
                         "User Report" + CRLF +
                         "===========" + CRLF +
                         "ID    : 007" + CRLF +
