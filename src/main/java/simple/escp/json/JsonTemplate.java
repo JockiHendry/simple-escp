@@ -298,9 +298,11 @@ public class JsonTemplate extends Template {
      * @param detail the <code>JsonArray</code> to be parsed.
      * @param firstPage the parsed result of <code>"firstPage"</code> section. Set <code>null</code> if it is
      *                  not defined.
+     * @param lastPage the parsed result of <code>"lastPage</code> section. Set <code>null</code> if it is
+     *                 not defined.
      * @return result in <code>String</code>.
      */
-    public String parseTemplateDetail(JsonArray detail, String firstPage) {
+    public String parseTemplateDetail(JsonArray detail, String firstPage, String lastPage) {
         StringBuffer result = new StringBuffer();
         if (firstPage != null) {
             result.append(firstPage);
@@ -316,6 +318,9 @@ public class JsonTemplate extends Template {
                 result.append(((JsonString) line).getString());
                 result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
             }
+        }
+        if (lastPage != null) {
+            result.append(lastPage);
         }
         return result.toString();
     }
@@ -340,12 +345,15 @@ public class JsonTemplate extends Template {
                         "to be defined in 'pageFormat'.");
             }
             JsonObject templateObject = json.getJsonObject("template");
-            String firstPage = null;
+            String firstPage = null, lastPage = null;
             if (templateObject.containsKey("firstPage")) {
                 firstPage = parseTemplateBasic(templateObject.getJsonArray("firstPage"));
             }
+            if (templateObject.containsKey("lastPage")) {
+                lastPage = parseTemplateBasic(templateObject.getJsonArray("lastPage"));
+            }
             if (templateObject.containsKey("detail")) {
-                tmp.append(parseTemplateDetail(templateObject.getJsonArray("detail"), firstPage));
+                tmp.append(parseTemplateDetail(templateObject.getJsonArray("detail"), firstPage, lastPage));
             }
         }
         return tmp.toString();

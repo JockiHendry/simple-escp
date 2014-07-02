@@ -96,4 +96,34 @@ public class JsonTemplateSectionTest {
         );
     }
 
+    @Test
+    public void parseLastPage() {
+        String jsonString =
+                "{" +
+                        "\"pageFormat\": {" +
+                        "\"pageLength\": 3" +
+                        "}," +
+                        "\"placeholder\": [" +
+                        "\"id\"," +
+                        "\"nickname\"" +
+                        "]," +
+                        "\"template\": {" +
+                        "\"lastPage\": [\"This should appear in last page only\"]," +
+                        "\"detail\": [" +
+                        "\"Line1\"," +
+                        "\"Line2\"," +
+                        "\"Line3\"," +
+                        "\"Your id is ${id}\"," +
+                        "\"Mr. ${nickname}.\"]" +
+                        "}" +
+                        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+                INIT + EscpUtil.escPageLength(3) + "Line1" + CRLF + "Line2" + CRLF+ "Line3" + CRLF +
+                        "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF +
+                        "This should appear in last page only" + CRLF + CRFF + INIT,
+                jsonTemplate.parse()
+        );
+    }
+
 }
