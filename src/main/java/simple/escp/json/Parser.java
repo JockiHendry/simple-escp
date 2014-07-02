@@ -196,7 +196,7 @@ public class Parser {
         }
 
         // check if footer need to be displayed
-        if ((footer != null) && !pageFooterDisplayed && !basic) {
+        if ((lineNumber != 1) && (footer != null) && !pageFooterDisplayed &&  !basic) {
             while (lineNumber++ < pageLength) {
                 result.append(EscpUtil.CRLF);
             }

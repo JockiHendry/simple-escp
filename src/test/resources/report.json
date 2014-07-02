@@ -1,18 +1,25 @@
 {
     "pageFormat": {
         "pageWidth": 30,
-        "pageLength": 3,
+        "pageLength": 7,
         "usePageLengthFromPrinter": false
     },
     "placeholder": [ "id", "nickname" ],
     "template": {
+        "firstPage": [
+            "User Report",
+            "==========="
+        ],
+        "header": [
+            "                    Page: X"
+        ],
         "detail": [
-            "Use Report",
-            "==========",
-            "ID    :  ${id}",
-            "Name  :  ${nickname}",
-            "ID    :  ${id}",
-            "Name  :  ${nickname}"
+            "ID          Name          ",
+            "--------------------------",
+            "${id}       ${nickname}   "
+        ],
+        "footer": [
+            "PS: This is a test report."
         ]
     }
 }
