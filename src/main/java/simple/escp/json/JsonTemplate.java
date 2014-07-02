@@ -85,6 +85,34 @@ import java.util.logging.Logger;
  *          ]
  *      }
  *  </pre>
+ *
+ *  <p>The value for <code>"template"</code> can be an array or an object.  If it is an object,
+ *  <code>"pageLength"</code> in <code>"pageFormat"</code> <strong>must</strong> be defined.
+ *
+ *  <p>Object for <code>"template"</code> accept of the following keys: <code>"firstPage"</code>.
+ *
+ *  <p>For example:
+ *
+ *  <pre>
+ *      {
+ *          "pageFormat": {
+ *              "pageLength": 10,
+ *          },
+ *          "placeholder": [
+ *              "id",
+ *              "nickname"
+ *          ],
+ *          "template": {
+ *              "firstPage": [
+ *                  "Welcome, ${nickname}."
+ *              ],
+ *              "detail": [
+ *                  "Your id is ${id}.",
+ *                  "Mr. ${nickname}."
+ *              ]
+ *          }
+ *      }
+ *  </pre>
  */
 public class JsonTemplate extends Template {
 
@@ -242,29 +270,56 @@ public class JsonTemplate extends Template {
     }
 
     /**
-     * Parse <code>"template"</code> section from this JSON template.
-     * @param json the root JSON of this template.
+     * Parse <code>"detail"</code> section of <code>"template"</code> or parse JSON array when it is the value of
+     * <code>"template"</code>.
+     *
+     * @param detail the <code>JsonArray</code> to be parsed.
+     * @param firstPage the parsed result of <code>"firstPage"</code> section. Set <code>null</code> if it is
+     *                  not defined.
      * @return result in <code>String</code>.
      */
-    public String parseTemplateText(JsonObject json) {
-        StringBuffer tmp = new StringBuffer();
-        JsonArray templateLines = json.getJsonArray("template");
-        if (templateLines == null) {
-            throw new IllegalArgumentException("JSON Template must contains 'template'.");
+    public String parseTemplateDetail(JsonArray detail, String firstPage) {
+        StringBuffer result = new StringBuffer();
+        if (firstPage != null) {
+            result.append(firstPage);
         }
-        for (JsonValue line : templateLines) {
+        for (JsonValue line : detail) {
             if (line instanceof JsonString) {
-
                 // Check for undefined placeholder name
                 for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
                     if (!hasPlaceholder(placeHolderName)) {
                         throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
                     }
                 }
+                result.append(((JsonString) line).getString());
+                result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
+            }
+        }
+        return result.toString();
+    }
 
-                tmp.append(((JsonString) line).getString());
-                tmp.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
-
+    /**
+     * Parse <code>"template"</code> section from this JSON template.
+     * @param json the root JSON of this template.
+     * @return result in <code>String</code>.
+     */
+    public String parseTemplateText(JsonObject json) {
+        StringBuffer tmp = new StringBuffer();
+        JsonValue template = json.get("template");
+        if (template == null) {
+            throw new IllegalArgumentException("JSON Template must contains 'template'.");
+        } else if (template.getValueType() == JsonValue.ValueType.ARRAY) {
+            // "template" is a JSON array
+            tmp.append(parseTemplateDetail(json.getJsonArray("template"), null));
+        } else if (template.getValueType() == JsonValue.ValueType.OBJECT) {
+            // "template" is a JSON object
+            if (getPageFormat().getPageLength() == null) {
+                throw new IllegalArgumentException("Using object on 'template' require 'pageLength' " +
+                        "to be defined in 'pageFormat'.");
+            }
+            JsonObject templateObject = json.getJsonObject("template");
+            if (templateObject.containsKey("detail")) {
+                tmp.append(parseTemplateDetail(templateObject.getJsonArray("detail"), null));
             }
         }
         return tmp.toString();
