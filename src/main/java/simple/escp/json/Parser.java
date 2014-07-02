@@ -34,10 +34,12 @@ public class Parser {
     private StringBuffer result;
     private int lineNumber;
     private int pageLength;
+    private int pageBreak;
     private PageFormat pageFormat;
     private JsonArray firstPage;
     private JsonArray lastPage;
     private JsonArray header;
+    private JsonArray footer;
     private JsonArray detail;
     private Set<String> placeholderNames;
 
@@ -50,8 +52,10 @@ public class Parser {
         this.pageFormat = pageFormat;
         if (pageFormat.getPageLength() != null) {
             this.pageLength = pageFormat.getPageLength();
+            this.pageBreak = this.pageLength;
         } else {
             this.pageLength = 0;
+            this.pageBreak = 0;
         }
         this.lineNumber = 1;
         this.placeholderNames = new HashSet<>();
@@ -80,6 +84,23 @@ public class Parser {
                     ") can't be greater than 'pageLength' (" + pageLength + ")");
         }
         this.header = header;
+    }
+
+    /**
+     * Set the "footer" section.
+     *
+     * @param footer a <code>JsonArray</code> or <code>null</code> if it is not available.
+     */
+    public void setFooter(JsonArray footer) {
+        if (pageLength == 0) {
+            throw new IllegalArgumentException("Can't use 'footer' if 'pageLength' is 0.");
+        }
+        if (footer.size() >= pageLength) {
+            throw new IllegalArgumentException("Number of lines of 'footer' (" + footer.size() +
+                    ") can't be greater than 'pageLength' (" + pageLength + ")");
+        }
+        this.pageBreak = pageLength - footer.size();
+        this.footer = footer;
     }
 
     /**
@@ -141,6 +162,8 @@ public class Parser {
      *              <code>"footer"</code> section.
      */
     private void parseHelper(JsonArray detail, boolean basic) {
+        boolean pageFooterDisplayed = false;
+
         for (JsonValue line : detail) {
 
             // print header if necessary
@@ -154,8 +177,13 @@ public class Parser {
                 findPlaceholderIn(text);
                 result.append(text);
                 result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
-                if ((pageLength > 0) && (lineNumber == pageLength)) {
-                    result.append(EscpUtil.CRFF);
+                if ((pageLength > 0) && (lineNumber == pageBreak)) {
+                    if ((footer != null) && !basic) {
+                        parseHelper(footer, true);
+                        pageFooterDisplayed = true;
+                    } else {
+                        result.append(EscpUtil.CRFF);
+                    }
                 }
             }
 
@@ -163,7 +191,17 @@ public class Parser {
             lineNumber++;
             if (lineNumber > pageLength) {
                 lineNumber = 1;
+                pageFooterDisplayed = false;
             }
+        }
+
+        // check if footer need to be displayed
+        if ((footer != null) && !pageFooterDisplayed && !basic) {
+            while (lineNumber++ < pageLength) {
+                result.append(EscpUtil.CRLF);
+            }
+            parseHelper(footer, true);
+            result.append(EscpUtil.CRFF);
         }
     }
 

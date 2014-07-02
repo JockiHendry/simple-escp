@@ -190,4 +190,69 @@ public class JsonTemplateSectionTest {
         );
     }
 
+    @Test
+    public void parseFooter() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"footer\": [\"This is footer.\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "Line1" + CRLF + "Line2" + CRLF + "This is footer."  + CRLF + CRFF +
+            "Line3" + CRLF +  "Your id is ${id}" + CRLF + "This is footer." + CRLF + CRFF +
+            "Mr. ${nickname}." + CRLF + CRLF + "This is footer." + CRLF +
+            CRFF + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
+    @Test
+    public void parseLastPageAndFooter() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"placeholder\": [" +
+                "\"id\"," +
+                "\"nickname\"" +
+            "]," +
+            "\"template\": {" +
+                "\"lastPage\": [\"This is last page only.\"]," +
+                "\"footer\": [\"This is footer.\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + "Line1" + CRLF + "Line2" + CRLF + "This is footer." + CRLF + CRFF +
+            "Line3" + CRLF + "Your id is ${id}" + CRLF + "This is footer." + CRLF + CRFF +
+            "Mr. ${nickname}." + CRLF + CRLF + "This is footer." + CRLF + CRFF +
+            "This is last page only." + CRLF + CRFF + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
+
 }

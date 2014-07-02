@@ -302,6 +302,9 @@ public class JsonTemplate extends Template {
             if (templateObject.containsKey("header")) {
                 parser.setHeader(templateObject.getJsonArray("header"));
             }
+            if (templateObject.containsKey("footer")) {
+                parser.setFooter(templateObject.getJsonArray("footer"));
+            }
             if (templateObject.containsKey("lastPage")) {
                 parser.setLastPage(templateObject.getJsonArray("lastPage"));
             }
