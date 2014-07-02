@@ -270,8 +270,30 @@ public class JsonTemplate extends Template {
     }
 
     /**
-     * Parse <code>"detail"</code> section of <code>"template"</code> or parse JSON array when it is the value of
-     * <code>"template"</code>.
+     * Parse basic JSON array.
+     *
+     * @param basic the <code>JsonArray</code> to be parsed.
+     * @return result in <code>String</code>.
+     */
+    public String parseTemplateBasic(JsonArray basic) {
+        StringBuffer result = new StringBuffer();
+        for (JsonValue line : basic) {
+            if (line instanceof JsonString) {
+                // Check for undefined placeholder name
+                for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
+                    if (!hasPlaceholder(placeHolderName)) {
+                        throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
+                    }
+                }
+                result.append(((JsonString) line).getString());
+                result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     * Parse <code>"detail"</code> section of <code>"template"</code>.
      *
      * @param detail the <code>JsonArray</code> to be parsed.
      * @param firstPage the parsed result of <code>"firstPage"</code> section. Set <code>null</code> if it is
@@ -310,7 +332,7 @@ public class JsonTemplate extends Template {
             throw new IllegalArgumentException("JSON Template must contains 'template'.");
         } else if (template.getValueType() == JsonValue.ValueType.ARRAY) {
             // "template" is a JSON array
-            tmp.append(parseTemplateDetail(json.getJsonArray("template"), null));
+            tmp.append(parseTemplateBasic(json.getJsonArray("template")));
         } else if (template.getValueType() == JsonValue.ValueType.OBJECT) {
             // "template" is a JSON object
             if (getPageFormat().getPageLength() == null) {
@@ -318,8 +340,12 @@ public class JsonTemplate extends Template {
                         "to be defined in 'pageFormat'.");
             }
             JsonObject templateObject = json.getJsonObject("template");
+            String firstPage = null;
+            if (templateObject.containsKey("firstPage")) {
+                firstPage = parseTemplateBasic(templateObject.getJsonArray("firstPage"));
+            }
             if (templateObject.containsKey("detail")) {
-                tmp.append(parseTemplateDetail(templateObject.getJsonArray("detail"), null));
+                tmp.append(parseTemplateDetail(templateObject.getJsonArray("detail"), firstPage));
             }
         }
         return tmp.toString();

@@ -67,4 +67,33 @@ public class JsonTemplateSectionTest {
         );
     }
 
+    @Test
+    public void parseFirstPage() {
+        String jsonString =
+                "{" +
+                        "\"pageFormat\": {" +
+                        "\"pageLength\": 3" +
+                        "}," +
+                        "\"placeholder\": [" +
+                        "\"id\"," +
+                        "\"nickname\"" +
+                        "]," +
+                        "\"template\": {" +
+                        "\"firstPage\": [\"This should appear in first page only\"]," +
+                        "\"detail\": [" +
+                        "\"Line1\"," +
+                        "\"Line2\"," +
+                        "\"Line3\"," +
+                        "\"Your id is ${id}\"," +
+                        "\"Mr. ${nickname}.\"]" +
+                        "}" +
+                        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+                INIT + EscpUtil.escPageLength(3) + "This should appear in first page only" + CRLF + "Line1" + CRLF +
+                        "Line2" + CRLF+ "Line3" + CRLF+  "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
+                jsonTemplate.parse()
+        );
+    }
+
 }
