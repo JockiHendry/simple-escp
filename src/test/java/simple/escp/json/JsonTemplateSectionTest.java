@@ -91,7 +91,7 @@ public class JsonTemplateSectionTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
             INIT + "This should appear in first page only" + CRLF + "Line1" + CRLF +
-                   "Line2" + CRLF+ "Line3" + CRLF+  "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
+                   "Line2" + CRLF + CRFF + "Line3" + CRLF +  "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
@@ -119,7 +119,7 @@ public class JsonTemplateSectionTest {
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         assertEquals(
-            INIT + "Line1" + CRLF + "Line2" + CRLF+ "Line3" + CRLF +
+            INIT + "Line1" + CRLF + "Line2" + CRLF+ "Line3" + CRLF + CRFF +
             "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF +
             "This should appear in last page only" + CRLF + CRFF + INIT,
             jsonTemplate.parse()

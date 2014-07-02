@@ -33,7 +33,7 @@ public class Parser {
 
     private StringBuffer result;
     private int lineNumber;
-    //private int pageLength;
+    private int pageLength;
     private PageFormat pageFormat;
     private JsonArray firstPage;
     private JsonArray lastPage;
@@ -47,11 +47,11 @@ public class Parser {
      */
     public Parser(PageFormat pageFormat) {
         this.pageFormat = pageFormat;
-//        if (pageFormat.getPageLength() != null) {
-//            this.pageLength = pageFormat.getPageLength();
-//        } else {
-//            this.pageLength = 0;
-//        }
+        if (pageFormat.getPageLength() != null) {
+            this.pageLength = pageFormat.getPageLength();
+        } else {
+            this.pageLength = 0;
+        }
         this.lineNumber = 1;
         this.placeholderNames = new HashSet<>();
     }
@@ -130,6 +130,9 @@ public class Parser {
                 findPlaceholderIn(text);
                 result.append(text);
                 result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
+                if ((pageLength > 0) && ((lineNumber % pageLength) == 0)) {
+                    result.append(EscpUtil.CRFF);
+                }
             }
             lineNumber++;
         }
@@ -144,6 +147,7 @@ public class Parser {
      */
     public String parse() {
         result = new StringBuffer();
+        lineNumber = 1;
         if (firstPage != null) {
             parseHelper(firstPage, true);
         }

@@ -20,31 +20,18 @@ import simple.escp.Template;
 import simple.escp.json.JsonTemplate;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainFrameTest extends JFrame {
 
-    public MainFrameTest() {
+    public MainFrameTest() throws URISyntaxException, IOException {
         super("Preview");
 
-        Template template = new JsonTemplate(
-        "{" +
-            "\"pageFormat\": {" +
-                "\"pageWidth\": \"30\"," +
-                "\"pageLength\": \"10\"" +
-            "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
-            "\"template\": [" +
-                "\"User Report\"," +
-                "\"===========\"," +
-                "\"ID   : ${id}\"," +
-                "\"Name : ${nickname}\"" +
-            "]" +
-        "}");
+        Template template = new JsonTemplate(Thread.currentThread().getContextClassLoader().getResource("report.json").toURI());
+
         Map<String, String> value = new HashMap<>();
         value.put("id", "007");
         value.put("nickname", "The Solid Snake");
@@ -60,7 +47,13 @@ public class MainFrameTest extends JFrame {
     }
 
     public static void main (String[] args) {
-        new MainFrameTest();
+        try {
+            new MainFrameTest();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -343,7 +343,7 @@ public class JsonTemplate extends Template {
                 tmp.append(parseTemplateText(json));
 
                 // Add at the end
-                if (pageFormat.isAutoFormFeed()) {
+                if (pageFormat.isAutoFormFeed() && !tmp.toString().endsWith(EscpUtil.CRFF)) {
                     tmp.append(EscpUtil.CRFF);
                 }
                 tmp.append(EscpUtil.escInitalize());

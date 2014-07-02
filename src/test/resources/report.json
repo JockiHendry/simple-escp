@@ -1,0 +1,18 @@
+{
+    "pageFormat": {
+        "pageWidth": 30,
+        "pageLength": 3,
+        "usePageLengthFromPrinter": false
+    },
+    "placeholder": [ "id", "nickname" ],
+    "template": {
+        "detail": [
+            "Use Report",
+            "==========",
+            "ID    :  ${id}",
+            "Name  :  ${nickname}",
+            "ID    :  ${id}",
+            "Name  :  ${nickname}"
+        ]
+    }
+}
