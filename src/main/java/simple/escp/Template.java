@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  */
 public abstract class Template {
 
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9]+)\\}");
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_]+)\\}");
 
     protected Map<String, Placeholder> placeholders = new HashMap<>();
     protected PageFormat pageFormat = new PageFormat();

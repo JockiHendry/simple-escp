@@ -21,14 +21,19 @@ import simple.escp.util.EscpUtil;
 import javax.json.JsonArray;
 import javax.json.JsonString;
 import javax.json.JsonValue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A helper class for parsing.
  */
 public class Parser {
 
+    public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{([a-zA-Z0-9_]+)\\}");
+
     private StringBuffer result;
     private int lineNumber;
+    private int pageNumber;
     private int pageLength;
     private int pageBreak;
     private PageFormat pageFormat;
@@ -53,6 +58,7 @@ public class Parser {
             this.pageBreak = 0;
         }
         this.lineNumber = 1;
+        this.pageNumber = 1;
     }
 
     /**
@@ -121,6 +127,33 @@ public class Parser {
     }
 
     /**
+     * A helper method that will parse built-in function in format of <code>%{...}</code> such as
+     * <code>%{PAGE_NO}</code> and replace it with actual value.
+     *
+     * @param text the string that will be parsed.
+     * @return the result in which functions are replaced by values.
+     */
+    private String parseFunction(String text) {
+        StringBuffer result = new StringBuffer();
+        Matcher matcher = FUNCTION_PATTERN.matcher(text);
+        while (matcher.find()) {
+            String function = matcher.group(1);
+
+            // PAGE_NO
+            if ("PAGE_NO".equals(function)) {
+                matcher.appendReplacement(result, String.valueOf(pageNumber));
+            }
+
+            // LINE_NO
+            if ("LINE_NO".equals(function)) {
+                matcher.appendReplacement(result, String.valueOf(lineNumber));
+            }
+        }
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
+    /**
      * A helper method to parse <code>JsonArray</code>.
      *
      * @param detail the <code>JsonArray</code> that will be parsed.
@@ -139,7 +172,7 @@ public class Parser {
 
             // parse line
             if (line instanceof JsonString) {
-                String text = ((JsonString) line).getString();
+                String text = parseFunction(((JsonString) line).getString());
                 result.append(text);
                 result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
                 if ((pageLength > 0) && (lineNumber == pageBreak)) {
@@ -156,6 +189,7 @@ public class Parser {
             lineNumber++;
             if (lineNumber > pageLength) {
                 lineNumber = 1;
+                pageNumber++;
                 pageFooterDisplayed = false;
             }
         }

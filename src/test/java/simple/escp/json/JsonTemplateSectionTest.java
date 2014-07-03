@@ -33,10 +33,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"autoFormFeed\": false" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"detail\": [\"Your id is ${id}\",  \"Mr. ${nickname}.\"]" +
             "}" +
@@ -52,10 +48,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"pageLength\": 10" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"detail\": [\"Your id is ${id}\",  \"Mr. ${nickname}.\"]" +
             "}" +
@@ -74,10 +66,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"pageLength\": 3" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"firstPage\": [\"This should appear in first page only\"]," +
                 "\"detail\": [" +
@@ -103,10 +91,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"pageLength\": 3" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"lastPage\": [\"This should appear in last page only\"]," +
                 "\"detail\": [" +
@@ -133,10 +117,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"pageLength\": 3" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"header\": [\"This is header.\"]," +
                 "\"detail\": [" +
@@ -165,10 +145,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"pageLength\": 3" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"firstPage\": [\"This is first page only.\"]," +
                 "\"header\": [\"This is header.\"]," +
@@ -197,10 +173,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"pageLength\": 3" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"footer\": [\"This is footer.\"]," +
                 "\"detail\": [" +
@@ -229,10 +201,6 @@ public class JsonTemplateSectionTest {
             "\"pageFormat\": {" +
                 "\"pageLength\": 3" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": {" +
                 "\"lastPage\": [\"This is last page only.\"]," +
                 "\"footer\": [\"This is footer.\"]," +
@@ -250,6 +218,57 @@ public class JsonTemplateSectionTest {
             "Line3" + CRLF + "Your id is ${id}" + CRLF + "This is footer." + CRLF + CRFF +
             "Mr. ${nickname}." + CRLF + CRLF + "This is footer." + CRLF + CRFF +
             "This is last page only." + CRLF + CRFF + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
+    @Test
+    public void parsePageNumber() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"detail\": [" +
+                    "\"Page %{PAGE_NO}\"," +
+                    "\"Page %{PAGE_NO}\"," +
+                    "\"Page %{PAGE_NO}\"," +
+                    "\"Page %{PAGE_NO}\"," +
+                    "\"Page %{PAGE_NO}\"," +
+                    "\"Page %{PAGE_NO}\"," +
+                    "\"Page %{PAGE_NO}\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + "Page 1" + CRLF + "Page 1" + CRLF + "Page 1" + CRLF + CRFF +
+            "Page 2" + CRLF + "Page 2" + CRLF + "Page 2" + CRLF + CRFF +
+            "Page 3" + CRLF + CRFF + INIT,
+            jsonTemplate.parse()
+        );
+    }
+
+    @Test
+    public void parsePageNumberWithHeader() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"header\": [\"Halaman %{PAGE_NO}\"]," +
+                "\"detail\": [" +
+                    "\"Detail 2\"," +
+                    "\"Detail 3\"," +
+                    "\"Detail 4\"," +
+                    "\"Detail 5\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT + "Halaman 1" + CRLF + "Detail 2" + CRLF + "Detail 3" + CRLF + CRFF +
+            "Halaman 2" + CRLF + "Detail 4" + CRLF + "Detail 5" + CRLF + CRFF + INIT,
             jsonTemplate.parse()
         );
     }
