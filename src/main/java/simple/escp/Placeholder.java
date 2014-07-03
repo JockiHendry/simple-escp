@@ -20,6 +20,7 @@ import simple.escp.exception.InvalidPlaceholder;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -33,6 +34,7 @@ public class Placeholder {
     private Map mapSource;
     private Object objectSource;
     private PropertyDescriptor[] propertyDescriptors;
+    private MethodDescriptor[] methodDescriptors;
 
     /**
      * Create a new instance of template's placeholder.
@@ -49,6 +51,7 @@ public class Placeholder {
             try {
                 BeanInfo beanInfo = Introspector.getBeanInfo(objectSource.getClass());
                 propertyDescriptors = beanInfo.getPropertyDescriptors();
+                methodDescriptors = beanInfo.getMethodDescriptors();
             } catch (IntrospectionException e) {
                 throw new RuntimeException("Can't read information from object.", e);
             }
@@ -122,16 +125,31 @@ public class Placeholder {
             v = mapSource.get(text);
         }
         if (v == null && objectSource != null) {
-            // Try to get value from object's property.
-            for (PropertyDescriptor propertyDescriptor: propertyDescriptors) {
-                if (propertyDescriptor.getName().equals(text)) {
-                    try {
-                        v = propertyDescriptor.getReadMethod().invoke(objectSource);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new InvalidPlaceholder("Can't invoke object method to get value for placehoder [" +
+            if (text.startsWith("@")) {
+                // This is a method call
+                text = text.substring(1);
+                for (MethodDescriptor methodDescriptor : methodDescriptors) {
+                    if (methodDescriptor.getName().equals(text)) {
+                        try {
+                            v = methodDescriptor.getMethod().invoke(objectSource);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw new InvalidPlaceholder("Can't invoke method for placeholder [" +
                                 text + "]");
+                        }
                     }
-                    break;
+                }
+            } else {
+                // Try to get value from object's property.
+                for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+                    if (propertyDescriptor.getName().equals(text)) {
+                        try {
+                            v = propertyDescriptor.getReadMethod().invoke(objectSource);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw new InvalidPlaceholder("Can't get property for placehoder [" +
+                                text + "]");
+                        }
+                        break;
+                    }
                 }
             }
         }

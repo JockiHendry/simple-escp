@@ -18,11 +18,10 @@ package simple.escp.json;
 
 import org.junit.Before;
 import org.junit.Test;
+import simple.escp.Placeholder;
 import simple.escp.exception.InvalidPlaceholder;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.junit.Assert.*;
 
 public class JsonTemplatePlaceholderTest {
@@ -46,4 +45,57 @@ public class JsonTemplatePlaceholderTest {
         jsonTemplate.fill(data, null);
     }
 
+    @Test
+    public void executeObjectMethod() {
+        String text = "@takeHomePay";
+        Employee emp = new Employee();
+        emp.setName("Snake");
+        emp.setSalary(1000);
+        emp.setTaxes(2.5);
+        Placeholder placeholder = new Placeholder(text, null, emp);
+        assertEquals("975.0", placeholder.value());
+    }
+
+    public static class Employee {
+        private String id;
+        private String name;
+        private double salary;
+        private double taxes;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public double getSalary() {
+            return salary;
+        }
+
+        public void setSalary(double salary) {
+            this.salary = salary;
+        }
+
+        public double getTaxes() {
+            return taxes;
+        }
+
+        public void setTaxes(double taxes) {
+            this.taxes = taxes;
+        }
+
+        public double takeHomePay() {
+            return salary - (salary * taxes / 100);
+        }
+    }
 }

@@ -48,7 +48,7 @@ public class JsonTemplateFillTest {
     }
 
     @Test
-    public void fillObject() throws Exception {
+    public void fillObject() {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         Person person = new Person();
         person.setId("007");
@@ -56,9 +56,29 @@ public class JsonTemplateFillTest {
         assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(null, person));
     }
 
+    public void fillObjectWithMethod() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"Your first name is ${firstName} and your last name is ${lastName}.\"," +
+                "\"I know you, ${@name}!\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Person person = new Person();
+        person.setFirstName("David");
+        person.setLastName("None");
+        person.setNickname("Snake");
+        assertEquals(INIT + "Your first name is David and your last name is None." + CRLF + CRFF +
+            "I know you, David None alias Snake." + INIT, jsonTemplate.fill(null, person));
+
+    }
+
     public static class Person {
         private String id;
         private String nickname;
+        private String firstName;
+        private String lastName;
 
         public String getId() {
             return id;
@@ -74,6 +94,26 @@ public class JsonTemplateFillTest {
 
         public void setNickname(String nickname) {
             this.nickname = nickname;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
+
+        public String name() {
+            return firstName + " " + lastName + " alias " + nickname;
         }
     }
 
