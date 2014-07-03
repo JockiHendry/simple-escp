@@ -5,17 +5,15 @@
         "usePageLengthFromPrinter": false
     },
     "template": {
-        "firstPage": [
-            "User Report",
-            "==========="
-        ],
         "header": [
-            "                    Page: X"
+            "                    Page: %{PAGE_NO}"
         ],
         "detail": [
+            "User Report",
+            "==========================",
             "ID          Name          ",
             "--------------------------",
-            "${id}       ${nickname}   "
+            "${id}         ${nickname}   "
         ],
         "footer": [
             "PS: This is a test report."

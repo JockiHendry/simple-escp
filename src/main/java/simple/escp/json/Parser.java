@@ -17,25 +17,20 @@
 package simple.escp.json;
 
 import simple.escp.PageFormat;
-import simple.escp.util.EscpUtil;
+import simple.escp.Report;
 import javax.json.JsonArray;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A helper class for parsing.
  */
 public class Parser {
 
-    public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{([a-zA-Z0-9_]+)\\}");
-
-    private StringBuffer result;
-    private int lineNumber;
-    private int pageNumber;
-    private int pageLength;
-    private int pageBreak;
+    private Report result;
+    private Integer pageLength;
     private PageFormat pageFormat;
     private JsonArray firstPage;
     private JsonArray lastPage;
@@ -50,15 +45,7 @@ public class Parser {
      */
     public Parser(PageFormat pageFormat) {
         this.pageFormat = pageFormat;
-        if (pageFormat.getPageLength() != null) {
-            this.pageLength = pageFormat.getPageLength();
-            this.pageBreak = this.pageLength;
-        } else {
-            this.pageLength = 0;
-            this.pageBreak = 0;
-        }
-        this.lineNumber = 1;
-        this.pageNumber = 1;
+        this.pageLength = pageFormat.getPageLength();
     }
 
     /**
@@ -76,12 +63,8 @@ public class Parser {
      * @param header a <code>JsonArray</code> or <code>null</code> if it is not available.
      */
     public void setHeader(JsonArray header) {
-        if (pageLength == 0) {
-            throw new IllegalArgumentException("Can't use 'header' if 'pageLength' is 0.");
-        }
-        if (header.size() >= pageLength) {
-            throw new IllegalArgumentException("Number of lines of 'header' (" + header.size() +
-                    ") can't be greater than 'pageLength' (" + pageLength + ")");
+        if (pageLength == null) {
+            throw new IllegalArgumentException("Can't use 'header' if 'pageLength' is not defined.");
         }
         this.header = header;
     }
@@ -92,14 +75,9 @@ public class Parser {
      * @param footer a <code>JsonArray</code> or <code>null</code> if it is not available.
      */
     public void setFooter(JsonArray footer) {
-        if (pageLength == 0) {
-            throw new IllegalArgumentException("Can't use 'footer' if 'pageLength' is 0.");
+        if (pageLength == null) {
+            throw new IllegalArgumentException("Can't use 'footer' if 'pageLength' is not defined.");
         }
-        if (footer.size() >= pageLength) {
-            throw new IllegalArgumentException("Number of lines of 'footer' (" + footer.size() +
-                    ") can't be greater than 'pageLength' (" + pageLength + ")");
-        }
-        this.pageBreak = pageLength - footer.size();
         this.footer = footer;
     }
 
@@ -127,81 +105,19 @@ public class Parser {
     }
 
     /**
-     * A helper method that will parse built-in function in format of <code>%{...}</code> such as
-     * <code>%{PAGE_NO}</code> and replace it with actual value.
+     * Convert <code>JsonArray</code> into <code>String[]</code>.
      *
-     * @param text the string that will be parsed.
-     * @return the result in which functions are replaced by values.
+     * @param text is the JSON array to convert.
+     * @return result in <code>String[]</code>.
      */
-    private String parseFunction(String text) {
-        StringBuffer result = new StringBuffer();
-        Matcher matcher = FUNCTION_PATTERN.matcher(text);
-        while (matcher.find()) {
-            String function = matcher.group(1);
-
-            // PAGE_NO
-            if ("PAGE_NO".equals(function)) {
-                matcher.appendReplacement(result, String.valueOf(pageNumber));
-            }
-
-            // LINE_NO
-            if ("LINE_NO".equals(function)) {
-                matcher.appendReplacement(result, String.valueOf(lineNumber));
+    private String[] convertFromJson(JsonArray text) {
+        List<String> result = new ArrayList<>();
+        if (text != null) {
+            for (JsonValue line : text) {
+                result.add(((JsonString) line).getString());
             }
         }
-        matcher.appendTail(result);
-        return result.toString();
-    }
-
-    /**
-     * A helper method to parse <code>JsonArray</code>.
-     *
-     * @param detail the <code>JsonArray</code> that will be parsed.
-     * @param basic if <code>true</code>, this method will work in basic mode and ignore <code>"header"</code> or
-     *              <code>"footer"</code> section.
-     */
-    private void parseHelper(JsonArray detail, boolean basic) {
-        boolean pageFooterDisplayed = false;
-
-        for (JsonValue line : detail) {
-
-            // print header if necessary
-            if ((header != null) && (lineNumber == 1) && !basic) {
-                parseHelper(header, true);
-            }
-
-            // parse line
-            if (line instanceof JsonString) {
-                String text = parseFunction(((JsonString) line).getString());
-                result.append(text);
-                result.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
-                if ((pageLength > 0) && (lineNumber == pageBreak)) {
-                    if ((footer != null) && !basic) {
-                        parseHelper(footer, true);
-                        pageFooterDisplayed = true;
-                    } else {
-                        result.append(EscpUtil.CRFF);
-                    }
-                }
-            }
-
-            // increase line number
-            lineNumber++;
-            if (lineNumber > pageLength) {
-                lineNumber = 1;
-                pageNumber++;
-                pageFooterDisplayed = false;
-            }
-        }
-
-        // check if footer need to be displayed
-        if ((lineNumber != 1) && (footer != null) && !pageFooterDisplayed &&  !basic) {
-            while (lineNumber++ < pageLength) {
-                result.append(EscpUtil.CRLF);
-            }
-            parseHelper(footer, true);
-            result.append(EscpUtil.CRFF);
-        }
+        return result.toArray(new String[0]);
     }
 
     /**
@@ -209,22 +125,22 @@ public class Parser {
      * <code>setLastPage()</code>, <code>setDetail()</code>, etc.  The parse result from this method
      * can also be obtained later by calling <code>getResult()</code>.
      *
-     * @return result of parsing in <code>String</code>.
+     * @return result of parsing in <code>Pages</code>.
      */
-    public String parse() {
-        result = new StringBuffer();
-        lineNumber = 1;
+    public Report parse() {
+        result = new Report(pageFormat, convertFromJson(header), convertFromJson(footer));
         if (firstPage != null) {
-            parseHelper(firstPage, true);
-            if ((lineNumber != 1) && (header != null)) {
-                parseHelper(header, true);
-            }
+            result.appendSinglePage(convertFromJson(firstPage), true);
+            result.lineBreak();
         }
         if (detail != null) {
-            parseHelper(detail, false);
+            for (String line: convertFromJson(detail)) {
+                result.append(line, false);
+            }
         }
         if (lastPage != null) {
-            parseHelper(lastPage, true);
+            result.lineBreak();
+            result.appendSinglePage(convertFromJson(lastPage), true);
         }
         return getResult();
     }
@@ -233,13 +149,13 @@ public class Parser {
      * Get the result of previous <code>parse()</code> invocation.  If <code>parse()</code> hasn't been invoked
      * before, this method will invoke it and return the result.
      *
-     * @return result of parsing in <code>String</code>.
+     * @return result of parsing in <code>Pages</code>.
      */
-    public String getResult() {
+    public Report getResult() {
         if (result == null) {
             parse();
         }
-        return result.toString();
+        return result;
     }
 
 }

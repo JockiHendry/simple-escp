@@ -16,9 +16,12 @@
 
 package simple.escp.json;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 import simple.escp.util.EscpUtil;
-import static org.junit.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.Map;
+
 import static simple.escp.util.EscpUtil.CRFF;
 import static simple.escp.util.EscpUtil.CRLF;
 
@@ -53,9 +56,12 @@ public class JsonTemplateSectionTest {
             "}" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + "Your id is 007" + CRLF + "Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -77,10 +83,17 @@ public class JsonTemplateSectionTest {
             "}" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + "This should appear in first page only" + CRLF + "Line1" + CRLF +
-                   "Line2" + CRLF + CRFF + "Line3" + CRLF +  "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + "This should appear in first page only" + CRLF + CRFF +
+            "Line1" + CRLF +
+            "Line2" + CRLF +
+            "Line3" + CRLF +  CRFF +
+            "Your id is 007" + CRLF +
+            "Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -102,11 +115,14 @@ public class JsonTemplateSectionTest {
             "}" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT + "Line1" + CRLF + "Line2" + CRLF+ "Line3" + CRLF + CRFF +
-            "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF +
+            "Your id is 007" + CRLF + "Mr. Snake." + CRLF + CRFF +
             "This should appear in last page only" + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -128,13 +144,16 @@ public class JsonTemplateSectionTest {
             "}" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT +
             "This is header." + CRLF + "Line1" + CRLF + "Line2" + CRLF + CRFF +
-            "This is header." + CRLF + "Line3" + CRLF +  "Your id is ${id}" + CRLF + CRFF +
-            "This is header." + CRLF + "Mr. ${nickname}." + CRLF +
+            "This is header." + CRLF + "Line3" + CRLF +  "Your id is 007" + CRLF + CRFF +
+            "This is header." + CRLF + "Mr. Snake." + CRLF +
             CRFF + INIT,
-            jsonTemplate.parse()
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -157,12 +176,15 @@ public class JsonTemplateSectionTest {
             "}" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + "This is first page only." + CRLF + "This is header." + CRLF + "Line1" + CRLF + CRFF +
-            "This is header." + CRLF + "Line2" + CRLF+ "Line3" + CRLF + CRFF +
-            "This is header." + CRLF + "Your id is ${id}" + CRLF + "Mr. ${nickname}." + CRLF +
-            CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + "This is first page only." + CRLF + CRFF +
+            "This is header." + CRLF + "Line1" + CRLF + "Line2" + CRLF + CRFF +
+            "This is header." + CRLF + "Line3" + CRLF+ "Your id is 007" + CRLF + CRFF +
+            "This is header." + CRLF + "Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -184,13 +206,15 @@ public class JsonTemplateSectionTest {
             "}" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT +
             "Line1" + CRLF + "Line2" + CRLF + "This is footer."  + CRLF + CRFF +
-            "Line3" + CRLF +  "Your id is ${id}" + CRLF + "This is footer." + CRLF + CRFF +
-            "Mr. ${nickname}." + CRLF + CRLF + "This is footer." + CRLF +
-            CRFF + INIT,
-            jsonTemplate.parse()
+            "Line3" + CRLF +  "Your id is 007" + CRLF + "This is footer." + CRLF + CRFF +
+            "Mr. Snake." + CRLF + "This is footer." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -213,12 +237,15 @@ public class JsonTemplateSectionTest {
             "}" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT + "Line1" + CRLF + "Line2" + CRLF + "This is footer." + CRLF + CRFF +
-            "Line3" + CRLF + "Your id is ${id}" + CRLF + "This is footer." + CRLF + CRFF +
-            "Mr. ${nickname}." + CRLF + CRLF + "This is footer." + CRLF + CRFF +
+            "Line3" + CRLF + "Your id is 007" + CRLF + "This is footer." + CRLF + CRFF +
+            "Mr. Snake." + CRLF + "This is footer." + CRLF + CRFF +
             "This is last page only." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -245,7 +272,7 @@ public class JsonTemplateSectionTest {
             INIT + "Page 1" + CRLF + "Page 1" + CRLF + "Page 1" + CRLF + CRFF +
             "Page 2" + CRLF + "Page 2" + CRLF + "Page 2" + CRLF + CRFF +
             "Page 3" + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            jsonTemplate.parse().fill(null, null)
         );
     }
 
@@ -269,9 +296,8 @@ public class JsonTemplateSectionTest {
         assertEquals(
             INIT + "Halaman 1" + CRLF + "Detail 2" + CRLF + "Detail 3" + CRLF + CRFF +
             "Halaman 2" + CRLF + "Detail 4" + CRLF + "Detail 5" + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            jsonTemplate.parse().fill(null, null)
         );
     }
-
 
 }

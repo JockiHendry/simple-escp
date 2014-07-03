@@ -16,10 +16,7 @@
 
 package simple.escp;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *  <code>Template</code> represent a template used for printing.  A single <code>Template</code>
@@ -27,10 +24,8 @@ import java.util.regex.Pattern;
  */
 public abstract class Template {
 
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_]+)\\}");
-
-    protected Map<String, Placeholder> placeholders = new HashMap<>();
     protected PageFormat pageFormat = new PageFormat();
+    protected Report report;
 
     /**
      * Retrieve current <code>PageFormat</code> associated with this template.
@@ -42,11 +37,12 @@ public abstract class Template {
     }
 
     /**
-     * Parse the template into a text.  This is usually executed only once.
+     * Parse the template into a text.  This is usually executed only once and generates result as
+     * <code>Pages</code>.
      *
-     * @return a parsed <code>String</code>.
+     * @return result of parsing in an instance of <code>Report</code>.
      */
-    public abstract String parse();
+    public abstract Report parse();
 
     /**
      * Fill this template with data from <code>Map</code> and/or an object.  This template must be parsed if
@@ -60,22 +56,10 @@ public abstract class Template {
      * @return text that will be printed and may contains ESC/P code.
      */
     public String fill(Map map, Object object) {
-        String parsedText = parse();
-        StringBuffer result = new StringBuffer();
-
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(parsedText);
-        while (matcher.find()) {
-            String placeholderText = matcher.group(1);
-            Placeholder placeholder = placeholders.get(placeholderText);
-            if (placeholder == null) {
-                placeholder = new Placeholder(placeholderText, map, object);
-                placeholders.put(placeholderText, placeholder);
-            }
-            matcher.appendReplacement(result, placeholder.value());
+        if (report == null) {
+            parse();
         }
-        matcher.appendTail(result);
-
-        return result.toString();
+        return report.fill(map, object);
     }
 
 }

@@ -42,7 +42,7 @@ public class JsonTemplateBasicTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         jsonTemplate.parse();
         assertEquals(jsonString, jsonTemplate.getOriginalText());
-        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + CRFF + INIT, jsonTemplate.getParsedText());
+        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + CRFF + INIT, jsonTemplate.parse().fill(null, null));
     }
 
     @Test
@@ -57,9 +57,12 @@ public class JsonTemplateBasicTest {
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is ${id}, Mr. ${nickname}." + CRLF  + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is 007, Mr. Snake." + CRLF  + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -75,9 +78,12 @@ public class JsonTemplateBasicTest {
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -94,9 +100,12 @@ public class JsonTemplateBasicTest {
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escPageLength(10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -113,9 +122,12 @@ public class JsonTemplateBasicTest {
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escPageLength(10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -131,9 +143,12 @@ public class JsonTemplateBasicTest {
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escRightMargin(25) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escRightMargin(25) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -152,10 +167,13 @@ public class JsonTemplateBasicTest {
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escLeftMargin(5) + EscpUtil.escRightMargin(27) + EscpUtil.escBottomMargin(70) +
-            "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -171,10 +189,13 @@ public class JsonTemplateBasicTest {
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escSelectTypeface(EscpUtil.TYPEFACE.SANS_SERIF) +
-                "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+                "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -190,9 +211,12 @@ public class JsonTemplateBasicTest {
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + "Your id is ${id}, Mr. ${nickname}." + CR + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + "Your id is 007, Mr. Snake." + CR + CRFF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 
@@ -208,9 +232,12 @@ public class JsonTemplateBasicTest {
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
-            jsonTemplate.parse()
+            INIT + "Your id is 007, Mr. Snake." + CRLF + INIT,
+            jsonTemplate.parse().fill(source, null)
         );
     }
 

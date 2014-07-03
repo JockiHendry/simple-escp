@@ -16,12 +16,9 @@
 
 package simple.escp.json;
 
-import simple.escp.Placeholder;
+import simple.escp.Report;
 import simple.escp.Template;
-import simple.escp.exception.InvalidPlaceholder;
-import simple.escp.util.EscpUtil;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -54,10 +51,6 @@ import java.util.logging.Logger;
  *
  *  <pre>
  *      {
- *          "placeholder": [
- *              {"name": "id"},
- *              "nickname"
- *          ],
  *          "template": [
  *              "Your id is ${id}, Mr. ${nickname}."
  *          ]
@@ -75,10 +68,6 @@ import java.util.logging.Logger;
  *              "leftMargin": 5,
  *              "rightMargin": 5
  *          },
- *          "placeholder": [
- *              "id",
- *              "nickname"
- *          ],
  *          "template": [
  *              "Your id is ${id}.",
  *              "Mr. ${nickname}."
@@ -98,13 +87,9 @@ import java.util.logging.Logger;
  *          "pageFormat": {
  *              "pageLength": 10,
  *          },
- *          "placeholder": [
- *              "id",
- *              "nickname"
- *          ],
  *          "template": {
  *              "firstPage": [
- *                  "Welcome, ${nickname}."
+ *                  "Welcome, ${nickname}. First-page only!"
  *              ],
  *              "detail": [
  *                  "Your id is ${id}.",
@@ -119,7 +104,6 @@ public class JsonTemplate extends Template {
     private static Logger logger = Logger.getLogger("simple.escp.json.JsonTemplate");
 
     private String originalText;
-    private String parsedText;
 
     /**
      * Create a new template from a string.
@@ -245,9 +229,9 @@ public class JsonTemplate extends Template {
     /**
      * Parse <code>"template"</code> section from this JSON template.
      * @param json the root JSON of this template.
-     * @return result in <code>String</code>.
+     * @return result in <code>Pages</code>.
      */
-    public String parseTemplateText(JsonObject json) {
+    public Report parseTemplateText(JsonObject json) {
         JsonValue template = json.get("template");
         if (template == null) {
             throw new IllegalArgumentException("JSON Template must contains 'template'.");
@@ -285,37 +269,22 @@ public class JsonTemplate extends Template {
             throw new IllegalArgumentException("Invalid value for 'template'.");
         }
 
-        return parser.parse();
+        report = parser.parse();
+        return report;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String parse() {
-        if (parsedText == null) {
+    public Report parse() {
+        if (report == null) {
             try (JsonReader reader = Json.createReader(new StringReader(originalText))) {
-
-                StringBuffer tmp = new StringBuffer();
                 JsonObject json = reader.readObject();
-
-                // Parse page format
                 parsePageFormat(json);
-                tmp.append(pageFormat.build());
-
-                // Parse the template text
-                tmp.append(parseTemplateText(json));
-
-                // Add at the end
-                if (pageFormat.isAutoFormFeed() && !tmp.toString().endsWith(EscpUtil.CRFF)) {
-                    tmp.append(EscpUtil.CRFF);
-                }
-                tmp.append(EscpUtil.escInitalize());
-
-                this.parsedText = tmp.toString();
-
+                parseTemplateText(json);
             }
         }
-        return this.parsedText;
+        return report;
     }
 
     /**
@@ -325,15 +294,6 @@ public class JsonTemplate extends Template {
      */
     public String getOriginalText() {
         return originalText;
-    }
-
-    /**
-     * Retrieve the text that represent this template after it is parsed.
-     *
-     * @return string parsed from JSON or <code>null</code> if this template hasn't been parsed.
-     */
-    public String getParsedText() {
-        return parsedText;
     }
 
 }
