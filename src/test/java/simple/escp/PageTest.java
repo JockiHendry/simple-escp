@@ -227,4 +227,32 @@ public class PageTest {
         assertEquals(line3, page.remove(3));
     }
 
+    @Test
+    public void hasDynamicLine() {
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content 1"));
+        Page page = new Page(content, null, null, 1, 3);
+        assertFalse(page.hasDynamicLine());
+        page.append(new TableLine("test"));
+        assertTrue(page.hasDynamicLine());
+    }
+
+    @Test
+    public void getTableLines() {
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content 1"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+        assertEquals(0, page.getTableLines().size());
+
+        page.append(new TableLine("test"));
+        assertEquals(1, page.getTableLines().size());
+        assertEquals(3, page.getTableLines().get(0).getLineNumber().intValue());
+        page.append(new TableLine("test"));
+        assertEquals(2, page.getTableLines().size());
+        assertEquals(3, page.getTableLines().get(0).getLineNumber().intValue());
+        assertEquals(4, page.getTableLines().get(1).getLineNumber().intValue());
+    }
+
 }

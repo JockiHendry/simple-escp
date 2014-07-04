@@ -1,6 +1,7 @@
 package simple.escp;
 
 import simple.escp.util.EscpUtil;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -283,6 +284,41 @@ public class Page {
             result.append(EscpUtil.CRFF);
         }
         return result.toString();
+    }
+
+    /**
+     * Check if this page contains one or more dynamic lines.
+     *
+     * @return <code>true</code> if this page contains dynamic line or <code>false</code> if otherwise.
+     */
+    public boolean hasDynamicLine() {
+        for (Line line: content) {
+            if (line.isDynamic()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get all <code>TableLine</code> in this page.  This method also stores line number for each returned
+     * <code>TableLine</code>.  To inspect line number for <code>TableLine</code>,
+     * use <code>TableLine.getLineNumber()</code> method.
+     *
+     * @return <code>List</code> that contains <code>TableLine</code> in this page.  If no <code>TableLine</code>
+     *         exists in this page, it will return an empty <code>List</code>.
+     */
+    public List<TableLine> getTableLines() {
+        List<TableLine> result = new ArrayList<>();
+        int offset = header.length + 1;
+        for (int i = 0; i < content.size(); i++) {
+            if (content.get(i) instanceof TableLine) {
+                TableLine tableLine = (TableLine) content.get(i);
+                tableLine.setLineNumber(offset + i);
+                result.add(tableLine);
+            }
+        }
+        return result;
     }
 
 }
