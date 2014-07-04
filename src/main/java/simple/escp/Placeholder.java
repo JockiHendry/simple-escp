@@ -114,11 +114,12 @@ public class Placeholder {
     }
 
     /**
-     * Retrieve formatted value for this placeholder.
+     * Retrieve value for this placeholder in form of object.  In most cases, you will use
+     * {@link #value()} that will return a <code>String</code> instead of object.
      *
-     * @return formatted value that will be used for printing.
+     * @return an object that represent the value for this placeholder.
      */
-    public String value() {
+    public Object valueAsObject() {
         Object v = null;
         // Try to get value from Map first.
         if (mapSource != null) {
@@ -134,7 +135,7 @@ public class Placeholder {
                             v = methodDescriptor.getMethod().invoke(objectSource);
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             throw new InvalidPlaceholder("Can't invoke method for placeholder [" +
-                                text + "]");
+                                    text + "]");
                         }
                     }
                 }
@@ -146,7 +147,7 @@ public class Placeholder {
                             v = propertyDescriptor.getReadMethod().invoke(objectSource);
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             throw new InvalidPlaceholder("Can't get property for placehoder [" +
-                                text + "]");
+                                    text + "]");
                         }
                         break;
                     }
@@ -158,7 +159,15 @@ public class Placeholder {
             throw new InvalidPlaceholder("Can't find supplied value for placeholder [" + text + "].");
         }
 
-        return v.toString();
+        return v;
+    }
+    /**
+     * Retrieve formatted value for this placeholder.
+     *
+     * @return formatted value that will be used for printing.
+     */
+    public String value() {
+        return valueAsObject().toString();
     }
 
 }

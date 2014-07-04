@@ -14,35 +14,26 @@
  * limitations under the License.
  */
 
-package simple.escp.json;
+package simple.escp;
 
 import org.junit.Before;
 import org.junit.Test;
 import simple.escp.Placeholder;
 import simple.escp.exception.InvalidPlaceholder;
+import simple.escp.json.JsonTemplate;
+
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.*;
 
-public class JsonTemplatePlaceholderTest {
-
-    private String jsonString;
-
-    @Before
-    public void setup() {
-        jsonString = "{" +
-            "\"template\": [" +
-                "\"Your id is ${id}, Mr. ${nickname}.\"" +
-            "]" +
-        "}";
-    }
+public class PlaceholderTest {
 
     @Test(expected = InvalidPlaceholder.class)
     public void invalidPlaceholders() {
-        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
-        jsonTemplate.fill(data, null);
+        Placeholder placeholder = new Placeholder("name", data, null);
+        placeholder.value();
     }
 
     @Test
@@ -54,6 +45,26 @@ public class JsonTemplatePlaceholderTest {
         emp.setTaxes(2.5);
         Placeholder placeholder = new Placeholder(text, null, emp);
         assertEquals("975.0", placeholder.value());
+    }
+
+    @Test
+    public void valueAsString() {
+        Employee emp = new Employee();
+        emp.setName("Snake");
+        emp.setSalary(1000);
+        emp.setTaxes(2.5);
+        Placeholder placeholder = new Placeholder("salary", null, emp);
+        assertEquals("1000.0", placeholder.value());
+    }
+
+    @Test
+    public void valueAsObject() {
+        Employee emp = new Employee();
+        emp.setName("Snake");
+        emp.setSalary(1000);
+        emp.setTaxes(2.5);
+        Placeholder placeholder = new Placeholder("salary", null, emp);
+        assertEquals(1000.0, placeholder.valueAsObject());
     }
 
     public static class Employee {
