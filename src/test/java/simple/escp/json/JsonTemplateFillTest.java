@@ -56,6 +56,7 @@ public class JsonTemplateFillTest {
         assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(null, person));
     }
 
+    @Test
     public void fillObjectWithMethod() {
         String jsonString =
         "{" +
@@ -69,8 +70,8 @@ public class JsonTemplateFillTest {
         person.setFirstName("David");
         person.setLastName("None");
         person.setNickname("Snake");
-        assertEquals(INIT + "Your first name is David and your last name is None." + CRLF + CRFF +
-            "I know you, David None alias Snake." + INIT, jsonTemplate.fill(null, person));
+        assertEquals(INIT + "Your first name is David and your last name is None." + CRLF +
+            "I know you, David None alias Snake!" + CRLF + CRFF + INIT, jsonTemplate.fill(null, person));
 
     }
 

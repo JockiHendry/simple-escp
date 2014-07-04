@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public class Report {
 
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_]+)\\}");
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_@]+)\\}");
     public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{([a-zA-Z0-9_]+)\\}");
 
     private List<Page> pages = new ArrayList<>();
