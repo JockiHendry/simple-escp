@@ -23,8 +23,8 @@ public class Report {
     private int lastPageNumber = 0;
     private PageFormat pageFormat;
     private Page currentPage;
-    private String[] header;
-    private String[] footer;
+    private TextLine[] header;
+    private TextLine[] footer;
     private boolean lineBreak;
     protected Map<String, Placeholder> placeholders = new HashMap<>();
 
@@ -35,32 +35,32 @@ public class Report {
      * @param header header for all of pages in this <code>Report</code>.
      * @param footer footer for all of pages in this <code>Report</code>.
      */
-    public Report(PageFormat pageFormat, String[] header, String[] footer) {
+    public Report(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
         this.pageFormat = pageFormat;
         if ((pageFormat.getPageLength() == null) && (!pageFormat.isUsePageLengthFromPrinter())) {
             throw new IllegalArgumentException("Invalid page format with pageLength undefined when " +
                 "isUsePageLengthFromPrinter is false.");
         }
-        this.header = (header == null) ? new String[0] : header;
-        this.footer = (footer == null) ? new String[0] : footer;
+        this.header = (header == null) ? new TextLine[0] : header;
+        this.footer = (footer == null) ? new TextLine[0] : footer;
         this.lineBreak = false;
     }
 
     /**
      * Get the header for this page.
      *
-     * @return header for this page.  The result is immutable (can't be used to modify current header).
+     * @return header for this page.
      */
-    public String[] getHeader() {
+    public TextLine[] getHeader() {
         return Arrays.copyOf(header, header.length);
     }
 
     /**
      * Get the footer for this page.
      *
-     * @return footer for this page. The result is immutable (can't be used to modify current footer).
+     * @return footer for this page.
      */
-    public String[] getFooter() {
+    public TextLine[] getFooter() {
         return Arrays.copyOf(footer, footer.length);
     }
 
@@ -103,9 +103,9 @@ public class Report {
         lastPageNumber++;
         Page page;
         if (plain) {
-            page = new Page(new ArrayList<String>(), null, null, lastPageNumber, pageFormat.getPageLength());
+            page = new Page(new ArrayList<Line>(), null, null, lastPageNumber, pageFormat.getPageLength());
         } else {
-            page = new Page(new ArrayList<String>(), header, footer, lastPageNumber, pageFormat.getPageLength());
+            page = new Page(new ArrayList<Line>(), header, footer, lastPageNumber, pageFormat.getPageLength());
         }
         pages.add(page);
         currentPage = page;
@@ -127,7 +127,7 @@ public class Report {
      * @param plain set <code>true</code> to include header and footer, or <code>false</code> if otherwise.
      * @return the created <code>Page</code>.
      */
-    public Page appendSinglePage(List<String> content, boolean plain) {
+    public Page appendSinglePage(List<Line> content, boolean plain) {
         Page page = newPage(plain);
         page.setContent(content);
         return page;
@@ -141,9 +141,9 @@ public class Report {
      * @return the created <code>Page</code>.
      */
 
-    public Page appendSinglePage(String[] content, boolean plain) {
-        List<String> contentInList = new ArrayList<>(content.length);
-        for (String s : content) {
+    public Page appendSinglePage(Line[] content, boolean plain) {
+        List<Line> contentInList = new ArrayList<>(content.length);
+        for (Line s : content) {
             contentInList.add(s);
         }
         return appendSinglePage(contentInList, plain);
@@ -156,7 +156,7 @@ public class Report {
      * @param line a new line to be inserted to the last page of this report.
      * @param plain set <code>true</code> to include header and footer, or <code>false</code> if otherwise.
      */
-    public void append(String line, boolean plain) {
+    public void append(Line line, boolean plain) {
         if (lineBreak || (currentPage == null) || currentPage.isFull()) {
             newPage(plain);
         }

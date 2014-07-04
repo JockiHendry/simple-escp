@@ -16,13 +16,11 @@
 
 package simple.escp.json;
 
+import simple.escp.Line;
 import simple.escp.PageFormat;
 import simple.escp.Report;
+import simple.escp.TextLine;
 import javax.json.JsonArray;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A helper class for parsing.
@@ -110,14 +108,28 @@ public class Parser {
      * @param text is the JSON array to convert.
      * @return result in <code>String[]</code>.
      */
-    private String[] convertFromJson(JsonArray text) {
-        List<String> result = new ArrayList<>();
-        if (text != null) {
-            for (JsonValue line : text) {
-                result.add(((JsonString) line).getString());
-            }
+    private String[] jsonToString(JsonArray text) {
+        int size = (text == null ? 0 : text.size());
+        String[] result = new String[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = text.getString(i);
         }
-        return result.toArray(new String[0]);
+        return result;
+    }
+
+    /**
+     * Convert <code>JsonArray</code> into <code>Line[]</code>.
+     *
+     * @param text is the JSON array to convert.
+     * @return result in <code>Line[]</code>.
+     */
+    private Line[] jsonToLine(JsonArray text) {
+        int size = (text == null ? 0 : text.size());
+        TextLine[] result = new TextLine[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = new TextLine(text.getString(i));
+        }
+        return result;
     }
 
     /**
@@ -128,19 +140,19 @@ public class Parser {
      * @return result of parsing in <code>Pages</code>.
      */
     public Report parse() {
-        result = new Report(pageFormat, convertFromJson(header), convertFromJson(footer));
+        result = new Report(pageFormat, (TextLine[]) jsonToLine(header), (TextLine[]) jsonToLine(footer));
         if (firstPage != null) {
-            result.appendSinglePage(convertFromJson(firstPage), true);
+            result.appendSinglePage(jsonToLine(firstPage), true);
             result.lineBreak();
         }
         if (detail != null) {
-            for (String line: convertFromJson(detail)) {
+            for (Line line: jsonToLine(detail)) {
                 result.append(line, false);
             }
         }
         if (lastPage != null) {
             result.lineBreak();
-            result.appendSinglePage(convertFromJson(lastPage), true);
+            result.appendSinglePage(jsonToLine(lastPage), true);
         }
         return getResult();
     }

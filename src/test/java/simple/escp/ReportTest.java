@@ -14,12 +14,12 @@ public class ReportTest {
     public void appendPage() {
         PageFormat pageFormat = new PageFormat();
         pageFormat.setPageLength(3);
-        String[] header = new String[] { "This is header." };
-        String[] footer = new String[] { "This is footer." };
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
         Report report = new Report(pageFormat, header, footer);
 
-        List<String> content = new ArrayList<>();
-        content.add("This is detail 1.");
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is detail 1."));
         Page page = report.appendSinglePage(content, false);
         assertEquals(1, report.getPages().size());
         assertEquals(1, page.getPageNumber().intValue());
@@ -30,7 +30,7 @@ public class ReportTest {
         assertEquals(2, page.getPageNumber().intValue());
         assertEquals(3, page.getNumberOfLines());
 
-        page = report.appendSinglePage(new ArrayList<String>(), false);
+        page = report.appendSinglePage(new ArrayList<Line>(), false);
         assertEquals(3, report.getPages().size());
         assertEquals(3, page.getPageNumber().intValue());
         assertEquals(2, page.getNumberOfLines());
@@ -45,14 +45,14 @@ public class ReportTest {
     public void appendFullPage() {
         PageFormat pageFormat = new PageFormat();
         pageFormat.setPageLength(3);
-        String[] header = new String[] { "This is header." };
-        String[] footer = new String[] { "This is footer." };
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
         Report report = new Report(pageFormat, header, footer);
 
-        List<String> content = new ArrayList<>();
-        content.add("This is detail 1.");
-        content.add("This is detail 2.");
-        content.add("This is detail 3.");
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is detail 1."));
+        content.add(new TextLine("This is detail 2."));
+        content.add(new TextLine("This is detail 3."));
         report.appendSinglePage(content, false);
     }
 
@@ -60,8 +60,8 @@ public class ReportTest {
     public void newPage() {
         PageFormat pageFormat = new PageFormat();
         pageFormat.setPageLength(3);
-        String[] header = new String[] { "This is header." };
-        String[] footer = new String[] { "This is footer." };
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
         Report report = new Report(pageFormat, header, footer);
 
         Page page = report.newPage(true);
@@ -85,21 +85,21 @@ public class ReportTest {
     public void append() {
         PageFormat pageFormat = new PageFormat();
         pageFormat.setPageLength(3);
-        String[] header = new String[] { "This is header." };
-        String[] footer = new String[] { "This is footer." };
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
         Report report = new Report(pageFormat, header, footer);
 
-        report.append("This is line 1", false);
+        report.append(new TextLine("This is line 1"), false);
         assertEquals(1, report.getLastPageNumber());
         assertEquals(1, report.getPages().size());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
 
-        report.append("This is line 2", false);
+        report.append(new TextLine("This is line 2"), false);
         assertEquals(2, report.getLastPageNumber());
         assertEquals(2, report.getPages().size());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
 
-        report.append("This is line 3", false);
+        report.append(new TextLine("This is line 3"), false);
         assertEquals(3, report.getLastPageNumber());
         assertEquals(3, report.getPages().size());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
@@ -109,26 +109,26 @@ public class ReportTest {
     public void appendBasic() {
         PageFormat pageFormat = new PageFormat();
         pageFormat.setPageLength(3);
-        String[] header = new String[] { "This is header." };
-        String[] footer = new String[] { "This is footer." };
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
         Report report = new Report(pageFormat, header, footer);
 
-        report.append("This is line 1", true);
+        report.append(new TextLine("This is line 1"), true);
         assertEquals(1, report.getLastPageNumber());
         assertEquals(1, report.getPages().size());
         assertEquals(1, report.getCurrentPage().getNumberOfLines());
 
-        report.append("This is line 2", true);
+        report.append(new TextLine("This is line 2"), true);
         assertEquals(1, report.getLastPageNumber());
         assertEquals(1, report.getPages().size());
         assertEquals(2, report.getCurrentPage().getNumberOfLines());
 
-        report.append("This is line 3", true);
+        report.append(new TextLine("This is line 3"), true);
         assertEquals(1, report.getLastPageNumber());
         assertEquals(1, report.getPages().size());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
 
-        report.append("This is line 4", true);
+        report.append(new TextLine("This is line 4"), true);
         assertEquals(2, report.getLastPageNumber());
         assertEquals(2, report.getPages().size());
         assertEquals(1, report.getCurrentPage().getNumberOfLines());
@@ -139,11 +139,11 @@ public class ReportTest {
         PageFormat pageFormat = new PageFormat();
         pageFormat.setPageLength(3);
         pageFormat.setUsePrinterPageLength(false);
-        String[] header = new String[] { "This is header." };
-        String[] footer = new String[] { "This is footer." };
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
         Report report = new Report(pageFormat, header, footer);
-        report.append("Name: ${name}", false);
-        report.append("Result: ${score}", false);
+        report.append(new TextLine("Name: ${name}"), false);
+        report.append(new TextLine("Result: ${score}"), false);
 
         Map<String, Object> mapSource = new HashMap<>();
         mapSource.put("name", "Solid Snake");

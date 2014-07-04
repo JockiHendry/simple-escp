@@ -10,26 +10,26 @@ public class PageTest {
 
     @Test
     public void append() {
-        List<String> content = new ArrayList<>();
+        List<Line> content = new ArrayList<>();
         Page page = new Page(content, null, null, 1, 3);
         page.append("This is line 1");
         assertEquals(1, page.getContent().size());
-        assertEquals("This is line 1", page.getContent().get(0));
-        assertEquals("This is line 1", page.get(1));
+        assertEquals("This is line 1", page.getContent().get(0).toString());
+        assertEquals("This is line 1", page.get(1).toString());
         page.append("This is line 2");
         assertEquals(2, page.getContent().size());
-        assertEquals("This is line 2", page.getContent().get(1));
-        assertEquals("This is line 2", page.get(2));
+        assertEquals("This is line 2", page.getContent().get(1).toString());
+        assertEquals("This is line 2", page.get(2).toString());
         page.append("This is line 3");
         assertEquals(3, page.getContent().size());
-        assertEquals("This is line 3", page.getContent().get(2));
-        assertEquals("This is line 3", page.get(3));
+        assertEquals("This is line 3", page.getContent().get(2).toString());
+        assertEquals("This is line 3", page.get(3).toString());
 
     }
 
     @Test(expected = IllegalStateException.class)
     public void appendFull() {
-        List<String> content = new ArrayList<>();
+        List<Line> content = new ArrayList<>();
         Page page = new Page(content, null, null, 1, 3);
         page.append("This is line 1");
         page.append("This is line 2");
@@ -39,9 +39,9 @@ public class PageTest {
 
     @Test(expected = IllegalStateException.class)
     public void appendFullWithHeaderAndFooter() {
-        List<String> content = new ArrayList<>();
-        String[] header = new String[] { "This is header 1"};
-        String[] footer = new String[] { "This is footer 1"};
+        List<Line> content = new ArrayList<>();
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 3);
         page.append("This is line 1");
         page.append("This is line 2");
@@ -49,30 +49,30 @@ public class PageTest {
 
     @Test
     public void getWithHeaderAndFooter() {
-        List<String> content = new ArrayList<>();
-        content.add("This is content");
-        String[] header = new String[] { "This is header 1"};
-        String[] footer = new String[] { "This is footer 1"};
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 3);
-        assertEquals("This is header 1", page.get(1));
-        assertEquals("This is content", page.get(2));
-        assertEquals("This is footer 1", page.get(3));
+        assertEquals("This is header 1", page.get(1).toString());
+        assertEquals("This is content", page.get(2).toString());
+        assertEquals("This is footer 1", page.get(3).toString());
     }
 
 
     @Test
     public void getNumberOfLines() {
         // With content only
-        List<String> content = new ArrayList<>();
-        content.add("This is content");
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content"));
         Page page = new Page(content, null, null, 1, 3);
         assertEquals(1, page.getNumberOfLines());
 
         // With header and footer
         content = new ArrayList<>();
-        content.add("This is content");
-        String[] header = new String[] { "This is header 1"};
-        String[] footer = new String[] { "This is footer 1"};
+        content.add(new TextLine("This is content"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         page = new Page(content, header, footer, 1, 3);
         assertEquals(3, page.getNumberOfLines());
     }
@@ -80,30 +80,30 @@ public class PageTest {
     @Test
     public void getLines() {
         // With content only
-        List<String> content = new ArrayList<>();
-        content.add("This is content");
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content"));
         Page page = new Page(content, null, null, 1, 3);
         assertEquals(1, page.getLines().length);
-        assertEquals("This is content", page.getLines()[0]);
+        assertEquals("This is content", page.getLines()[0].toString());
 
         // With header and footer
         content = new ArrayList<>();
-        content.add("This is content");
-        String[] header = new String[] { "This is header 1"};
-        String[] footer = new String[] { "This is footer 1"};
+        content.add(new TextLine("This is content"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         page = new Page(content, header, footer, 1, 3);
         assertEquals(3, page.getLines().length);
-        assertEquals("This is header 1", page.getLines()[0]);
-        assertEquals("This is content", page.getLines()[1]);
-        assertEquals("This is footer 1", page.getLines()[2]);
+        assertEquals("This is header 1", page.getLines()[0].toString());
+        assertEquals("This is content", page.getLines()[1].toString());
+        assertEquals("This is footer 1", page.getLines()[2].toString());
     }
 
     @Test
     public void convertToString() {
-        List<String> content = new ArrayList<>();
-        content.add("This is content");
-        String[] header = new String[] { "This is header 1"};
-        String[] footer = new String[] { "This is footer 1"};
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 3);
         assertEquals("This is header 1" + CRLF + "This is content" + CRLF + "This is footer 1" + CRLF + CRFF,
             page.convertToString(false, true));

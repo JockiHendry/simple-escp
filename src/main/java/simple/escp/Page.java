@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class Page {
 
-    private String[] header;
-    private String[] footer;
-    private List<String> content;
+    private TextLine[] header;
+    private TextLine[] footer;
+    private List<Line> content;
     private Integer pageNumber;
     private Integer pageLength;
 
@@ -29,10 +29,10 @@ public class Page {
      * @param pageLength maximum number of lines for this page.  Set <code>null</code> for unlimited lines in this
      *                   page.
      */
-    public Page(List<String> content, String[] header, String[] footer, Integer pageNumber, Integer pageLength) {
+    public Page(List<Line> content, TextLine[] header, TextLine[] footer, Integer pageNumber, Integer pageLength) {
         this.content = content;
-        this.header = header == null ? new String[]{} : header;
-        this.footer = footer == null ? new String[]{} : footer;
+        this.header = header == null ? new TextLine[0] : header;
+        this.footer = footer == null ? new TextLine[0] : footer;
         this.pageNumber = pageNumber;
         this.pageLength = pageLength;
     }
@@ -40,18 +40,18 @@ public class Page {
     /**
      * Get the header for this page.
      *
-     * @return header for this page. The result is immutable (can't be used to modify current header).
+     * @return header for this page.
      */
-    public String[] getHeader() {
+    public TextLine[] getHeader() {
         return Arrays.copyOf(header, header.length);
     }
 
     /**
      * Get the footer for this page.
      *
-     * @return footer for this page. The result is immutable (can't be used to modify current footer).
+     * @return footer for this page.
      */
-    public String[] getFooter() {
+    public TextLine[] getFooter() {
         return Arrays.copyOf(footer, footer.length);
     }
 
@@ -60,7 +60,7 @@ public class Page {
      *
      * @return content of this page.
      */
-    public List<String> getContent() {
+    public List<Line> getContent() {
         return content;
     }
 
@@ -69,7 +69,7 @@ public class Page {
      *
      * @param content the new content for this page.
      */
-    public void setContent(List<String> content) {
+    public void setContent(List<Line> content) {
         if (pageLength != null) {
             int numberOfLines = header.length + footer.length;
             if (numberOfLines + content.size() > pageLength) {
@@ -121,15 +121,28 @@ public class Page {
     }
 
     /**
-     * Add a new line to this page.  The line will be inserted after the last line of this page.
+     * Add a new line to this page from a string.  The string will be converted to a line.
+     * See also {@link #append(Line)}.
      *
-     * @param text the string to add.
+     * @param text the string that will be added to this page.
      */
     public void append(String text) {
         if (isFull()) {
             throw new IllegalStateException("Page is full.");
         }
-        content.add(text);
+        content.add(new TextLine(text));
+    }
+
+    /**
+     * Add a new line to this page.  The line will be inserted after the last line of this page.
+     *
+     * @param line the line that will be added to this page.
+     */
+    public void append(Line line) {
+        if (isFull()) {
+            throw new IllegalStateException("Page is full.");
+        }
+        content.add(line);
     }
 
     /**
@@ -146,16 +159,16 @@ public class Page {
      *
      * @return all lines of this page (excluding empty lines).
      */
-    public String[] getLines() {
-        String[] result = new String[getNumberOfLines()];
+    public Line[] getLines() {
+        Line[] result = new Line[getNumberOfLines()];
         int index = 0;
-        for (String line : header) {
+        for (TextLine line : header) {
             result[index++] = line;
         }
-        for (String line : content) {
+        for (Line line : content) {
             result[index++] = line;
         }
-        for (String line : footer) {
+        for (Line line : footer) {
             result[index++] = line;
         }
         return result;
@@ -167,7 +180,7 @@ public class Page {
      * @param lineNumber a line number starting from 1.
      * @return the text for the specified line number.
      */
-    public String get(int lineNumber) {
+    public Line get(int lineNumber) {
         if (lineNumber < 0 || lineNumber > getNumberOfLines()) {
             throw new IllegalArgumentException("Number of lines [" + lineNumber + "] is out of range.");
         }
@@ -194,9 +207,11 @@ public class Page {
      */
     public String convertToString(boolean autoLinefeed, boolean autoFormfeed) {
         StringBuffer result = new StringBuffer();
-        for (String line: getLines()) {
-            result.append(line);
-            result.append(autoLinefeed ? EscpUtil.CR : EscpUtil.CRLF);
+        for (Line line: getLines()) {
+            if (line instanceof TextLine) {
+                result.append(((TextLine) line).getText());
+                result.append(autoLinefeed ? EscpUtil.CR : EscpUtil.CRLF);
+            }
         }
         if (autoFormfeed) {
             result.append(EscpUtil.CRFF);
