@@ -221,11 +221,11 @@ public class Report {
         Line discardedLine = startPage.insert(line, lineNumber);
         Page currentPage = nextPage(startPage);
         while (discardedLine != null) {
-            discardedLine = currentPage.insert(discardedLine, header.length + 1);
-            currentPage = nextPage(currentPage);
-            if (discardedLine != null && currentPage == null) {
+            if (currentPage == null) {
                 currentPage = newPage(false);
             }
+            discardedLine = currentPage.insert(discardedLine, header.length + 1);
+            currentPage = nextPage(currentPage);
         }
     }
 

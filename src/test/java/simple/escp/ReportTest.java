@@ -310,4 +310,29 @@ public class ReportTest {
         assertEquals("This is footer.", page3.get(3).toString());
     }
 
+    @Test
+    public void insertCausesNewPage() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is line 1 in page 1"), false);
+
+        report.insert(new TextLine("This is inserted line."), 1, 2);
+
+        assertEquals(2, report.getPages().size());
+        Page page1 = report.getPages().get(0);
+        assertEquals(3, page1.getNumberOfLines());
+        assertEquals("This is header.", page1.get(1).toString());
+        assertEquals("This is inserted line.", page1.get(2).toString());
+        assertEquals("This is footer.", page1.get(3).toString());
+        Page page2 = report.getPages().get(1);
+        assertEquals(3, page2.getNumberOfLines());
+        assertEquals("This is header.", page2.get(1).toString());
+        assertEquals("This is line 1 in page 1", page2.get(2).toString());
+        assertEquals("This is footer.", page2.get(3).toString());
+    }
+
 }
