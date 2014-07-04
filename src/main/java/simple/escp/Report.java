@@ -230,6 +230,20 @@ public class Report {
     }
 
     /**
+     * Determine if one or more pages in this report has one or more dynamic lines.
+     *
+     * @return <code>true</code> if this report contains dynamic line or <code>false</code> if otherwise.
+     */
+    public boolean hasDynamicLine() {
+        for (Page page : pages) {
+            if (page.hasDynamicLine()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * This method will fill placeholders with value from both supplied <code>Map</code> and Java Bean object.
      *
      * @param text the source text that has placeholders.

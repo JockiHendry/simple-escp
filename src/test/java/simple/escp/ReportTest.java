@@ -335,4 +335,18 @@ public class ReportTest {
         assertEquals("This is footer.", page2.get(3).toString());
     }
 
+    @Test
+    public void dynamicLine() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is line 1 in page 1"), false);
+        assertFalse(report.hasDynamicLine());
+        report.append(new TableLine("test"), true);
+        assertTrue(report.hasDynamicLine());
+    }
+
 }
