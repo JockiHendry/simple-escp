@@ -121,6 +121,20 @@ public class Page {
     }
 
     /**
+     * Check if this page is overflow.  The difference with this method and {@link #isFull()} is that this method
+     * will return <code>true</code> only if number of lines is more than allowed length.
+     *
+     * @return <code>true</code> if this page is overflowed or <code>false</code> if otherwise.
+     */
+    public boolean isOverflow() {
+        if (pageLength == null) {
+            return false;
+        } else {
+            return (header.length + footer.length + content.size()) > pageLength;
+        }
+    }
+
+    /**
      * Add a new line to this page from a string.  The string will be converted to a line.
      * See also {@link #append(Line)}.
      *
@@ -143,6 +157,32 @@ public class Page {
             throw new IllegalStateException("Page is full.");
         }
         content.add(line);
+    }
+
+    /**
+     * Insert a new <code>Line</code> at the specified <code>lineNumber</code> position.  If the page is full
+     * after insertion, the last line of the content (<strong>not</strong> including footer) will be removed
+     * and returned.
+     *
+     * @param line the <code>Line</code> that will be inserted.
+     * @param lineNumber the line number position in which the new line will be inserted.
+     * @return discarded <code>Line</code> if insertion causes overflow and a line is removed, or
+     *         <code>null</code> if no line is discarded.
+     */
+    public Line insert(Line line, int lineNumber) {
+        Line result = null;
+        if (lineNumber < header.length) {
+            throw new IllegalArgumentException("Line number can't be inserted before header: " + lineNumber);
+        }
+        if ((pageLength != null) && (lineNumber > pageLength)) {
+            throw new IllegalArgumentException("Invalid line number: " + lineNumber);
+        }
+        content.add(lineNumber - header.length - 1, line);
+        if (isOverflow()) {
+            result = content.get(content.size() - 1);
+            content.remove(result);
+        }
+        return result;
     }
 
     /**

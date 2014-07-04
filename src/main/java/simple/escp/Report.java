@@ -92,6 +92,50 @@ public class Report {
     }
 
     /**
+     * Get a <code>Page</code> based on its <code>pageNumber</code>.
+     *
+     * @param pageNumber the page number for the page that will be retrieved.
+     * @return a <code>Page</code> or throws <code>IllegalArgumentException</code> if <code>pageNumber</code>
+     *         is not valid.
+     */
+    public Page page(int pageNumber) {
+        if (pageNumber < 1 || pageNumber > getLastPageNumber()) {
+            throw new IllegalArgumentException("Invalid page: " + pageNumber);
+        }
+        return pages.get(pageNumber - 1);
+    }
+
+    /**
+     * Get next page of the specified page.
+     *
+     * @param  page find the next page of this <code>page</code>.
+     * @return a <code>Page</code> or <code>null</code> if <code>page</code> is the last page.
+     */
+    public Page nextPage(Page page) {
+        if (page.getPageNumber() == pages.size()) {
+            return null;
+        }
+        // Note that page is 1-based while the list is 0-based.
+        // page + 1 to list index is: page + 1 - 1 = page + 0.
+        return pages.get(page.getPageNumber());
+    }
+
+    /**
+     * Get previous page of the specified page.
+     *
+     * @param  page find the previous page of this <code>page</code>.
+     * @return a <code>Page</code> or <code>null</code> if <code>page</code> is the first page.
+     */
+    public Page previousPage(Page page) {
+        if (page.getPageNumber() == 1) {
+            return null;
+        }
+        // Note that page is 1-based while the list is 0-based.
+        // page - 1 to list index is: page - 1 - 1 = page - 2.
+        return pages.get(page.getPageNumber() - 2);
+    }
+
+    /**
      * Create a new page for this report.
      *
      * @param plain if <code>true</code> will ignore header and footer.  Set this to <code>false</code> to create
@@ -140,7 +184,6 @@ public class Report {
      * @param plain set <code>true</code> to include header and footer, or <code>false</code> if otherwise.
      * @return the created <code>Page</code>.
      */
-
     public Page appendSinglePage(Line[] content, boolean plain) {
         List<Line> contentInList = new ArrayList<>(content.length);
         for (Line s : content) {
@@ -161,6 +204,29 @@ public class Report {
             newPage(plain);
         }
         currentPage.append(line);
+    }
+
+    /**
+     * Insert a new line at certain page and certain position.  This may a new page to be created if necessary.
+     *
+     * @param line a new line to be inserted to this report.
+     * @param pageNumber the page number in which the new line will be inserted.
+     * @param lineNumber the line number in the page where the new line will be inserted.
+     */
+    public void insert(Line line, int pageNumber, int lineNumber) {
+        if (pageNumber < 1 || pageNumber > pages.size()) {
+            throw new IllegalArgumentException("Invalid page number: " + pageNumber);
+        }
+        Page startPage = pages.get(pageNumber - 1);
+        Line discardedLine = startPage.insert(line, lineNumber);
+        Page currentPage = nextPage(startPage);
+        while (discardedLine != null) {
+            discardedLine = currentPage.insert(discardedLine, header.length + 1);
+            currentPage = nextPage(currentPage);
+            if (discardedLine != null && currentPage == null) {
+                currentPage = newPage(false);
+            }
+        }
     }
 
     /**

@@ -111,4 +111,43 @@ public class PageTest {
             page.convertToString(true, true));
     }
 
+    @Test
+    public void insert() {
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content 1"));
+        content.add(new TextLine("This is content 2"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+        Line result = page.insert(new TextLine("Inserted line"), 4);
+
+        assertNull(result);
+        assertEquals(5, page.getNumberOfLines());
+        assertEquals("This is header 1", page.get(1).toString());
+        assertEquals("This is content 1", page.get(2).toString());
+        assertEquals("This is content 2", page.get(3).toString());
+        assertEquals("Inserted line", page.get(4).toString());
+        assertEquals("This is footer 1", page.get(5).toString());
+    }
+
+    @Test
+    public void insertOverflow() {
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content 1"));
+        content.add(new TextLine("This is content 2"));
+        content.add(new TextLine("This is content 3"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+        Line result = page.insert(new TextLine("Inserted line"), 3);
+
+        assertEquals("This is content 3", result.toString());
+        assertEquals(5, page.getNumberOfLines());
+        assertEquals("This is header 1", page.get(1).toString());
+        assertEquals("This is content 1", page.get(2).toString());
+        assertEquals("Inserted line", page.get(3).toString());
+        assertEquals("This is content 2", page.get(4).toString());
+        assertEquals("This is footer 1", page.get(5).toString());
+    }
+
 }

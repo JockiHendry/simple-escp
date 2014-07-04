@@ -160,4 +160,154 @@ public class ReportTest {
         );
     }
 
+    @Test
+    public void nextPage() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is in page 1."), false);
+        report.lineBreak();
+        report.append(new TextLine("This is in page 2."), false);
+        report.lineBreak();
+        report.append(new TextLine("This is in page 3."), false);
+
+        assertEquals(3, report.getLastPageNumber());
+        Page page1 = report.page(1);
+        Page page2 = report.page(2);
+        Page page3 = report.page(3);
+        assertEquals(page2, report.nextPage(page1));
+        assertEquals(page3, report.nextPage(page2));
+    }
+
+    @Test
+    public void previousPage() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is in page 1."), false);
+        report.lineBreak();
+        report.append(new TextLine("This is in page 2."), false);
+        report.lineBreak();
+        report.append(new TextLine("This is in page 3."), false);
+
+        assertEquals(3, report.getLastPageNumber());
+        Page page1 = report.page(1);
+        Page page2 = report.page(2);
+        Page page3 = report.page(3);
+        assertEquals(page1, report.previousPage(page2));
+        assertEquals(page2, report.previousPage(page3));
+    }
+
+    @Test
+    public void insert() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(5);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is line 1 in page 1"), false);
+        report.append(new TextLine("This is line 2 in page 1"), false);
+        report.lineBreak();
+        report.append(new TextLine("This is line 1 in page 2"), false);
+        report.append(new TextLine("This is line 2 in page 2"), false);
+        report.append(new TextLine("This is line 3 in page 2"), false);
+
+        report.insert(new TextLine("This is inserted line."), 1, 4);
+
+        assertEquals(2, report.getPages().size());
+        Page page1 = report.getPages().get(0);
+        assertEquals(5, page1.getNumberOfLines());
+        assertEquals("This is header.", page1.get(1).toString());
+        assertEquals("This is line 1 in page 1", page1.get(2).toString());
+        assertEquals("This is line 2 in page 1", page1.get(3).toString());
+        assertEquals("This is inserted line.", page1.get(4).toString());
+        assertEquals("This is footer.", page1.get(5).toString());
+        Page page2 = report.getPages().get(1);
+        assertEquals(5, page2.getNumberOfLines());
+        assertEquals("This is header.", page2.get(1).toString());
+        assertEquals("This is line 1 in page 2", page2.get(2).toString());
+        assertEquals("This is line 2 in page 2", page2.get(3).toString());
+        assertEquals("This is line 3 in page 2", page2.get(4).toString());
+        assertEquals("This is footer.", page2.get(5).toString());
+    }
+
+    @Test
+    public void insertLast() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(5);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is line 1 in page 1"), false);
+        report.append(new TextLine("This is line 2 in page 1"), false);
+        report.append(new TextLine("This is line 3 in page 1"), false);
+        report.append(new TextLine("This is line 1 in page 2"), false);
+        report.append(new TextLine("This is line 2 in page 2"), false);
+
+        report.insert(new TextLine("This is inserted line."), 2, 4);
+
+        assertEquals(2, report.getPages().size());
+        Page page1 = report.getPages().get(0);
+        assertEquals(5, page1.getNumberOfLines());
+        assertEquals("This is header.", page1.get(1).toString());
+        assertEquals("This is line 1 in page 1", page1.get(2).toString());
+        assertEquals("This is line 2 in page 1", page1.get(3).toString());
+        assertEquals("This is line 3 in page 1", page1.get(4).toString());
+        assertEquals("This is footer.", page1.get(5).toString());
+        Page page2 = report.getPages().get(1);
+        assertEquals(5, page2.getNumberOfLines());
+        assertEquals("This is header.", page2.get(1).toString());
+        assertEquals("This is line 1 in page 2", page2.get(2).toString());
+        assertEquals("This is line 2 in page 2", page2.get(3).toString());
+        assertEquals("This is inserted line.", page2.get(4).toString());
+        assertEquals("This is footer.", page2.get(5).toString());
+    }
+
+    @Test
+    public void insertOverflow() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(5);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is line 1 in page 1"), false);
+        report.append(new TextLine("This is line 2 in page 1"), false);
+        report.append(new TextLine("This is line 3 in page 1"), false);
+        report.append(new TextLine("This is line 1 in page 2"), false);
+        report.append(new TextLine("This is line 2 in page 2"), false);
+        report.append(new TextLine("This is line 3 in page 2"), false);
+
+        report.insert(new TextLine("This is inserted line."), 1, 3);
+
+        assertEquals(3, report.getPages().size());
+        Page page1 = report.getPages().get(0);
+        assertEquals(5, page1.getNumberOfLines());
+        assertEquals("This is header.", page1.get(1).toString());
+        assertEquals("This is line 1 in page 1", page1.get(2).toString());
+        assertEquals("This is inserted line.", page1.get(3).toString());
+        assertEquals("This is line 2 in page 1", page1.get(4).toString());
+        assertEquals("This is footer.", page1.get(5).toString());
+        Page page2 = report.getPages().get(1);
+        assertEquals(5, page2.getNumberOfLines());
+        assertEquals("This is header.", page2.get(1).toString());
+        assertEquals("This is line 3 in page 1", page2.get(2).toString());
+        assertEquals("This is line 1 in page 2", page2.get(3).toString());
+        assertEquals("This is line 2 in page 2", page2.get(4).toString());
+        assertEquals("This is footer.", page2.get(5).toString());
+        Page page3 = report.getPages().get(2);
+        assertEquals(3, page3.getNumberOfLines());
+        assertEquals("This is header.", page3.get(1).toString());
+        assertEquals("This is line 3 in page 2", page3.get(2).toString());
+        assertEquals("This is footer.", page3.get(3).toString());
+    }
+
 }
