@@ -19,8 +19,11 @@ package simple.escp.json;
 import simple.escp.Line;
 import simple.escp.PageFormat;
 import simple.escp.Report;
+import simple.escp.TableLine;
 import simple.escp.TextLine;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 /**
  * A helper class for parsing.
@@ -118,6 +121,49 @@ public class Parser {
     }
 
     /**
+     * Convert <code>JsonArray</code> into <code>TextLine[]</code>.  This method will <strong>ignore</strong>
+     * non-text line or dynamic line such as <code>TableLine</code>.
+     *
+     * <p>See also {@link #jsonToLine(javax.json.JsonArray)} for converting to generic <code>Line[]</code>.
+     *
+     * @param text is the JSON array to convert.
+     * @return result in <code>TextLine[]</code>.
+     */
+
+    private TextLine[] jsonToTextLine(JsonArray text) {
+        int size = (text == null ? 0 : text.size());
+        TextLine[] result = new TextLine[size];
+        for (int i = 0; i < size; i++) {
+            JsonValue value = text.get(i);
+            if (value.getValueType() == JsonValue.ValueType.STRING) {
+                result[i] = new TextLine(text.getString(i));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Convert <code>JsonObject</code> into <code>TableLine</code>.
+     *
+     * @param table is the JSON object to convert.
+     * @return result in <code>TableLine</code>.
+     */
+
+    private TableLine jsonToTableLine(JsonObject table) {
+        TableLine tableLine = new TableLine(table.getString("table"));
+        JsonArray columns = table.getJsonArray("columns");
+        if (columns == null) {
+            throw new IllegalArgumentException("Table must have 'columns'.");
+        } else {
+            for (int i = 0; i < columns.size(); i++) {
+                JsonObject column = columns.getJsonObject(i);
+                tableLine.addColumn(column.getString("source"), column.getInt("width"));
+            }
+        }
+        return tableLine;
+    }
+
+    /**
      * Convert <code>JsonArray</code> into <code>Line[]</code>.
      *
      * @param text is the JSON array to convert.
@@ -125,9 +171,19 @@ public class Parser {
      */
     private Line[] jsonToLine(JsonArray text) {
         int size = (text == null ? 0 : text.size());
-        TextLine[] result = new TextLine[size];
+        Line[] result = new Line[size];
         for (int i = 0; i < size; i++) {
-            result[i] = new TextLine(text.getString(i));
+            JsonValue value = text.get(i);
+            if (value.getValueType() == JsonValue.ValueType.STRING) {
+                result[i] = new TextLine(text.getString(i));
+            } else if (value.getValueType() == JsonValue.ValueType.OBJECT) {
+                JsonObject object = text.getJsonObject(i);
+                if (object.containsKey("table")) {
+                    result[i] = jsonToTableLine(object);
+                } else {
+                    throw new IllegalArgumentException("Unknown object in JSON: " + object);
+                }
+            }
         }
         return result;
     }
@@ -140,7 +196,7 @@ public class Parser {
      * @return result of parsing in <code>Pages</code>.
      */
     public Report parse() {
-        result = new Report(pageFormat, (TextLine[]) jsonToLine(header), (TextLine[]) jsonToLine(footer));
+        result = new Report(pageFormat, jsonToTextLine(header), jsonToTextLine(footer));
         if (firstPage != null) {
             result.appendSinglePage(jsonToLine(firstPage), true);
             result.lineBreak();

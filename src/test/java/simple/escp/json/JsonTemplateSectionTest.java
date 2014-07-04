@@ -18,6 +18,10 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import simple.escp.Page;
+import simple.escp.Report;
+import simple.escp.TableColumn;
+import simple.escp.TableLine;
 import simple.escp.util.EscpUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -298,6 +302,102 @@ public class JsonTemplateSectionTest {
             "Halaman 2" + CRLF + "Detail 4" + CRLF + "Detail 5" + CRLF + CRFF + INIT,
             jsonTemplate.parse().fill(null, null)
         );
+    }
+
+    @Test
+    public void parseTable() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": [" +
+                "\"This is line 1.\"," +
+                "{" +
+                    "\"table\": \"sources\"," +
+                    "\"columns\":" +
+                        "[" +
+                            "{ \"source\": \"field1\", \"width\": 10 }," +
+                            "{ \"source\": \"field2\", \"width\": 15 }," +
+                            "{ \"source\": \"field3\", \"width\": 8 }" +
+                        "]" +
+                "}," +
+                "\"This is line 2.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Report report = jsonTemplate.parse();
+        assertEquals(1, report.getPages().size());
+        Page page = report.getPages().get(0);
+        assertEquals(3, page.getNumberOfLines());
+        assertEquals("This is line 1.", page.get(1).toString());
+        assertFalse(page.get(1).isDynamic());
+        assertEquals("This is line 2.", page.get(3).toString());
+        assertFalse(page.get(3).isDynamic());
+        assertTrue(page.get(2).isDynamic());
+        assertTrue(page.get(2) instanceof TableLine);
+
+        TableLine tableLine = (TableLine) page.get(2);
+        assertEquals("sources", tableLine.getSource());
+        assertEquals(3, tableLine.getNumberOfColumns());
+
+        TableColumn column = tableLine.getColumnAt(1);
+        assertEquals("field1", column.getText());
+        assertEquals(10, column.getWidth());
+        column = tableLine.getColumnAt(2);
+        assertEquals("field2", column.getText());
+        assertEquals(15, column.getWidth());
+        column = tableLine.getColumnAt(3);
+        assertEquals("field3", column.getText());
+        assertEquals(8, column.getWidth());
+    }
+
+    @Test
+    public void parseTableInDetail() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"header\": [\"This is header.\"]," +
+                "\"detail\": [{" +
+                    "\"table\": \"sources\"," +
+                    "\"columns\":" +
+                        "[" +
+                            "{ \"source\": \"field1\", \"width\": 10 }," +
+                            "{ \"source\": \"field2\", \"width\": 15 }," +
+                            "{ \"source\": \"field3\", \"width\": 8 }" +
+                        "]" +
+                "}]," +
+                "\"footer\": [\"This is footer.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Report report = jsonTemplate.parse();
+        assertEquals(1, report.getPages().size());
+        Page page = report.getPages().get(0);
+        assertEquals(3, page.getNumberOfLines());
+        assertEquals("This is header.", page.get(1).toString());
+        assertFalse(page.get(1).isDynamic());
+        assertEquals("This is footer.", page.get(3).toString());
+        assertFalse(page.get(3).isDynamic());
+        assertTrue(page.get(2).isDynamic());
+        assertTrue(page.get(2) instanceof TableLine);
+
+        TableLine tableLine = (TableLine) page.get(2);
+        assertEquals("sources", tableLine.getSource());
+        assertEquals(3, tableLine.getNumberOfColumns());
+
+        TableColumn column = tableLine.getColumnAt(1);
+        assertEquals("field1", column.getText());
+        assertEquals(10, column.getWidth());
+        column = tableLine.getColumnAt(2);
+        assertEquals("field2", column.getText());
+        assertEquals(15, column.getWidth());
+        column = tableLine.getColumnAt(3);
+        assertEquals("field3", column.getText());
+        assertEquals(8, column.getWidth());
     }
 
 }
