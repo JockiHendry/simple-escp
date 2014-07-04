@@ -236,6 +236,32 @@ public class Page {
     }
 
     /**
+     * Remove a <code>Line</code> from this <code>Page</code>.
+     *
+     * @param line a <code>Line</code> that will be removed.
+     * @return <code>true</code> if this page contained the specified line
+     */
+    public boolean remove(Line line) {
+        return content.remove(line);
+    }
+
+    /**
+     * Remove a <code>Line</code> by its line number.  This method will only delete line located at detail (content).
+     * Header and footer can't be deleted by using this method.
+     *
+     * @param lineNumber a line number starting from 1 starting from header (if exists).  The line number
+     *                   <strong>should not</strong> be part of header or footer.
+     * @return the deleted <code>Line</code> or <code>null</code> if nothing is deleted.
+     */
+    public Line remove(int lineNumber) {
+        if ((lineNumber <= header.length) || (lineNumber > header.length + content.size())) {
+            throw new IllegalArgumentException("Line number is not valid: [" + lineNumber + "]");
+        }
+        int index = lineNumber - header.length - 1;
+        return content.remove(index);
+    }
+
+    /**
      * Convert this page into ESC/P string that can be printed.  This is <strong>>not</strong> including filling
      * operation to substitute placeholder with values from data source or evaluating functions.
      *

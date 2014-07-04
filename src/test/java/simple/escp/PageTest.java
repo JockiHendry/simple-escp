@@ -150,4 +150,81 @@ public class PageTest {
         assertEquals("This is footer 1", page.get(5).toString());
     }
 
+    @Test
+    public void removeByObject() {
+        List<Line> content = new ArrayList<>();
+        TextLine line1 = new TextLine("This is content 1");
+        TextLine line2 = new TextLine("This is content 2");
+        TextLine line3 = new TextLine("This is content 3");
+        content.add(line1);
+        content.add(line2);
+        content.add(line3);
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+
+        assertTrue(page.remove(line2));
+        assertEquals(4, page.getNumberOfLines());
+        assertEquals("This is header 1", page.get(1).toString());
+        assertEquals("This is content 1", page.get(2).toString());
+        assertEquals("This is content 3", page.get(3).toString());
+        assertEquals("This is footer 1", page.get(4).toString());
+
+        assertTrue(page.remove(line1));
+        assertEquals(3, page.getNumberOfLines());
+        assertEquals("This is header 1", page.get(1).toString());
+        assertEquals("This is content 3", page.get(2).toString());
+        assertEquals("This is footer 1", page.get(3).toString());
+
+        assertFalse(page.remove(new TextLine("This is content 3")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void removeByLineNumberHeader() {
+        List<Line> content = new ArrayList<>();
+        TextLine line1 = new TextLine("This is content 1");
+        TextLine line2 = new TextLine("This is content 2");
+        TextLine line3 = new TextLine("This is content 3");
+        content.add(line1);
+        content.add(line2);
+        content.add(line3);
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+        page.remove(1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void removeByLineNumberFooter() {
+        List<Line> content = new ArrayList<>();
+        TextLine line1 = new TextLine("This is content 1");
+        TextLine line2 = new TextLine("This is content 2");
+        TextLine line3 = new TextLine("This is content 3");
+        content.add(line1);
+        content.add(line2);
+        content.add(line3);
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+        page.remove(5);
+    }
+
+    @Test
+    public void removeByLineNumber() {
+        List<Line> content = new ArrayList<>();
+        TextLine line1 = new TextLine("This is content 1");
+        TextLine line2 = new TextLine("This is content 2");
+        TextLine line3 = new TextLine("This is content 3");
+        content.add(line1);
+        content.add(line2);
+        content.add(line3);
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+
+        assertEquals(line2, page.remove(3));
+        assertEquals(4, page.getNumberOfLines());
+        assertEquals(line3, page.remove(3));
+    }
+
 }
