@@ -16,12 +16,9 @@
 
 package simple.escp.json;
 
-import simple.escp.Placeholder;
+import simple.escp.Report;
 import simple.escp.Template;
-import simple.escp.exception.InvalidPlaceholder;
-import simple.escp.util.EscpUtil;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -54,10 +51,6 @@ import java.util.logging.Logger;
  *
  *  <pre>
  *      {
- *          "placeholder": [
- *              {"name": "id"},
- *              "nickname"
- *          ],
  *          "template": [
  *              "Your id is ${id}, Mr. ${nickname}."
  *          ]
@@ -75,14 +68,34 @@ import java.util.logging.Logger;
  *              "leftMargin": 5,
  *              "rightMargin": 5
  *          },
- *          "placeholder": [
- *              "id",
- *              "nickname"
- *          ],
  *          "template": [
  *              "Your id is ${id}.",
  *              "Mr. ${nickname}."
  *          ]
+ *      }
+ *  </pre>
+ *
+ *  <p>The value for <code>"template"</code> can be an array or an object.  If it is an object,
+ *  <code>"pageLength"</code> in <code>"pageFormat"</code> <strong>must</strong> be defined.
+ *
+ *  <p>Object for <code>"template"</code> accept of the following keys: <code>"firstPage"</code>.
+ *
+ *  <p>For example:
+ *
+ *  <pre>
+ *      {
+ *          "pageFormat": {
+ *              "pageLength": 10,
+ *          },
+ *          "template": {
+ *              "firstPage": [
+ *                  "Welcome, ${nickname}. First-page only!"
+ *              ],
+ *              "detail": [
+ *                  "Your id is ${id}.",
+ *                  "Mr. ${nickname}."
+ *              ]
+ *          }
  *      }
  *  </pre>
  */
@@ -91,7 +104,6 @@ public class JsonTemplate extends Template {
     private static Logger logger = Logger.getLogger("simple.escp.json.JsonTemplate");
 
     private String originalText;
-    private String parsedText;
 
     /**
      * Create a new template from a string.
@@ -207,36 +219,9 @@ public class JsonTemplate extends Template {
                 pageFormat.setAutoFormFeed(parsedPageFormat.getBoolean("autoFormFeed"));
             }
 
-        }
-    }
-
-    /**
-     * Parse <code>"placeholder"</code> section from this JSON template.
-     *
-     * @param json the root JSON of this template.
-     */
-    private void parsePlaceholder(JsonObject json) {
-        JsonArray placeholdersDefinitions = json.getJsonArray("placeholder");
-        if (placeholdersDefinitions != null) {
-            for (JsonValue placeholderDefinition : placeholdersDefinitions) {
-                if (placeholderDefinition instanceof JsonObject) {
-
-                    JsonObject placeholderObject = (JsonObject) placeholderDefinition;
-
-                    // Process name
-                    if (placeholderObject.getJsonString("name") == null) {
-                        throw new IllegalArgumentException("Object inside placeholder must has 'name'");
-                    }
-                    String name = placeholderObject.getString("name");
-                    Placeholder placeholder = new Placeholder(name);
-                    placeholders.put(name, placeholder);
-
-                } else if (placeholderDefinition instanceof JsonString) {
-
-                    String name = ((JsonString) placeholderDefinition).getString();
-                    placeholders.put(name, new Placeholder(name));
-
-                }
+            // Use page length from printer
+            if (parsedPageFormat.containsKey("usePageLengthFromPrinter")) {
+                pageFormat.setUsePrinterPageLength(parsedPageFormat.getBoolean("usePageLengthFromPrinter"));
             }
         }
     }
@@ -244,63 +229,62 @@ public class JsonTemplate extends Template {
     /**
      * Parse <code>"template"</code> section from this JSON template.
      * @param json the root JSON of this template.
-     * @return result in <code>String</code>.
+     * @return result in <code>Pages</code>.
      */
-    public String parseTemplateText(JsonObject json) {
-        StringBuffer tmp = new StringBuffer();
-        JsonArray templateLines = json.getJsonArray("template");
-        if (templateLines == null) {
+    public Report parseTemplateText(JsonObject json) {
+        JsonValue template = json.get("template");
+        if (template == null) {
             throw new IllegalArgumentException("JSON Template must contains 'template'.");
         }
-        for (JsonValue line : templateLines) {
-            if (line instanceof JsonString) {
+        Parser parser = new Parser(getPageFormat());
 
-                // Check for undefined placeholder name
-                for (String placeHolderName : findPlaceholderIn(((JsonString) line).getString())) {
-                    if (!hasPlaceholder(placeHolderName)) {
-                        throw new InvalidPlaceholder("[" + placeHolderName + "] is not defined.");
-                    }
-                }
+        if (template.getValueType() == JsonValue.ValueType.ARRAY) {
 
-                tmp.append(((JsonString) line).getString());
-                tmp.append(pageFormat.isAutoLineFeed() ? EscpUtil.CR : EscpUtil.CRLF);
+            parser.setDetail(json.getJsonArray("template"));
 
+        } else if (template.getValueType() == JsonValue.ValueType.OBJECT) {
+
+            if (getPageFormat().getPageLength() == null) {
+                throw new IllegalArgumentException("Using object on 'template' require 'pageLength' " +
+                        "to be defined in 'pageFormat'.");
             }
+            JsonObject templateObject = json.getJsonObject("template");
+            if (templateObject.containsKey("firstPage")) {
+                parser.setFirstPage(templateObject.getJsonArray("firstPage"));
+            }
+            if (templateObject.containsKey("header")) {
+                parser.setHeader(templateObject.getJsonArray("header"));
+            }
+            if (templateObject.containsKey("footer")) {
+                parser.setFooter(templateObject.getJsonArray("footer"));
+            }
+            if (templateObject.containsKey("lastPage")) {
+                parser.setLastPage(templateObject.getJsonArray("lastPage"));
+            }
+            if (templateObject.containsKey("detail")) {
+                parser.setDetail(templateObject.getJsonArray("detail"));
+            }
+
+        } else {
+            throw new IllegalArgumentException("Invalid value for 'template'.");
         }
-        return tmp.toString();
+
+        report = parser.parse();
+        return report;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String parse() {
-        if (parsedText == null) {
+    public Report parse() {
+        if (report == null) {
             try (JsonReader reader = Json.createReader(new StringReader(originalText))) {
-
-                StringBuffer tmp = new StringBuffer();
                 JsonObject json = reader.readObject();
-
-                // Parse page format
                 parsePageFormat(json);
-                tmp.append(pageFormat.build());
-
-                // Parse placeholders
-                parsePlaceholder(json);
-
-                // Parse the template text
-                tmp.append(parseTemplateText(json));
-
-                // Add at the end
-                if (pageFormat.isAutoFormFeed()) {
-                    tmp.append(EscpUtil.CRFF);
-                }
-                tmp.append(EscpUtil.escInitalize());
-
-                this.parsedText = tmp.toString();
-
+                parseTemplateText(json);
             }
         }
-        return this.parsedText;
+        return report;
     }
 
     /**
@@ -310,15 +294,6 @@ public class JsonTemplate extends Template {
      */
     public String getOriginalText() {
         return originalText;
-    }
-
-    /**
-     * Retrieve the text that represent this template after it is parsed.
-     *
-     * @return string parsed from JSON or <code>null</code> if this template hasn't been parsed.
-     */
-    public String getParsedText() {
-        return parsedText;
     }
 
 }

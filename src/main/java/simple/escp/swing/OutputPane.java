@@ -41,7 +41,7 @@ public class OutputPane extends JPanel {
     private static final float MARGIN_LEFT = 10.0f;
     private static final float MARGIN_RIGHT = 50.0f;
     private static final int CHAR_WIDTH = 12;
-    private static final int CHAR_HEIGHT = 20;
+    private static final int CHAR_HEIGHT = 25;
     private static final int CIRCLE_SIZE = 15;
     private static final int CIRCLE_SPACING = 25;
     private static final int CIRCLE_LINE_MARGIN = 5;
@@ -66,7 +66,7 @@ public class OutputPane extends JPanel {
         this.pageLength = pageLength;
         this.pageWidth = pageWidth;
 
-        this.lines = text.split("(" + EscpUtil.CRLF + "|" + EscpUtil.CR + ")");
+        this.lines = text.split("(" + EscpUtil.CRLF  + ")");
         this.pages = this.lines.length / pageLength;
 
         // Create background shapes

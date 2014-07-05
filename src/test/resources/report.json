@@ -1,0 +1,30 @@
+{
+    "pageFormat": {
+        "pageWidth": 50,
+        "pageLength": 8,
+        "usePageLengthFromPrinter": false
+    },
+    "template": {
+        "header": [
+            " Company Name                             Page: %{PAGE_NO}",
+            " Invoice No:  ${invoiceNo:10}                     ",
+            "==================================================",
+            " Code    Product's Name                    Qty   ",
+            "=================================================="
+        ],
+        "detail": [
+            {
+                "table": "table_source",
+                "columns": [
+                    { "source": "code", "width": 9  },
+                    { "source": "name", "width": 34 },
+                    { "source": "qty",  "width": 6  }
+                ]
+            },
+            "==================================================",
+            "                                                  ",
+            "                                                  ",
+            "   (Signature)                  (Signature)       "
+        ]
+    }
+}

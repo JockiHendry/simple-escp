@@ -3,9 +3,6 @@
         "pageLength": 30,
         "pageWith": 20
     },
-    "placeholder": [
-        "id", "nickname"
-    ],
     "template": [
         "User Report",
         "===========",

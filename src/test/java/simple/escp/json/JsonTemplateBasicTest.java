@@ -18,15 +18,15 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import simple.escp.FillJob;
+import simple.escp.data.MapDataSource;
 import simple.escp.util.EscpUtil;
 import static simple.escp.util.EscpUtil.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class JsonTemplateBasicTest {
@@ -42,31 +42,8 @@ public class JsonTemplateBasicTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         jsonTemplate.parse();
         assertEquals(jsonString, jsonTemplate.getOriginalText());
-        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + CRFF + INIT, jsonTemplate.getParsedText());
-    }
-
-    @Test
-    public void findPlaceholderName() {
-        String jsonString =
-            "{" +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
-                "\"template\": [" +
-                    "\"Your id is ${id}, Mr. ${nickname}.\"" +
-                "]" +
-            "}";
-        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
-
-        List<String> results = jsonTemplate.findPlaceholderIn("Your id is ${id}");
-        assertEquals(1, results.size());
-        assertEquals("id", results.get(0));
-
-        results = jsonTemplate.findPlaceholderIn("Your id is ${id} and your name is ${name}");
-        assertEquals(2, results.size());
-        assertTrue(results.contains("id"));
-        assertTrue(results.contains("name"));
+        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill());
     }
 
     @Test
@@ -76,18 +53,17 @@ public class JsonTemplateBasicTest {
                 "\"pageFormat\": {" +
                     "\"lineSpacing\": \"1/8\"" +
                 "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is ${id}, Mr. ${nickname}." + CRLF  + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is 007, Mr. Snake." + CRLF  + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -98,18 +74,17 @@ public class JsonTemplateBasicTest {
                 "\"pageFormat\": {" +
                     "\"characterPitch\": \"10\"" +
                 "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -118,20 +93,20 @@ public class JsonTemplateBasicTest {
         String jsonString =
             "{" +
                 "\"pageFormat\": {" +
-                    "\"pageLength\": \"10\"" +
+                    "\"pageLength\": \"10\"," +
+                    "\"usePageLengthFromPrinter\": false" +
                     "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escPageLength(10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -140,20 +115,20 @@ public class JsonTemplateBasicTest {
         String jsonString =
             "{" +
                 "\"pageFormat\": {" +
-                    "\"pageLength\": 10" +
+                    "\"pageLength\": 10," +
+                    "\"usePageLengthFromPrinter\": false" +
                 "}," +
-                "\"placeholder\": [" +
-                    "\"id\"," +
-                    "\"nickname\"" +
-                "]," +
                 "\"template\": [" +
                     "\"Your id is ${id}, Mr. ${nickname}.\"" +
                 "]" +
             "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escPageLength(10) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escPageLength(10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -164,18 +139,17 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"pageWidth\": \"25\"" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + EscpUtil.escRightMargin(25) + "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + EscpUtil.escRightMargin(25) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -189,19 +163,18 @@ public class JsonTemplateBasicTest {
                 "\"rightMargin\": \"3\"," +
                 "\"bottomMargin\": \"70\"" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escLeftMargin(5) + EscpUtil.escRightMargin(27) + EscpUtil.escBottomMargin(70) +
-            "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+            "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -212,19 +185,18 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"typeface\": \"sans-serif\"" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escSelectTypeface(EscpUtil.TYPEFACE.SANS_SERIF) +
-                "Your id is ${id}, Mr. ${nickname}." + CRLF + CRFF + INIT,
-            jsonTemplate.parse()
+                "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -235,18 +207,17 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"autoLineFeed\": true" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + "Your id is ${id}, Mr. ${nickname}." + CR + CRFF + INIT,
-            jsonTemplate.parse()
+            INIT + "Your id is 007, Mr. Snake." + CR + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -257,18 +228,17 @@ public class JsonTemplateBasicTest {
             "\"pageFormat\": {" +
                 "\"autoFormFeed\": false" +
             "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
             "\"template\": [" +
                 "\"Your id is ${id}, Mr. ${nickname}.\"" +
             "]" +
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
         assertEquals(
-            INIT + "Your id is ${id}, Mr. ${nickname}." + CRLF + INIT,
-            jsonTemplate.parse()
+            INIT + "Your id is 007, Mr. Snake." + CRLF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -282,9 +252,6 @@ public class JsonTemplateBasicTest {
             "        \"pageLength\": 30," + LS +
             "        \"pageWith\": 20" + LS +
             "    }," + LS +
-            "    \"placeholder\": [" + LS +
-            "        \"id\", \"nickname\"" + LS +
-            "    ]," + LS +
             "    \"template\": [" + LS +
             "        \"User Report\"," + LS +
             "        \"===========\"," + LS +
@@ -296,9 +263,9 @@ public class JsonTemplateBasicTest {
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
         data.put("nickname", "The Solid Snake");
-        String result = jsonTemplate.fill(data);
+        String result = new FillJob(jsonTemplate.parse(), new MapDataSource(data)).fill();
         assertEquals(
-            EscpUtil.escInitalize() + EscpUtil.escPageLength(30) +
+            EscpUtil.escInitalize() +
             "User Report" + CRLF +
             "===========" + CRLF +
             "ID    : 007" + CRLF +
@@ -317,9 +284,6 @@ public class JsonTemplateBasicTest {
                 "        \"pageLength\": 30," + LS +
                 "        \"pageWith\": 20" + LS +
                 "    }," + LS +
-                "    \"placeholder\": [" + LS +
-                "        \"id\", \"nickname\"" + LS +
-                "    ]," + LS +
                 "    \"template\": [" + LS +
                 "        \"User Report\"," + LS +
                 "        \"===========\"," + LS +
@@ -331,9 +295,9 @@ public class JsonTemplateBasicTest {
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
         data.put("nickname", "The Solid Snake");
-        String result = jsonTemplate.fill(data);
+        String result = new FillJob(jsonTemplate.parse(), new MapDataSource(data)).fill();
         assertEquals(
-                EscpUtil.escInitalize() + EscpUtil.escPageLength(30) +
+                EscpUtil.escInitalize() +
                         "User Report" + CRLF +
                         "===========" + CRLF +
                         "ID    : 007" + CRLF +

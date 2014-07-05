@@ -36,6 +36,7 @@ public class PageFormat {
     private Integer bottomMargin;
     private boolean autoLineFeed = false;
     private boolean autoFormFeed = true;
+    private boolean usePageLengthFromPrinter = true;
 
     /**
      * Set vertical line spacing.
@@ -247,6 +248,27 @@ public class PageFormat {
     }
 
     /**
+     * Determine weither to use page length from printer ROM setting or from software configuration.
+     *
+     * @return <code>true</code> if the effective page length is from printer ROM setting or <code>false</code>
+     *         if the effective page length is from software configuration.
+     */
+    public boolean isUsePageLengthFromPrinter() {
+        return usePageLengthFromPrinter;
+    }
+
+    /**
+     * Use this configuration to select weither to use page length setting from printer ROM or from
+     * software configuration.
+     *
+     * @param usePageLengthFromPrinter if <code>true</code>, page length from printer ROM will be used or if
+     *                             <code>false</code>, page length from software configuration will be used.
+     */
+    public void setUsePrinterPageLength(boolean usePageLengthFromPrinter) {
+        this.usePageLengthFromPrinter = usePageLengthFromPrinter;
+    }
+
+    /**
      * Build a string that represent ESC/P commands for this page format.
      *
      * @return a string that contains ESC/P commands.
@@ -270,7 +292,7 @@ public class PageFormat {
         }
 
         // set page length
-        if (pageLength != null) {
+        if (pageLength != null && !usePageLengthFromPrinter) {
             result.append(EscpUtil.escPageLength(pageLength));
         }
 

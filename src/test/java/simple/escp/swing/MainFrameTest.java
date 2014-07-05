@@ -18,38 +18,36 @@ package simple.escp.swing;
 
 import simple.escp.Template;
 import simple.escp.json.JsonTemplate;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainFrameTest extends JFrame {
 
-    public MainFrameTest() {
+    public MainFrameTest() throws URISyntaxException, IOException {
         super("Preview");
 
-        Template template = new JsonTemplate(
-        "{" +
-            "\"pageFormat\": {" +
-                "\"pageWidth\": \"30\"," +
-                "\"pageLength\": \"10\"" +
-            "}," +
-            "\"placeholder\": [" +
-                "\"id\"," +
-                "\"nickname\"" +
-            "]," +
-            "\"template\": [" +
-                "\"User Report\"," +
-                "\"===========\"," +
-                "\"ID   : ${id}\"," +
-                "\"Name : ${nickname}\"" +
-            "]" +
-        "}");
-        Map<String, String> value = new HashMap<>();
-        value.put("id", "007");
-        value.put("nickname", "The Solid Snake");
+        Template template = new JsonTemplate(Thread.currentThread().getContextClassLoader().getResource("report.json").toURI());
 
-        PrintPreviewPane printPreview = new PrintPreviewPane(template, value);
+        Map<String, Object> value = new HashMap<>();
+        value.put("invoiceNo", "INVC-00001");
+        List<Map<String, Object>> tables = new ArrayList<>();
+        for (int i=0; i<30; i++) {
+            Map<String, Object> line = new HashMap<>();
+            line.put("code", String.format("CODE-%d", i));
+            line.put("name", String.format("Product Random %d", i));
+            line.put("qty", String.format("%d", i*i));
+            tables.add(line);
+        }
+        value.put("table_source", tables);
+
+        PrintPreviewPane printPreview = new PrintPreviewPane(template, value, null);
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(printPreview, BorderLayout.CENTER);
 
@@ -60,7 +58,13 @@ public class MainFrameTest extends JFrame {
     }
 
     public static void main (String[] args) {
-        new MainFrameTest();
+        try {
+            new MainFrameTest();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
