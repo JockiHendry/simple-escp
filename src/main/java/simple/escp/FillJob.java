@@ -22,9 +22,9 @@ public class FillJob {
     public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_@]+)\\}");
     public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{([a-zA-Z0-9_]+)\\}");
 
-    private Report report;
-    private DataSource[] dataSources;
-    private Map<String, Placeholder> placeholders = new HashMap<>();
+    protected Report report;
+    protected DataSource[] dataSources;
+    protected Map<String, Placeholder> placeholders = new HashMap<>();
 
     /**
      * Create a new <code>FillJob</code> with empty data source.
@@ -112,17 +112,28 @@ public class FillJob {
      *
      * @param placeholder the <code>Placeholder</code> whose value will be retrieved.
      * @return the value for the <code>placeholder</code>.
-     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for <code>placeholder</code> is
+     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for <code>placeholder</code> in
      *         data source.
      */
-
     public Object getValue(Placeholder placeholder) {
+        return getValue(placeholder.getText());
+    }
+
+    /**
+     * Retrieve a value for a member name from <code>DataSource</code>.
+     *
+     * @param name the member name that is in <code>DataSource</code>.
+     * @return the value for the member name.
+     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for the member name in
+     *         data source.
+     */
+    public Object getValue(String name) {
         for (DataSource dataSource: dataSources) {
-            if (dataSource.has(placeholder.getText())) {
-                return dataSource.get(placeholder.getText());
+            if (dataSource.has(name)) {
+                return dataSource.get(name);
             }
         }
-        throw new InvalidPlaceholder("Can't find data source's member for [" + placeholder + "]");
+        throw new InvalidPlaceholder("Can't find data source's member for [" + name + "]");
     }
 
     /**

@@ -1,12 +1,13 @@
 package simple.escp;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * DOM class to represent table.  A table consists of one or more {@link simple.escp.TableColumn}.
  */
-public class TableLine implements Line {
+public class TableLine implements Line, Iterable<TableColumn> {
 
     private List<TableColumn> columns = new ArrayList<>();
     private String source;
@@ -102,6 +103,11 @@ public class TableLine implements Line {
      */
     public Integer getLineNumber() {
         return this.lineNumber;
+    }
+
+    @Override
+    public Iterator<TableColumn> iterator() {
+        return columns.iterator();
     }
 
 }
