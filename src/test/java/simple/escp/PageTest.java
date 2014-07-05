@@ -15,15 +15,15 @@ public class PageTest {
         page.append("This is line 1");
         assertEquals(1, page.getContent().size());
         assertEquals("This is line 1", page.getContent().get(0).toString());
-        assertEquals("This is line 1", page.get(1).toString());
+        assertEquals("This is line 1", page.getLine(1).toString());
         page.append("This is line 2");
         assertEquals(2, page.getContent().size());
         assertEquals("This is line 2", page.getContent().get(1).toString());
-        assertEquals("This is line 2", page.get(2).toString());
+        assertEquals("This is line 2", page.getLine(2).toString());
         page.append("This is line 3");
         assertEquals(3, page.getContent().size());
         assertEquals("This is line 3", page.getContent().get(2).toString());
-        assertEquals("This is line 3", page.get(3).toString());
+        assertEquals("This is line 3", page.getLine(3).toString());
 
     }
 
@@ -54,9 +54,9 @@ public class PageTest {
         TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
         TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 3);
-        assertEquals("This is header 1", page.get(1).toString());
-        assertEquals("This is content", page.get(2).toString());
-        assertEquals("This is footer 1", page.get(3).toString());
+        assertEquals("This is header 1", page.getLine(1).toString());
+        assertEquals("This is content", page.getLine(2).toString());
+        assertEquals("This is footer 1", page.getLine(3).toString());
     }
 
 
@@ -123,11 +123,11 @@ public class PageTest {
 
         assertNull(result);
         assertEquals(5, page.getNumberOfLines());
-        assertEquals("This is header 1", page.get(1).toString());
-        assertEquals("This is content 1", page.get(2).toString());
-        assertEquals("This is content 2", page.get(3).toString());
-        assertEquals("Inserted line", page.get(4).toString());
-        assertEquals("This is footer 1", page.get(5).toString());
+        assertEquals("This is header 1", page.getLine(1).toString());
+        assertEquals("This is content 1", page.getLine(2).toString());
+        assertEquals("This is content 2", page.getLine(3).toString());
+        assertEquals("Inserted line", page.getLine(4).toString());
+        assertEquals("This is footer 1", page.getLine(5).toString());
     }
 
     @Test
@@ -143,11 +143,11 @@ public class PageTest {
 
         assertEquals("This is content 3", result.toString());
         assertEquals(5, page.getNumberOfLines());
-        assertEquals("This is header 1", page.get(1).toString());
-        assertEquals("This is content 1", page.get(2).toString());
-        assertEquals("Inserted line", page.get(3).toString());
-        assertEquals("This is content 2", page.get(4).toString());
-        assertEquals("This is footer 1", page.get(5).toString());
+        assertEquals("This is header 1", page.getLine(1).toString());
+        assertEquals("This is content 1", page.getLine(2).toString());
+        assertEquals("Inserted line", page.getLine(3).toString());
+        assertEquals("This is content 2", page.getLine(4).toString());
+        assertEquals("This is footer 1", page.getLine(5).toString());
     }
 
     @Test
@@ -163,20 +163,20 @@ public class PageTest {
         TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 5);
 
-        assertTrue(page.remove(line2));
+        assertTrue(page.removeLine(line2));
         assertEquals(4, page.getNumberOfLines());
-        assertEquals("This is header 1", page.get(1).toString());
-        assertEquals("This is content 1", page.get(2).toString());
-        assertEquals("This is content 3", page.get(3).toString());
-        assertEquals("This is footer 1", page.get(4).toString());
+        assertEquals("This is header 1", page.getLine(1).toString());
+        assertEquals("This is content 1", page.getLine(2).toString());
+        assertEquals("This is content 3", page.getLine(3).toString());
+        assertEquals("This is footer 1", page.getLine(4).toString());
 
-        assertTrue(page.remove(line1));
+        assertTrue(page.removeLine(line1));
         assertEquals(3, page.getNumberOfLines());
-        assertEquals("This is header 1", page.get(1).toString());
-        assertEquals("This is content 3", page.get(2).toString());
-        assertEquals("This is footer 1", page.get(3).toString());
+        assertEquals("This is header 1", page.getLine(1).toString());
+        assertEquals("This is content 3", page.getLine(2).toString());
+        assertEquals("This is footer 1", page.getLine(3).toString());
 
-        assertFalse(page.remove(new TextLine("This is content 3")));
+        assertFalse(page.removeLine(new TextLine("This is content 3")));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -191,7 +191,7 @@ public class PageTest {
         TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
         TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 5);
-        page.remove(1);
+        page.removeLine(1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -206,7 +206,7 @@ public class PageTest {
         TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
         TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 5);
-        page.remove(5);
+        page.removeLine(5);
     }
 
     @Test
@@ -222,9 +222,9 @@ public class PageTest {
         TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
         Page page = new Page(content, header, footer, 1, 5);
 
-        assertEquals(line2, page.remove(3));
+        assertEquals(line2, page.removeLine(3));
         assertEquals(4, page.getNumberOfLines());
-        assertEquals(line3, page.remove(3));
+        assertEquals(line3, page.removeLine(3));
     }
 
     @Test

@@ -180,7 +180,7 @@ public class FillJob {
         boolean isAutoLineFeed = report.getPageFormat().isAutoLineFeed();
         boolean isAutoFormFeed = report.getPageFormat().isAutoFormFeed();
         result.append(report.getPageFormat().build());
-        for (Page page : report.getPages()) {
+        for (Page page : report) {
             String pageText = page.convertToString(isAutoLineFeed, isAutoFormFeed);
             pageText = fillPlaceholder(pageText);
             pageText = fillFunction(pageText, page);

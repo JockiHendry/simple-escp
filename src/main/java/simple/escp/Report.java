@@ -1,20 +1,16 @@
 package simple.escp;
 
-import simple.escp.util.EscpUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * DOM class to represent a print result in form of collection of empty, one or more <code>Page</code>.
  * <code>Report</code> is usually the output of parsing stage.  To initiate filling stage,
  * call <code>fill()</code> method of this class.
  */
-public class Report {
+public class Report implements Iterable<Page> {
 
     private List<Page> pages = new ArrayList<>();
     private int lastPageNumber = 0;
@@ -23,6 +19,24 @@ public class Report {
     private TextLine[] header;
     private TextLine[] footer;
     private boolean lineBreak;
+
+    /**
+     * Create a clone from another report.
+     *
+     * @param report a <code>Report</code> to clone.
+     */
+    public Report(Report report) {
+        this.pageFormat = report.getPageFormat();
+        this.header = report.getHeader();
+        this.footer = report.getFooter();
+        this.lineBreak = false;
+
+        for (Page page : report) {
+            for (Line line : page.getContent()) {
+                append(line, false);
+            }
+        }
+    }
 
     /**
      * Create a new instance of <code>Report</code>.
@@ -70,15 +84,6 @@ public class Report {
     }
 
     /**
-     * Get all of <code>Page</code> in this report.
-     *
-     * @return list of available <code>Page</code> in this report.
-     */
-    public List<Page> getPages() {
-        return pages;
-    }
-
-    /**
      * Get current page number for this report.
      *
      * @return current page number in this report starting from 1.
@@ -103,11 +108,20 @@ public class Report {
      * @return a <code>Page</code> or throws <code>IllegalArgumentException</code> if <code>pageNumber</code>
      *         is not valid.
      */
-    public Page page(int pageNumber) {
+    public Page getPage(int pageNumber) {
         if (pageNumber < 1 || pageNumber > getLastPageNumber()) {
             throw new IllegalArgumentException("Invalid page: " + pageNumber);
         }
         return pages.get(pageNumber - 1);
+    }
+
+    /**
+     * Get number of pages in this report.
+     *
+     * @return number of pages in this report.
+     */
+    public int getNumberOfPages() {
+        return pages.size();
     }
 
     /**
@@ -248,4 +262,8 @@ public class Report {
         return false;
     }
 
+    @Override
+    public Iterator<Page> iterator() {
+        return pages.iterator();
+    }
 }

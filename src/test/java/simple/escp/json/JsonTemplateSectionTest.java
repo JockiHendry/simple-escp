@@ -324,17 +324,17 @@ public class JsonTemplateSectionTest {
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         Report report = jsonTemplate.parse();
-        assertEquals(1, report.getPages().size());
-        Page page = report.getPages().get(0);
+        assertEquals(1, report.getNumberOfPages());
+        Page page = report.getPage(1);
         assertEquals(3, page.getNumberOfLines());
-        assertEquals("This is line 1.", page.get(1).toString());
-        assertFalse(page.get(1).isDynamic());
-        assertEquals("This is line 2.", page.get(3).toString());
-        assertFalse(page.get(3).isDynamic());
-        assertTrue(page.get(2).isDynamic());
-        assertTrue(page.get(2) instanceof TableLine);
+        assertEquals("This is line 1.", page.getLine(1).toString());
+        assertFalse(page.getLine(1).isDynamic());
+        assertEquals("This is line 2.", page.getLine(3).toString());
+        assertFalse(page.getLine(3).isDynamic());
+        assertTrue(page.getLine(2).isDynamic());
+        assertTrue(page.getLine(2) instanceof TableLine);
 
-        TableLine tableLine = (TableLine) page.get(2);
+        TableLine tableLine = (TableLine) page.getLine(2);
         assertEquals("sources", tableLine.getSource());
         assertEquals(3, tableLine.getNumberOfColumns());
 
@@ -372,17 +372,17 @@ public class JsonTemplateSectionTest {
         "}";
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         Report report = jsonTemplate.parse();
-        assertEquals(1, report.getPages().size());
-        Page page = report.getPages().get(0);
+        assertEquals(1, report.getNumberOfPages());
+        Page page = report.getPage(1);
         assertEquals(3, page.getNumberOfLines());
-        assertEquals("This is header.", page.get(1).toString());
-        assertFalse(page.get(1).isDynamic());
-        assertEquals("This is footer.", page.get(3).toString());
-        assertFalse(page.get(3).isDynamic());
-        assertTrue(page.get(2).isDynamic());
-        assertTrue(page.get(2) instanceof TableLine);
+        assertEquals("This is header.", page.getLine(1).toString());
+        assertFalse(page.getLine(1).isDynamic());
+        assertEquals("This is footer.", page.getLine(3).toString());
+        assertFalse(page.getLine(3).isDynamic());
+        assertTrue(page.getLine(2).isDynamic());
+        assertTrue(page.getLine(2) instanceof TableLine);
 
-        TableLine tableLine = (TableLine) page.get(2);
+        TableLine tableLine = (TableLine) page.getLine(2);
         assertEquals("sources", tableLine.getSource());
         assertEquals(3, tableLine.getNumberOfColumns());
 

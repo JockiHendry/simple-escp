@@ -221,7 +221,7 @@ public class Page {
      * @param lineNumber a line number starting from 1.
      * @return the text for the specified line number.
      */
-    public Line get(int lineNumber) {
+    public Line getLine(int lineNumber) {
         if (lineNumber < 0 || lineNumber > getNumberOfLines()) {
             throw new IllegalArgumentException("Number of lines [" + lineNumber + "] is out of range.");
         }
@@ -242,7 +242,7 @@ public class Page {
      * @param line a <code>Line</code> that will be removed.
      * @return <code>true</code> if this page contained the specified line
      */
-    public boolean remove(Line line) {
+    public boolean removeLine(Line line) {
         return content.remove(line);
     }
 
@@ -254,7 +254,7 @@ public class Page {
      *                   <strong>should not</strong> be part of header or footer.
      * @return the deleted <code>Line</code> or <code>null</code> if nothing is deleted.
      */
-    public Line remove(int lineNumber) {
+    public Line removeLine(int lineNumber) {
         if ((lineNumber <= header.length) || (lineNumber > header.length + content.size())) {
             throw new IllegalArgumentException("Line number is not valid: [" + lineNumber + "]");
         }

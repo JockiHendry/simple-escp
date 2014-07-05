@@ -22,22 +22,22 @@ public class ReportTest {
         List<Line> content = new ArrayList<>();
         content.add(new TextLine("This is detail 1."));
         Page page = report.appendSinglePage(content, false);
-        assertEquals(1, report.getPages().size());
+        assertEquals(1, report.getNumberOfPages());
         assertEquals(1, page.getPageNumber().intValue());
         assertEquals(3, page.getNumberOfLines());
 
         page = report.appendSinglePage(content, false);
-        assertEquals(2, report.getPages().size());
+        assertEquals(2, report.getNumberOfPages());
         assertEquals(2, page.getPageNumber().intValue());
         assertEquals(3, page.getNumberOfLines());
 
         page = report.appendSinglePage(new ArrayList<Line>(), false);
-        assertEquals(3, report.getPages().size());
+        assertEquals(3, report.getNumberOfPages());
         assertEquals(3, page.getPageNumber().intValue());
         assertEquals(2, page.getNumberOfLines());
 
         page = report.appendSinglePage(content, true);
-        assertEquals(4, report.getPages().size());
+        assertEquals(4, report.getNumberOfPages());
         assertEquals(4, page.getPageNumber().intValue());
         assertEquals(1, page.getNumberOfLines());
     }
@@ -70,7 +70,7 @@ public class ReportTest {
         assertEquals(1, page.getPageNumber().intValue());
         assertEquals(3, page.getPageLength().intValue());
         assertFalse(page.isFull());
-        assertEquals(1, report.getPages().size());
+        assertEquals(1, report.getNumberOfPages());
         assertEquals(page, report.getCurrentPage());
 
         page = report.newPage(false);
@@ -78,7 +78,7 @@ public class ReportTest {
         assertEquals(2, page.getPageNumber().intValue());
         assertEquals(3, page.getPageLength().intValue());
         assertFalse(page.isFull());
-        assertEquals(2, report.getPages().size());
+        assertEquals(2, report.getNumberOfPages());
         assertEquals(page, report.getCurrentPage());
     }
 
@@ -92,17 +92,17 @@ public class ReportTest {
 
         report.append(new TextLine("This is line 1"), false);
         assertEquals(1, report.getLastPageNumber());
-        assertEquals(1, report.getPages().size());
+        assertEquals(1, report.getNumberOfPages());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
 
         report.append(new TextLine("This is line 2"), false);
         assertEquals(2, report.getLastPageNumber());
-        assertEquals(2, report.getPages().size());
+        assertEquals(2, report.getNumberOfPages());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
 
         report.append(new TextLine("This is line 3"), false);
         assertEquals(3, report.getLastPageNumber());
-        assertEquals(3, report.getPages().size());
+        assertEquals(3, report.getNumberOfPages());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
     }
 
@@ -116,22 +116,22 @@ public class ReportTest {
 
         report.append(new TextLine("This is line 1"), true);
         assertEquals(1, report.getLastPageNumber());
-        assertEquals(1, report.getPages().size());
+        assertEquals(1, report.getNumberOfPages());
         assertEquals(1, report.getCurrentPage().getNumberOfLines());
 
         report.append(new TextLine("This is line 2"), true);
         assertEquals(1, report.getLastPageNumber());
-        assertEquals(1, report.getPages().size());
+        assertEquals(1, report.getNumberOfPages());
         assertEquals(2, report.getCurrentPage().getNumberOfLines());
 
         report.append(new TextLine("This is line 3"), true);
         assertEquals(1, report.getLastPageNumber());
-        assertEquals(1, report.getPages().size());
+        assertEquals(1, report.getNumberOfPages());
         assertEquals(3, report.getCurrentPage().getNumberOfLines());
 
         report.append(new TextLine("This is line 4"), true);
         assertEquals(2, report.getLastPageNumber());
-        assertEquals(2, report.getPages().size());
+        assertEquals(2, report.getNumberOfPages());
         assertEquals(1, report.getCurrentPage().getNumberOfLines());
     }
 
@@ -176,9 +176,9 @@ public class ReportTest {
         report.append(new TextLine("This is in page 3."), false);
 
         assertEquals(3, report.getLastPageNumber());
-        Page page1 = report.page(1);
-        Page page2 = report.page(2);
-        Page page3 = report.page(3);
+        Page page1 = report.getPage(1);
+        Page page2 = report.getPage(2);
+        Page page3 = report.getPage(3);
         assertEquals(page2, report.nextPage(page1));
         assertEquals(page3, report.nextPage(page2));
     }
@@ -198,9 +198,9 @@ public class ReportTest {
         report.append(new TextLine("This is in page 3."), false);
 
         assertEquals(3, report.getLastPageNumber());
-        Page page1 = report.page(1);
-        Page page2 = report.page(2);
-        Page page3 = report.page(3);
+        Page page1 = report.getPage(1);
+        Page page2 = report.getPage(2);
+        Page page3 = report.getPage(3);
         assertEquals(page1, report.previousPage(page2));
         assertEquals(page2, report.previousPage(page3));
     }
@@ -222,21 +222,21 @@ public class ReportTest {
 
         report.insert(new TextLine("This is inserted line."), 1, 4);
 
-        assertEquals(2, report.getPages().size());
-        Page page1 = report.getPages().get(0);
+        assertEquals(2, report.getNumberOfPages());
+        Page page1 = report.getPage(1);
         assertEquals(5, page1.getNumberOfLines());
-        assertEquals("This is header.", page1.get(1).toString());
-        assertEquals("This is line 1 in page 1", page1.get(2).toString());
-        assertEquals("This is line 2 in page 1", page1.get(3).toString());
-        assertEquals("This is inserted line.", page1.get(4).toString());
-        assertEquals("This is footer.", page1.get(5).toString());
-        Page page2 = report.getPages().get(1);
+        assertEquals("This is header.", page1.getLine(1).toString());
+        assertEquals("This is line 1 in page 1", page1.getLine(2).toString());
+        assertEquals("This is line 2 in page 1", page1.getLine(3).toString());
+        assertEquals("This is inserted line.", page1.getLine(4).toString());
+        assertEquals("This is footer.", page1.getLine(5).toString());
+        Page page2 = report.getPage(2);
         assertEquals(5, page2.getNumberOfLines());
-        assertEquals("This is header.", page2.get(1).toString());
-        assertEquals("This is line 1 in page 2", page2.get(2).toString());
-        assertEquals("This is line 2 in page 2", page2.get(3).toString());
-        assertEquals("This is line 3 in page 2", page2.get(4).toString());
-        assertEquals("This is footer.", page2.get(5).toString());
+        assertEquals("This is header.", page2.getLine(1).toString());
+        assertEquals("This is line 1 in page 2", page2.getLine(2).toString());
+        assertEquals("This is line 2 in page 2", page2.getLine(3).toString());
+        assertEquals("This is line 3 in page 2", page2.getLine(4).toString());
+        assertEquals("This is footer.", page2.getLine(5).toString());
     }
 
     @Test
@@ -255,21 +255,21 @@ public class ReportTest {
 
         report.insert(new TextLine("This is inserted line."), 2, 4);
 
-        assertEquals(2, report.getPages().size());
-        Page page1 = report.getPages().get(0);
+        assertEquals(2, report.getNumberOfPages());
+        Page page1 = report.getPage(1);
         assertEquals(5, page1.getNumberOfLines());
-        assertEquals("This is header.", page1.get(1).toString());
-        assertEquals("This is line 1 in page 1", page1.get(2).toString());
-        assertEquals("This is line 2 in page 1", page1.get(3).toString());
-        assertEquals("This is line 3 in page 1", page1.get(4).toString());
-        assertEquals("This is footer.", page1.get(5).toString());
-        Page page2 = report.getPages().get(1);
+        assertEquals("This is header.", page1.getLine(1).toString());
+        assertEquals("This is line 1 in page 1", page1.getLine(2).toString());
+        assertEquals("This is line 2 in page 1", page1.getLine(3).toString());
+        assertEquals("This is line 3 in page 1", page1.getLine(4).toString());
+        assertEquals("This is footer.", page1.getLine(5).toString());
+        Page page2 = report.getPage(2);
         assertEquals(5, page2.getNumberOfLines());
-        assertEquals("This is header.", page2.get(1).toString());
-        assertEquals("This is line 1 in page 2", page2.get(2).toString());
-        assertEquals("This is line 2 in page 2", page2.get(3).toString());
-        assertEquals("This is inserted line.", page2.get(4).toString());
-        assertEquals("This is footer.", page2.get(5).toString());
+        assertEquals("This is header.", page2.getLine(1).toString());
+        assertEquals("This is line 1 in page 2", page2.getLine(2).toString());
+        assertEquals("This is line 2 in page 2", page2.getLine(3).toString());
+        assertEquals("This is inserted line.", page2.getLine(4).toString());
+        assertEquals("This is footer.", page2.getLine(5).toString());
     }
 
     @Test
@@ -289,26 +289,26 @@ public class ReportTest {
 
         report.insert(new TextLine("This is inserted line."), 1, 3);
 
-        assertEquals(3, report.getPages().size());
-        Page page1 = report.getPages().get(0);
+        assertEquals(3, report.getNumberOfPages());
+        Page page1 = report.getPage(1);
         assertEquals(5, page1.getNumberOfLines());
-        assertEquals("This is header.", page1.get(1).toString());
-        assertEquals("This is line 1 in page 1", page1.get(2).toString());
-        assertEquals("This is inserted line.", page1.get(3).toString());
-        assertEquals("This is line 2 in page 1", page1.get(4).toString());
-        assertEquals("This is footer.", page1.get(5).toString());
-        Page page2 = report.getPages().get(1);
+        assertEquals("This is header.", page1.getLine(1).toString());
+        assertEquals("This is line 1 in page 1", page1.getLine(2).toString());
+        assertEquals("This is inserted line.", page1.getLine(3).toString());
+        assertEquals("This is line 2 in page 1", page1.getLine(4).toString());
+        assertEquals("This is footer.", page1.getLine(5).toString());
+        Page page2 = report.getPage(2);
         assertEquals(5, page2.getNumberOfLines());
-        assertEquals("This is header.", page2.get(1).toString());
-        assertEquals("This is line 3 in page 1", page2.get(2).toString());
-        assertEquals("This is line 1 in page 2", page2.get(3).toString());
-        assertEquals("This is line 2 in page 2", page2.get(4).toString());
-        assertEquals("This is footer.", page2.get(5).toString());
-        Page page3 = report.getPages().get(2);
+        assertEquals("This is header.", page2.getLine(1).toString());
+        assertEquals("This is line 3 in page 1", page2.getLine(2).toString());
+        assertEquals("This is line 1 in page 2", page2.getLine(3).toString());
+        assertEquals("This is line 2 in page 2", page2.getLine(4).toString());
+        assertEquals("This is footer.", page2.getLine(5).toString());
+        Page page3 = report.getPage(3);
         assertEquals(3, page3.getNumberOfLines());
-        assertEquals("This is header.", page3.get(1).toString());
-        assertEquals("This is line 3 in page 2", page3.get(2).toString());
-        assertEquals("This is footer.", page3.get(3).toString());
+        assertEquals("This is header.", page3.getLine(1).toString());
+        assertEquals("This is line 3 in page 2", page3.getLine(2).toString());
+        assertEquals("This is footer.", page3.getLine(3).toString());
     }
 
     @Test
@@ -323,17 +323,17 @@ public class ReportTest {
 
         report.insert(new TextLine("This is inserted line."), 1, 2);
 
-        assertEquals(2, report.getPages().size());
-        Page page1 = report.getPages().get(0);
+        assertEquals(2, report.getNumberOfPages());
+        Page page1 = report.getPage(1);
         assertEquals(3, page1.getNumberOfLines());
-        assertEquals("This is header.", page1.get(1).toString());
-        assertEquals("This is inserted line.", page1.get(2).toString());
-        assertEquals("This is footer.", page1.get(3).toString());
-        Page page2 = report.getPages().get(1);
+        assertEquals("This is header.", page1.getLine(1).toString());
+        assertEquals("This is inserted line.", page1.getLine(2).toString());
+        assertEquals("This is footer.", page1.getLine(3).toString());
+        Page page2 = report.getPage(2);
         assertEquals(3, page2.getNumberOfLines());
-        assertEquals("This is header.", page2.get(1).toString());
-        assertEquals("This is line 1 in page 1", page2.get(2).toString());
-        assertEquals("This is footer.", page2.get(3).toString());
+        assertEquals("This is header.", page2.getLine(1).toString());
+        assertEquals("This is line 1 in page 1", page2.getLine(2).toString());
+        assertEquals("This is footer.", page2.getLine(3).toString());
     }
 
     @Test
@@ -348,6 +348,39 @@ public class ReportTest {
         assertFalse(report.hasDynamicLine());
         report.append(new TableLine("test"), true);
         assertTrue(report.hasDynamicLine());
+    }
+
+    @Test
+    public void cloneReport() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is line 1 in page 1."), false);
+
+        Report cloneReport = new Report(report);
+
+        // Change cloned report.
+        assertEquals(1, cloneReport.getNumberOfPages());
+        assertEquals("This is header.", cloneReport.getPage(1).getLine(1).toString());
+        assertEquals("This is line 1 in page 1.", cloneReport.getPage(1).getLine(2).toString());
+        assertEquals("This is footer.", cloneReport.getPage(1).getLine(3).toString());
+
+        // Make sure cloned report is modified
+        cloneReport.getPage(1).removeLine(2);
+        assertEquals(1, cloneReport.getNumberOfPages());
+        assertEquals(2, cloneReport.getPage(1).getNumberOfLines());
+        assertEquals("This is header.", cloneReport.getPage(1).getLine(1).toString());
+        assertEquals("This is footer.", cloneReport.getPage(1).getLine(2).toString());
+
+        // Make sure original report is not modified.
+        assertEquals(1, report.getNumberOfPages());
+        assertEquals(3, report.getPage(1).getNumberOfLines());
+        assertEquals("This is header.", report.getPage(1).getLine(1).toString());
+        assertEquals("This is line 1 in page 1.", report.getPage(1).getLine(2).toString());
+        assertEquals("This is footer.", report.getPage(1).getLine(3).toString());
     }
 
 }
