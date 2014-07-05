@@ -70,10 +70,21 @@ public class BeanDataSource implements DataSource {
      */
     @Override
     public boolean has(String member) {
-        if (member.startsWith("@")) {
-           return getMethod(member.substring(1)) != null ? true : false;
+        if (member.contains(".")) {
+            String[] memberParts = member.split("\\.", 2);
+            String curentPart = memberParts[0];
+            String compositePart = memberParts[1];
+            if (!has(curentPart)) {
+                return false;
+            } else {
+                return (new BeanDataSource(get(curentPart))).has(compositePart);
+            }
         } else {
-            return getProperty(member) != null ? true : false;
+            if (member.startsWith("@")) {
+                return getMethod(member.substring(1)) != null ? true : false;
+            } else {
+                return getProperty(member) != null ? true : false;
+            }
         }
     }
 
@@ -85,17 +96,24 @@ public class BeanDataSource implements DataSource {
         if (!has(member)) {
             throw new InvalidPlaceholder("Can't find [" + member + "] in this data source.");
         }
-        if (member.startsWith("@")) {
-            try {
-                return getMethod(member.substring(1)).getMethod().invoke(source);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new InvalidPlaceholder("Can't execute [" + member + "].", e);
-            }
+        if (member.contains(".")) {
+            String[] memberParts = member.split("\\.", 2);
+            String curentPart = memberParts[0];
+            String compositePart = memberParts[1];
+            return (new BeanDataSource(get(curentPart))).get(compositePart);
         } else {
-            try {
-                return getProperty(member).getReadMethod().invoke(source);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new InvalidPlaceholder("Can't read [" + member + "].", e);
+            if (member.startsWith("@")) {
+                try {
+                    return getMethod(member.substring(1)).getMethod().invoke(source);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new InvalidPlaceholder("Can't execute [" + member + "].", e);
+                }
+            } else {
+                try {
+                    return getProperty(member).getReadMethod().invoke(source);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new InvalidPlaceholder("Can't read [" + member + "].", e);
+                }
             }
         }
     }
