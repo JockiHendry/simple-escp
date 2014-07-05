@@ -1,4 +1,4 @@
-simple-escp
+simple-escp [ ![Download](https://api.bintray.com/packages/jockihendry/maven/simple-escp/images/download.png) ](https://bintray.com/jockihendry/maven/simple-escp/_latestVersion)
 ===========
 
 Getting Started
