@@ -116,6 +116,21 @@ public class Report implements Iterable<Page> {
     }
 
     /**
+     * Get the first <code>Page</code> in this report that has contains <code>TableLine</code>.
+     *
+     * @return a <code>Page</code> that has at least one <code>TableLine</code>, or <code>null</code> if no page
+     *         in this report has <code>TableLine</code>.
+     */
+    public Page getFirstPageWithTableLines() {
+        for (Page page : pages) {
+            if (!page.getTableLines().isEmpty()) {
+                return page;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get number of pages in this report.
      *
      * @return number of pages in this report.

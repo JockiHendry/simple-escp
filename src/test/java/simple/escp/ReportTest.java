@@ -383,4 +383,30 @@ public class ReportTest {
         assertEquals("This is footer.", report.getPage(1).getLine(3).toString());
     }
 
+    @Test
+    public void getFirstPageWithTableLines() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        Report report = new Report(pageFormat, null, null);
+        report.append(new TextLine("This is line 1 in page 1."), false);
+        assertNull(report.getFirstPageWithTableLines());
+
+        pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        report = new Report(pageFormat, null, null);
+        report.append(new TableLine("test"), false);
+        assertEquals(report.getPage(1), report.getFirstPageWithTableLines());
+
+        pageFormat = new PageFormat();
+        pageFormat.setPageLength(3);
+        pageFormat.setUsePrinterPageLength(false);
+        report = new Report(pageFormat, null, null);
+        report.append(new TextLine("This is line 1 in page 1."), false);
+        report.lineBreak();
+        report.append(new TableLine("source"), false);
+        assertEquals(report.getPage(2), report.getFirstPageWithTableLines());
+    }
+
 }
