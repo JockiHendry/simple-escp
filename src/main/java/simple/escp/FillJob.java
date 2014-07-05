@@ -4,7 +4,10 @@ import simple.escp.data.DataSource;
 import simple.escp.exception.InvalidPlaceholder;
 import simple.escp.util.EscpUtil;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -181,17 +184,43 @@ public class FillJob {
     }
 
     /**
+     * Fill <code>TableLine</code>.
+     *
+     * @param report the <code>Report</code> that will be filled.  This is not necessary the same as the
+     *               original report becauses <code>FillJob</code> shouldn't change original <code>Report</code>
+     *               so that it can be reused in the next filling.
+     */
+    private void fillTableLine(Report report) {
+        Page page;
+        while ((page = report.getFirstPageWithTableLines()) != null) {
+            TableLine tableLine = page.getTableLines().get(0);
+            TableFillJob tableFillJob = new TableFillJob(tableLine, (Collection) getValue(tableLine.getSource()));
+            List<String> results = tableFillJob.fill();
+            Collections.reverse(results);
+            page.removeLine(tableLine);
+            for (String result : results) {
+                report.insert(new TextLine(result), page.getPageNumber(), tableLine.getLineNumber());
+            }
+        }
+    }
+
+    /**
      * Execute this <code>FillJob</code> action.  This will perform the action of filling <code>Report</code> with
      * one or more <code>DataSource</code>.  This method will not modify the original <code>Report</code>.
      *
      * @return a <code>String</code> that may contains ESC/P commands and can be printed.
      */
     public String fill() {
+        Report parsedReport = report;
+        if (parsedReport.hasDynamicLine()) {
+            parsedReport = new Report(report);
+            fillTableLine(parsedReport);
+        }
         StringBuffer result = new StringBuffer();
-        boolean isAutoLineFeed = report.getPageFormat().isAutoLineFeed();
-        boolean isAutoFormFeed = report.getPageFormat().isAutoFormFeed();
-        result.append(report.getPageFormat().build());
-        for (Page page : report) {
+        boolean isAutoLineFeed = parsedReport.getPageFormat().isAutoLineFeed();
+        boolean isAutoFormFeed = parsedReport.getPageFormat().isAutoFormFeed();
+        result.append(parsedReport.getPageFormat().build());
+        for (Page page : parsedReport) {
             String pageText = page.convertToString(isAutoLineFeed, isAutoFormFeed);
             pageText = fillPlaceholder(pageText);
             pageText = fillFunction(pageText, page);
