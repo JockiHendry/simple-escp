@@ -18,15 +18,15 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import simple.escp.FillJob;
+import simple.escp.data.MapDataSource;
 import simple.escp.util.EscpUtil;
 import static simple.escp.util.EscpUtil.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class JsonTemplateBasicTest {
@@ -42,7 +42,8 @@ public class JsonTemplateBasicTest {
         JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
         jsonTemplate.parse();
         assertEquals(jsonString, jsonTemplate.getOriginalText());
-        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + CRFF + INIT, jsonTemplate.parse().fill(null, null));
+        assertEquals(INIT + "This is the first line" + CRLF + "This is the second line" + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill());
     }
 
     @Test
@@ -62,7 +63,7 @@ public class JsonTemplateBasicTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escOnePerEightInchLineSpacing() + "Your id is 007, Mr. Snake." + CRLF  + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -83,7 +84,7 @@ public class JsonTemplateBasicTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escMasterSelect(EscpUtil.CHARACTER_PITCH.CPI_10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -105,7 +106,7 @@ public class JsonTemplateBasicTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escPageLength(10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -127,7 +128,7 @@ public class JsonTemplateBasicTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escPageLength(10) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -148,7 +149,7 @@ public class JsonTemplateBasicTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + EscpUtil.escRightMargin(25) + "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -173,7 +174,7 @@ public class JsonTemplateBasicTest {
         assertEquals(
             INIT + EscpUtil.escLeftMargin(5) + EscpUtil.escRightMargin(27) + EscpUtil.escBottomMargin(70) +
             "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -195,7 +196,7 @@ public class JsonTemplateBasicTest {
         assertEquals(
             INIT + EscpUtil.escSelectTypeface(EscpUtil.TYPEFACE.SANS_SERIF) +
                 "Your id is 007, Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -216,7 +217,7 @@ public class JsonTemplateBasicTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + "Your id is 007, Mr. Snake." + CR + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -237,7 +238,7 @@ public class JsonTemplateBasicTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + "Your id is 007, Mr. Snake." + CRLF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -262,7 +263,7 @@ public class JsonTemplateBasicTest {
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
         data.put("nickname", "The Solid Snake");
-        String result = jsonTemplate.fill(data, null);
+        String result = new FillJob(jsonTemplate.parse(), new MapDataSource(data)).fill();
         assertEquals(
             EscpUtil.escInitalize() +
             "User Report" + CRLF +
@@ -294,7 +295,7 @@ public class JsonTemplateBasicTest {
         Map<String, String> data = new HashMap<>();
         data.put("id", "007");
         data.put("nickname", "The Solid Snake");
-        String result = jsonTemplate.fill(data, null);
+        String result = new FillJob(jsonTemplate.parse(), new MapDataSource(data)).fill();
         assertEquals(
                 EscpUtil.escInitalize() +
                         "User Report" + CRLF +

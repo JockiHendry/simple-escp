@@ -44,22 +44,4 @@ public abstract class Template {
      */
     public abstract Report parse();
 
-    /**
-     * Fill this template with data from <code>Map</code> and/or an object.  This template must be parsed if
-     * it hasn't been parsed previously.
-     *
-     * @param map contains data for this template in form of <code>Map</code>.  This argument has a
-     *            higher priority than <code>object</code>.  If no data from <code>Map</code> is required,
-     *            set this as <code>null</code>.
-     * @param object contains data for this template in form of <code>Object</code>.  If no data from object
-     *               is required, set this as <code>null</code>.
-     * @return text that will be printed and may contains ESC/P code.
-     */
-    public String fill(Map map, Object object) {
-        if (report == null) {
-            parse();
-        }
-        return report.fill(map, object);
-    }
-
 }

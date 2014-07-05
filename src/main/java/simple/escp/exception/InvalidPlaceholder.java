@@ -30,4 +30,14 @@ public class InvalidPlaceholder extends RuntimeException {
         super(message);
     }
 
+    /**
+     * Create a new instance with custom error message.
+     *
+     * @param message a description for the cause of invalid placeholder.
+     * @param cause the cause of this <code>Exception</code>.
+     */
+    public InvalidPlaceholder(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

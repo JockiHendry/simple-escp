@@ -18,14 +18,11 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import simple.escp.Page;
-import simple.escp.Report;
-import simple.escp.TableColumn;
-import simple.escp.TableLine;
+import simple.escp.*;
+import simple.escp.data.MapDataSource;
 import simple.escp.util.EscpUtil;
 import java.util.HashMap;
 import java.util.Map;
-
 import static simple.escp.util.EscpUtil.CRFF;
 import static simple.escp.util.EscpUtil.CRLF;
 
@@ -65,7 +62,7 @@ public class JsonTemplateSectionTest {
         source.put("nickname", "Snake");
         assertEquals(
             INIT + "Your id is 007" + CRLF + "Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -97,7 +94,7 @@ public class JsonTemplateSectionTest {
             "Line3" + CRLF +  CRFF +
             "Your id is 007" + CRLF +
             "Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -126,7 +123,7 @@ public class JsonTemplateSectionTest {
             INIT + "Line1" + CRLF + "Line2" + CRLF+ "Line3" + CRLF + CRFF +
             "Your id is 007" + CRLF + "Mr. Snake." + CRLF + CRFF +
             "This should appear in last page only" + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source))  .fill()
         );
     }
 
@@ -157,7 +154,7 @@ public class JsonTemplateSectionTest {
             "This is header." + CRLF + "Line3" + CRLF +  "Your id is 007" + CRLF + CRFF +
             "This is header." + CRLF + "Mr. Snake." + CRLF +
             CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -188,7 +185,7 @@ public class JsonTemplateSectionTest {
             "This is header." + CRLF + "Line1" + CRLF + "Line2" + CRLF + CRFF +
             "This is header." + CRLF + "Line3" + CRLF+ "Your id is 007" + CRLF + CRFF +
             "This is header." + CRLF + "Mr. Snake." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -218,7 +215,7 @@ public class JsonTemplateSectionTest {
             "Line1" + CRLF + "Line2" + CRLF + "This is footer."  + CRLF + CRFF +
             "Line3" + CRLF +  "Your id is 007" + CRLF + "This is footer." + CRLF + CRFF +
             "Mr. Snake." + CRLF + "This is footer." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -249,7 +246,7 @@ public class JsonTemplateSectionTest {
             "Line3" + CRLF + "Your id is 007" + CRLF + "This is footer." + CRLF + CRFF +
             "Mr. Snake." + CRLF + "This is footer." + CRLF + CRFF +
             "This is last page only." + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(source, null)
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
@@ -276,7 +273,7 @@ public class JsonTemplateSectionTest {
             INIT + "Page 1" + CRLF + "Page 1" + CRLF + "Page 1" + CRLF + CRFF +
             "Page 2" + CRLF + "Page 2" + CRLF + "Page 2" + CRLF + CRFF +
             "Page 3" + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(null, null)
+            new FillJob(jsonTemplate.parse()).fill()
         );
     }
 
@@ -300,7 +297,7 @@ public class JsonTemplateSectionTest {
         assertEquals(
             INIT + "Halaman 1" + CRLF + "Detail 2" + CRLF + "Detail 3" + CRLF + CRFF +
             "Halaman 2" + CRLF + "Detail 4" + CRLF + "Detail 5" + CRLF + CRFF + INIT,
-            jsonTemplate.parse().fill(null, null)
+            new FillJob(jsonTemplate.parse()).fill()
         );
     }
 

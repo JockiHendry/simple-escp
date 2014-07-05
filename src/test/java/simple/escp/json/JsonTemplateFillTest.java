@@ -18,6 +18,9 @@ package simple.escp.json;
 
 import org.junit.Before;
 import org.junit.Test;
+import simple.escp.FillJob;
+import simple.escp.data.BeanDataSource;
+import simple.escp.data.MapDataSource;
 import simple.escp.util.EscpUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +47,8 @@ public class JsonTemplateFillTest {
         Map<String, String> dataSource = new HashMap<>();
         dataSource.put("id", "007");
         dataSource.put("nickname", "Solid Snake");
-        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(dataSource, null));
+        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(dataSource)).fill());
     }
 
     @Test
@@ -53,7 +57,8 @@ public class JsonTemplateFillTest {
         Person person = new Person();
         person.setId("007");
         person.setNickname("Solid Snake");
-        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT, jsonTemplate.fill(null, person));
+        assertEquals(INIT + "Your id is 007, Mr. Solid Snake." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new BeanDataSource(person)).fill());
     }
 
     @Test
@@ -71,8 +76,8 @@ public class JsonTemplateFillTest {
         person.setLastName("None");
         person.setNickname("Snake");
         assertEquals(INIT + "Your first name is David and your last name is None." + CRLF +
-            "I know you, David None alias Snake!" + CRLF + CRFF + INIT, jsonTemplate.fill(null, person));
-
+            "I know you, David None alias Snake!" + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new BeanDataSource(person)).fill());
     }
 
     public static class Person {

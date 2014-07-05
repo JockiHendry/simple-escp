@@ -16,6 +16,8 @@
 
 package simple.escp;
 
+import simple.escp.data.DataSource;
+import simple.escp.data.DataSources;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -127,13 +129,49 @@ public class SimpleEscp {
      *
      * @param template an instance of <code>Template</code>.
      * @param mapSource contains values that will replace placeholders in template.  This value has the highest
-     *                  priority.  If no value in <code>Map</code> is required, set this to <code>null</code>.
-     * @param objectSource contains value that will replace placeholders in template.  If no value in an object
-     *                     is required, set this to <code>null</code>.
+     *                  priority.
+     * @param objectSource contains value that will replace placeholders in template.
      * @return a <code>DocPrintJob</code> that is associated with this operation.
      */
     public DocPrintJob print(Template template, Map mapSource, Object objectSource) {
-        return print(template.fill(mapSource, objectSource));
+        FillJob fillJob = new FillJob(template.parse(), DataSources.from(mapSource, objectSource));
+        return print(fillJob.fill());
+    }
+
+    /**
+     * Fill a template based on value and print it to current printer.
+     *
+     * @param template an instance of <code>Template</code>.
+     * @param mapSource contains values that will replace placeholders in template.
+     * @return a <code>DocPrintJob</code> that is associated with this operation.
+     */
+    public DocPrintJob print(Template template, Map mapSource) {
+        FillJob fillJob = new FillJob(template.parse(), DataSources.from(mapSource));
+        return print(fillJob.fill());
+    }
+
+    /**
+     * Fill a template based on value and print it to current printer.
+     *
+     * @param template an instance of <code>Template</code>.
+     * @param dataSource the data source to fill <code>template</code>
+     * @return a <code>DocPrintJob</code> that is associated with this operation.
+     */
+    public DocPrintJob print(Template template, DataSource dataSource) {
+        FillJob fillJob = new FillJob(template.parse(), dataSource);
+        return print(fillJob.fill());
+    }
+
+    /**
+     * Fill a template based on value and print it to current printer.
+     *
+     * @param template an instance of <code>Template</code>.
+     * @param dataSources one or more <code>DataSource</code> to fill <code>template</code>.
+     * @return a <code>DocPrintJob</code> that is associated with this operation.
+     */
+    public DocPrintJob print(Template template, DataSource[] dataSources) {
+        FillJob fillJob = new FillJob(template.parse(), dataSources);
+        return print(fillJob.fill());
     }
 
     /**

@@ -16,9 +16,6 @@ import java.util.regex.Pattern;
  */
 public class Report {
 
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_@]+)\\}");
-    public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{([a-zA-Z0-9_]+)\\}");
-
     private List<Page> pages = new ArrayList<>();
     private int lastPageNumber = 0;
     private PageFormat pageFormat;
@@ -26,7 +23,6 @@ public class Report {
     private TextLine[] header;
     private TextLine[] footer;
     private boolean lineBreak;
-    protected Map<String, Placeholder> placeholders = new HashMap<>();
 
     /**
      * Create a new instance of <code>Report</code>.
@@ -44,6 +40,15 @@ public class Report {
         this.header = (header == null) ? new TextLine[0] : header;
         this.footer = (footer == null) ? new TextLine[0] : footer;
         this.lineBreak = false;
+    }
+
+    /**
+     * Get the <code>PageFormat</code> for this report.
+     *
+     * @return <code>PageFormat</code> for this report.
+     */
+    public PageFormat getPageFormat() {
+        return pageFormat;
     }
 
     /**
@@ -241,80 +246,6 @@ public class Report {
             }
         }
         return false;
-    }
-
-    /**
-     * This method will fill placeholders with value from both supplied <code>Map</code> and Java Bean object.
-     *
-     * @param text the source text that has placeholders.
-     * @param mapSource value for placeholder in form of <code>Map</code>.  Set <code>null</code> if no value
-     *                  is in <code>Map</code>.
-     * @param objectSource value for placeholder in form of Java Bean object.  Set <code>null</code> if no value
-     *                     is in a Java Bean object.
-     * @return source with placeholders replaced by actual value.
-     */
-    private String fillPlaceholder(String text, Map mapSource, Object objectSource) {
-        StringBuffer result = new StringBuffer();
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
-        while (matcher.find()) {
-            String placeholderText = matcher.group(1);
-            Placeholder placeholder = placeholders.get(placeholderText);
-            if (placeholder == null) {
-                placeholder = new Placeholder(placeholderText, mapSource, objectSource);
-                placeholders.put(placeholderText, placeholder);
-            }
-            matcher.appendReplacement(result, placeholder.value());
-        }
-        matcher.appendTail(result);
-        return result.toString();
-    }
-
-    /**
-     * This method will evaluate functions.
-     *
-     * @param text the source text that has functions.
-     * @param page the associated <code>Page</code> for source text.
-     * @return source with functions replaced by evaluated value.
-     */
-    private String fillFunction(String text, Page page) {
-        StringBuffer result = new StringBuffer();
-        Matcher matcher = FUNCTION_PATTERN.matcher(text);
-        while (matcher.find()) {
-            String function = matcher.group(1);
-
-            // PAGE_NO
-            if ("PAGE_NO".equals(function)) {
-                matcher.appendReplacement(result, String.valueOf(page.getPageNumber()));
-            }
-        }
-        matcher.appendTail(result);
-        return result.toString();
-    }
-
-    /**
-     * Perform the filling stage of this report.  This method will fill placeholders with value from both
-     * supplied <code>Map</code> and Java Bean object.
-     *
-     * @param mapSource <code>Map</code> as data source.  Set <code>null</code> if no data source is defined in
-     *                  <code>Map</code>.
-     * @param objectSource a Java Bean object as data source.  Set <code>null</code> if no data source is defined as
-     *                     Java Bean object.
-     * @return a string with ESC/P commands that can be printed to printer.
-     */
-    public String fill(Map mapSource, Object objectSource) {
-        StringBuffer result = new StringBuffer();
-        result.append(pageFormat.build());
-        for (Page page : pages) {
-            String pageText = page.convertToString(pageFormat.isAutoLineFeed(), pageFormat.isAutoFormFeed());
-            pageText = fillPlaceholder(pageText, mapSource, objectSource);
-            pageText = fillFunction(pageText, page);
-            result.append(pageText);
-        }
-        if (pageFormat.isAutoFormFeed() && !result.toString().endsWith(EscpUtil.CRFF)) {
-            result.append(EscpUtil.CRFF);
-        }
-        result.append(EscpUtil.escInitalize());
-        return result.toString();
     }
 
 }

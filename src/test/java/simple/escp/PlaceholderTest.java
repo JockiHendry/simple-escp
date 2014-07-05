@@ -16,55 +16,16 @@
 
 package simple.escp;
 
-import org.junit.Before;
 import org.junit.Test;
-import simple.escp.Placeholder;
-import simple.escp.exception.InvalidPlaceholder;
-import simple.escp.json.JsonTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
 import static org.junit.Assert.*;
 
 public class PlaceholderTest {
 
-    @Test(expected = InvalidPlaceholder.class)
-    public void invalidPlaceholders() {
-        Map<String, String> data = new HashMap<>();
-        data.put("id", "007");
-        Placeholder placeholder = new Placeholder("name", data, null);
-        placeholder.value();
-    }
-
     @Test
-    public void executeObjectMethod() {
+    public void getText() {
         String text = "@takeHomePay";
-        Employee emp = new Employee();
-        emp.setName("Snake");
-        emp.setSalary(1000);
-        emp.setTaxes(2.5);
-        Placeholder placeholder = new Placeholder(text, null, emp);
-        assertEquals("975.0", placeholder.value());
-    }
-
-    @Test
-    public void valueAsString() {
-        Employee emp = new Employee();
-        emp.setName("Snake");
-        emp.setSalary(1000);
-        emp.setTaxes(2.5);
-        Placeholder placeholder = new Placeholder("salary", null, emp);
-        assertEquals("1000.0", placeholder.value());
-    }
-
-    @Test
-    public void valueAsObject() {
-        Employee emp = new Employee();
-        emp.setName("Snake");
-        emp.setSalary(1000);
-        emp.setTaxes(2.5);
-        Placeholder placeholder = new Placeholder("salary", null, emp);
-        assertEquals(1000.0, placeholder.valueAsObject());
+        Placeholder placeholder = new Placeholder(text);
+        assertEquals("@takeHomePay", placeholder.getText());
     }
 
     public static class Employee {

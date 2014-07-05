@@ -16,8 +16,10 @@
 
 package simple.escp.swing;
 
+import simple.escp.FillJob;
 import simple.escp.SimpleEscp;
 import simple.escp.Template;
+import simple.escp.data.DataSources;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.swing.JButton;
@@ -30,8 +32,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Vector;
 
@@ -65,7 +65,7 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
      * @param objectValue to fill placeholders in the <code>Template</code>.
      */
     public PrintPreviewPane(Template template, Map mapValue, Object objectValue) {
-        this(template.fill(mapValue, objectValue),
+        this(new FillJob(template.parse(), DataSources.from(mapValue, objectValue)).fill(),
             template.getPageFormat().getPageLength(),
             template.getPageFormat().getPageWidth());
     }

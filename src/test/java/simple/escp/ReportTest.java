@@ -1,6 +1,7 @@
 package simple.escp;
 
 import org.junit.Test;
+import simple.escp.data.MapDataSource;
 import static org.junit.Assert.*;
 import static simple.escp.util.EscpUtil.*;
 import java.util.ArrayList;
@@ -156,7 +157,7 @@ public class ReportTest {
             "This is header." + CRLF +
             "Result: 80" + CRLF +
             "This is footer." + CRLF + CRFF + escInitalize(),
-            report.fill(mapSource, null)
+            new FillJob(report, new MapDataSource(mapSource)).fill()
         );
     }
 
