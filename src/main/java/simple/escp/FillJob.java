@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class FillJob {
 
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_@]+)\\}");
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_@:]+)\\}");
     public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{([a-zA-Z0-9_]+)\\}");
 
     protected Report report;
@@ -119,7 +119,7 @@ public class FillJob {
      *         data source.
      */
     public Object getValue(Placeholder placeholder) {
-        return getValue(placeholder.getText());
+        return placeholder.getFormatted(getValue(placeholder.getName()));
     }
 
     /**

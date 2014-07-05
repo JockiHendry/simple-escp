@@ -133,6 +133,27 @@ public class JsonTemplateFillTest {
         );
     }
 
+    @Test
+    public void placeholderFormatting() {
+         String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"Your first name is ${firstName:10} and your last name is ${lastName:5}.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, Object> source = new HashMap<>();
+        source.put("firstName", "Jocki");
+        source.put("lastName", "Hendry");
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+            INIT +
+            "Your first name is Jocki      and your last name is Hendr." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
 
     public static class Person {
         private String id;

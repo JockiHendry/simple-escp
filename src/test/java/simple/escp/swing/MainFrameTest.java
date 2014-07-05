@@ -18,11 +18,14 @@ package simple.escp.swing;
 
 import simple.escp.Template;
 import simple.escp.json.JsonTemplate;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainFrameTest extends JFrame {
@@ -32,9 +35,17 @@ public class MainFrameTest extends JFrame {
 
         Template template = new JsonTemplate(Thread.currentThread().getContextClassLoader().getResource("report.json").toURI());
 
-        Map<String, String> value = new HashMap<>();
-        value.put("id", "007");
-        value.put("nickname", "The Solid Snake");
+        Map<String, Object> value = new HashMap<>();
+        value.put("invoiceNo", "INVC-00001");
+        List<Map<String, Object>> tables = new ArrayList<>();
+        for (int i=0; i<30; i++) {
+            Map<String, Object> line = new HashMap<>();
+            line.put("code", String.format("CODE-%d", i));
+            line.put("name", String.format("Product Random %d", i));
+            line.put("qty", String.format("%d", i*i));
+            tables.add(line);
+        }
+        value.put("table_source", tables);
 
         PrintPreviewPane printPreview = new PrintPreviewPane(template, value, null);
         getContentPane().setLayout(new BorderLayout());

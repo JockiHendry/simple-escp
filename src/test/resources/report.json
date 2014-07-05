@@ -1,22 +1,30 @@
 {
     "pageFormat": {
-        "pageWidth": 30,
-        "pageLength": 7,
+        "pageWidth": 50,
+        "pageLength": 8,
         "usePageLengthFromPrinter": false
     },
     "template": {
         "header": [
-            "                    Page: %{PAGE_NO}"
+            " Company Name                             Page: %{PAGE_NO}",
+            " Invoice No:  ${invoiceNo:10}                     ",
+            "==================================================",
+            " Code    Product's Name                    Qty   ",
+            "=================================================="
         ],
         "detail": [
-            "User Report",
-            "==========================",
-            "ID          Name          ",
-            "--------------------------",
-            "${id}         ${nickname}   "
-        ],
-        "footer": [
-            "PS: This is a test report."
+            {
+                "table": "table_source",
+                "columns": [
+                    { "source": "code", "width": 9  },
+                    { "source": "name", "width": 34 },
+                    { "source": "qty",  "width": 6  }
+                ]
+            },
+            "==================================================",
+            "                                                  ",
+            "                                                  ",
+            "   (Signature)                  (Signature)       "
         ]
     }
 }
