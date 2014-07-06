@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
@@ -96,7 +95,6 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
             }
         }
         printerNameComboBox = new JComboBox<>(printerName);
-        toolbar.setLayout(new FlowLayout(FlowLayout.LEADING));
         toolbar.add(printerNameComboBox);
         toolbar.add(printButton);
 

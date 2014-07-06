@@ -26,7 +26,10 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -143,6 +146,33 @@ public class JsonTemplate extends Template {
      */
     public JsonTemplate(URI uri) throws IOException {
         this(new File(uri));
+    }
+
+    /**
+     * Create a new template from an <code>InputStream</code> that contains UTF-8 character set.
+     *
+     * @param inputStream the input stream that will be read.
+     * @throws IOException if error occured when reading the input stream.
+     */
+    public JsonTemplate(InputStream inputStream) throws IOException {
+        this(inputStream, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Create a new template from an <code>InputStream</code>.
+     *
+     * @param inputStream the input stream that will be read.
+     * @param charset character set of the input stream.
+     * @throws IOException if error occured when reading the input stream.
+     */
+    public JsonTemplate(InputStream inputStream, Charset charset) throws IOException {
+        InputStreamReader isr = new InputStreamReader(inputStream, charset);
+        StringWriter sw = new StringWriter();
+        int c;
+        while ((c = isr.read()) != -1) {
+            sw.write(c);
+        }
+        this.originalText = sw.getBuffer().toString();
     }
 
     /**

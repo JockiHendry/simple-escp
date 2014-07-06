@@ -16,7 +16,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 sourceCompatibility = 1.7
-version = '0.2'
+version = '0.2.1'
 group = 'jockihendry'
 
 repositories {
@@ -94,7 +94,8 @@ bintray {
     publications = ['mavenJava']
     publish = false
     pkg {
-        repo = 'jockihendry'
+        repo = 'maven'
+        userOrg = 'jockihendry'
         name = 'simple-escp'
         licenses = ['Apache-2.0']
     }
