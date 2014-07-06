@@ -38,6 +38,9 @@ public class PlaceholderTest {
     public void getName() {
         assertEquals("payment", new Placeholder("payment:currency").getName());
         assertEquals("payment", new Placeholder("payment:10").getName());
+        assertEquals("payment", new Placeholder("payment:10         ").getName());
+        assertEquals("payment", new Placeholder("payment :10").getName());
+        assertEquals("payment", new Placeholder(" payment : 10").getName());
         assertEquals("payment", new Placeholder("payment:currency:20").getName());
     }
 
@@ -45,12 +48,17 @@ public class PlaceholderTest {
     public void getWidth() {
         assertEquals(0, new Placeholder("payment:currency").getWidth());
         assertEquals(10, new Placeholder("payment:10").getWidth());
+        assertEquals(10, new Placeholder("payment:10         ").getWidth());
+        assertEquals(10, new Placeholder("payment :10").getWidth());
+        assertEquals(10, new Placeholder(" payment : 10").getWidth());
         assertEquals(20, new Placeholder("payment:currency:20").getWidth());
     }
 
     @Test
     public void getFormat() {
         assertEquals(DecimalFormat.class, new Placeholder("payment:number:10").getFormat().getClass());
+        assertEquals(DecimalFormat.class, new Placeholder("payment:number :10     ").getFormat().getClass());
+        assertEquals(DecimalFormat.class, new Placeholder("payment:  number   :  10").getFormat().getClass());
         assertEquals(DecimalFormat.class, new Placeholder("payment:integer").getFormat().getClass());
         assertEquals(DecimalFormat.class, new Placeholder("payment:currency").getFormat().getClass());
         assertEquals(SimpleDateFormat.class, new Placeholder("birthDate:date_full:20").getFormat().getClass());

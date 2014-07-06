@@ -49,7 +49,7 @@ public class Placeholder {
      * @param text a string that defines this placeholder.
      */
     public Placeholder(String text) {
-        this.text = text;
+        this.text = text.trim();
         parseText(text);
     }
 
@@ -97,8 +97,9 @@ public class Placeholder {
     private void parseText(String text) {
         if (text.contains(":")) {
             String[] parts = text.split(":", 2);
-            this.name = parts[0];
+            this.name = parts[0].trim();
             for (String part: parts[1].split(":")) {
+                part = part.trim();
                 parseFormatter(part);
                 parseWidth(part);
             }
