@@ -29,7 +29,7 @@ To use simple-escp, first define a JSON template.  For example, the following _t
 ```javascript
 {
   "pageFormat": {
-    "characterPitch": 17,
+    "characterPitch": "17 cpi",
     "leftMargin": 3,
     "pageWidth": 20,
     "pageLength": 15
