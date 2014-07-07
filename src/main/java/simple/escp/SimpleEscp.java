@@ -18,6 +18,7 @@ package simple.escp;
 
 import simple.escp.data.DataSource;
 import simple.escp.data.DataSources;
+import simple.escp.fill.FillJob;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;

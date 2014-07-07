@@ -1,20 +1,31 @@
 package simple.escp.placeholder;
 
+import simple.escp.data.DataSource;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * This class represent a <code>Placeholder</code> that contains scripts that will be executed by using
  * JSR 223 Scripting for the Java Platform API.
  */
 public class ScriptPlaceholder extends Placeholder {
 
+    private static Logger logger = Logger.getLogger("simple.escp.placeholder.ScriptPlaceholder");
+
     private String script;
+    private ScriptEngine scriptEngine;
 
     /**
      * Create a new instance of script placeholder.
      *
      * @param text a string that defines this placeholder.
+     * @param scriptEngine a script engine to execute script in this placeholder.
      */
-    public ScriptPlaceholder(String text) {
+    public ScriptPlaceholder(String text, ScriptEngine scriptEngine) {
         super(text);
+        this.scriptEngine = scriptEngine;
         parseText(getText());
     }
 
@@ -55,5 +66,17 @@ public class ScriptPlaceholder extends Placeholder {
         this.script = script;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getValue(DataSource[] dataSources) {
+        try {
+            return scriptEngine.eval(script);
+        } catch (ScriptException e) {
+            logger.log(Level.SEVERE, "Can't execute script: [" + getText() + "]");
+            return null;
+        }
+    }
 
 }

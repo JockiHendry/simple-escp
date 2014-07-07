@@ -5,6 +5,8 @@ import simple.escp.exception.InvalidPlaceholder;
 import static org.junit.Assert.*;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
+import java.util.Arrays;
+import java.util.List;
 
 public class BeanDataSourceTest {
 
@@ -48,6 +50,17 @@ public class BeanDataSourceTest {
         assertEquals(10.0, ds.get("hourRate"));
         assertEquals(24.0, ds.get("workHours"));
         assertEquals(240.0, ds.get("@grossIncome"));
+    }
+
+    public void getMembers() {
+        Employee emp = new Employee("test", 10.0, 24.0);
+        BeanDataSource ds = new BeanDataSource(emp);
+        assertEquals(4, ds.getMembers().length);
+        List<String> result = Arrays.asList(ds.getMembers());
+        assertTrue(result.contains("name"));
+        assertTrue(result.contains("hourRate"));
+        assertTrue(result.contains("workHours"));
+        assertTrue(result.contains("address"));
     }
 
     @Test(expected = InvalidPlaceholder.class)

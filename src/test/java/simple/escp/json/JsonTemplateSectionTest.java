@@ -18,8 +18,12 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import simple.escp.*;
+import simple.escp.Page;
+import simple.escp.Report;
+import simple.escp.TableColumn;
+import simple.escp.TableLine;
 import simple.escp.data.MapDataSource;
+import simple.escp.fill.FillJob;
 import simple.escp.util.EscpUtil;
 import java.util.HashMap;
 import java.util.Map;

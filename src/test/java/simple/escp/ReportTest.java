@@ -2,6 +2,7 @@ package simple.escp;
 
 import org.junit.Test;
 import simple.escp.data.MapDataSource;
+import simple.escp.fill.FillJob;
 import static org.junit.Assert.*;
 import static simple.escp.util.EscpUtil.*;
 import java.util.ArrayList;

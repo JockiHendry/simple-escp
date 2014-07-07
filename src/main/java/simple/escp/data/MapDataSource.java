@@ -9,14 +9,14 @@ import java.util.Map;
  */
 public class MapDataSource implements DataSource {
 
-    private Map source;
+    private Map<String, ?> source;
 
     /**
      * Create a new <code>MapDataSource</code>.
      *
      * @param source the <code>Map</code> that contains the value for this <code>DataSource</code>.
      */
-    public MapDataSource(Map source) {
+    public MapDataSource(Map<String, ? extends Object> source) {
         this.source = source;
     }
 
@@ -45,5 +45,13 @@ public class MapDataSource implements DataSource {
     @Override
     public Object getSource() {
         return source;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getMembers() {
+        return source.keySet().toArray(new String[0]);
     }
 }

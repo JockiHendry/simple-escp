@@ -2,7 +2,7 @@ package simple.escp.data;
 
 import org.junit.Test;
 import simple.escp.TableColumn;
-import simple.escp.TableFillJob;
+import simple.escp.fill.TableFillJob;
 import simple.escp.TableLine;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -16,9 +16,8 @@
 
 package simple.escp.placeholder;
 
-import java.text.DateFormat;
-import java.text.Format;
-import java.text.NumberFormat;
+import simple.escp.data.DataSource;
+import simple.escp.exception.InvalidPlaceholder;
 
 /**
  *  This class represent a <code>Placeholder</code> that retrieves its value simply from property or method name.
@@ -72,6 +71,19 @@ public class BasicPlaceholder extends Placeholder {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getValue(DataSource[] dataSources) {
+        for (DataSource dataSource: dataSources) {
+            if (dataSource.has(name)) {
+                return dataSource.get(name);
+            }
+        }
+        throw new InvalidPlaceholder("Can't find data source's member for [" + name + "]");
     }
 
 }

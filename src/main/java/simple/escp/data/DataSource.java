@@ -32,4 +32,11 @@ public interface DataSource {
      */
     public Object getSource();
 
+    /**
+     * Retrieve all member of this <code>DataSource</code>.
+     *
+     * @return all member of this <code>DataSource</code> or empty array if no member is available.
+     */
+    public String[] getMembers();
+
 }

@@ -17,11 +17,15 @@
 package simple.escp.placeholder;
 
 import org.junit.Test;
+import simple.escp.data.DataSource;
+import simple.escp.data.DataSources;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -81,6 +85,25 @@ public class BasicPlaceholderTest {
         assertEquals("124", new BasicPlaceholder("result:integer:3").getFormatted(123.55));
         assertEquals("Snack     ", new BasicPlaceholder("name:10").getFormatted("Snack"));
     }
+
+    @Test
+    public void getValueAsStringFromMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", "Solid");
+        map.put("rate", 5);
+        DataSource dataSource = DataSources.from(map);
+        DataSource[] dataSources = new DataSource[]{dataSource};
+
+        Placeholder placeholder = new BasicPlaceholder("name:3");
+        assertEquals("Sol", placeholder.getValueAsString(dataSources));
+
+        placeholder = new BasicPlaceholder("name:10");
+        assertEquals("Solid     ", placeholder.getValueAsString(dataSources));
+
+        placeholder = new BasicPlaceholder("rate:10");
+        assertEquals("5         ", placeholder.getValueAsString(dataSources));
+    }
+
 
     public static class Employee {
         private String id;

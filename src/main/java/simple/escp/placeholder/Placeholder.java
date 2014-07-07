@@ -1,5 +1,7 @@
 package simple.escp.placeholder;
 
+import simple.escp.data.DataSource;
+
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.NumberFormat;
@@ -158,5 +160,37 @@ public abstract class Placeholder {
         }
     }
 
+    /**
+     * Retrieve a value from specified <code>DataSource</code>.
+     *
+     * @param dataSources the data sources from where this placeholder retrieves its value.
+     * @return the value for the member name.
+     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for the member name in
+     *         data source.
+     */
+    public abstract Object getValue(DataSource[] dataSources);
+
+    /**
+     * Retrieve a value for a <code>Placeholder</code> in form of <code>String</code>.
+     *
+     * @param dataSources the data sources from where this placeholder retrieves its value.
+     * @return the value for the <code>placeholder</code> in form of <code>String</code>.
+     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for <code>placeholder</code> is
+     *         data source.
+     */
+    public String getValueAsString(DataSource[] dataSources) {
+        return getFormattedValue(dataSources).toString();
+    }
+
+    /**
+     * Get a formatted version of {@link #getValue(simple.escp.data.DataSource[])} .
+     *
+     * @param dataSources the data sources from where this placeholder retrieves its value.
+     * @return the formatted value.  If <code>value</code> is formatted, it will be returned as <code>String</code>.
+     *         If no formatting is specified for this placeholder, the <code>value</code> will be returned as is.
+     */
+    public Object getFormattedValue(DataSource[] dataSources) {
+        return getFormatted(getValue(dataSources));
+    }
 
 }

@@ -16,6 +16,7 @@ public abstract class DataSources {
      * @param object the data source value.
      * @return an implementation of <code>DataSource</code>.
      */
+    @SuppressWarnings("unchecked")
     public static DataSource from(Object object) {
         if (object instanceof Map) {
             return new MapDataSource((Map) object);

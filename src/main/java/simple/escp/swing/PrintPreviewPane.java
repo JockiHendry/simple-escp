@@ -16,7 +16,7 @@
 
 package simple.escp.swing;
 
-import simple.escp.FillJob;
+import simple.escp.fill.FillJob;
 import simple.escp.SimpleEscp;
 import simple.escp.Template;
 import simple.escp.data.DataSources;
