@@ -2,6 +2,7 @@ package simple.escp;
 
 import simple.escp.data.DataSource;
 import simple.escp.exception.InvalidPlaceholder;
+import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.util.EscpUtil;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +28,7 @@ public class FillJob {
 
     protected Report report;
     protected DataSource[] dataSources;
-    protected Map<String, Placeholder> placeholders = new HashMap<>();
+    protected Map<String, BasicPlaceholder> placeholders = new HashMap<>();
 
     /**
      * Create a new <code>FillJob</code> with empty data source.
@@ -82,7 +83,7 @@ public class FillJob {
      *
      * @return a <code>Map</code> that contains all <code>Placeholder</code> in this report.
      */
-    public Map<String, Placeholder> getPlaceholders() {
+    public Map<String, BasicPlaceholder> getPlaceholders() {
         return placeholders;
     }
 
@@ -93,20 +94,20 @@ public class FillJob {
      * @return a <code>Placeholder</code> if it is found, or <code>null</code> if no placeholder with the specified
      *         text is exists in this report.
      */
-    public Placeholder getPlaceholder(String text) {
+    public BasicPlaceholder getPlaceholder(String text) {
         return placeholders.get(text);
     }
 
     /**
      * Retrieve a value for a <code>Placeholder</code> in form of <code>String</code>.  See also
-     * {@link #getValue(Placeholder)}.
+     * {@link #getValue(BasicPlaceholder)}.
      *
      * @param placeholder the <code>Placeholder</code> whose value will be retrieved.
      * @return the value for the <code>placeholder</code>.
      * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for <code>placeholder</code> is
      *         data source.
      */
-    public String getValueAsString(Placeholder placeholder) {
+    public String getValueAsString(BasicPlaceholder placeholder) {
         return getValue(placeholder).toString();
     }
 
@@ -118,7 +119,7 @@ public class FillJob {
      * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for <code>placeholder</code> in
      *         data source.
      */
-    public Object getValue(Placeholder placeholder) {
+    public Object getValue(BasicPlaceholder placeholder) {
         return placeholder.getFormatted(getValue(placeholder.getName()));
     }
 
@@ -172,9 +173,9 @@ public class FillJob {
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
             String placeholderText = matcher.group(1);
-            Placeholder placeholder = placeholders.get(placeholderText);
+            BasicPlaceholder placeholder = placeholders.get(placeholderText);
             if (placeholder == null) {
-                placeholder = new Placeholder(placeholderText);
+                placeholder = new BasicPlaceholder(placeholderText);
                 placeholders.put(placeholderText, placeholder);
             }
             matcher.appendReplacement(result, getValueAsString(placeholder));

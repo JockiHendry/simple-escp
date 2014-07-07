@@ -1,29 +1,14 @@
-/*
- * Copyright 2014 Jocki Hendry
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package simple.escp;
+package simple.escp.placeholder;
 
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.NumberFormat;
 
 /**
- *  <code>Placeholder</code> represent a placeholder in template, such as <code>${name}</code>.
+ *  <code>Placeholder</code> represent a placeholder in template, such as <code>${name}</code> or
+ *  <code>{{salary * 0.5}}</code>.
  *
- *  <p>Placeholder can also have an optional formatting, such as <code>${salary:currency}</code>.  The following
+ *  <p>Placeholder may have an optional formatting, such as <code>${salary:currency}</code>.  The following
  *  format options are available on number value: <code>number</code>, <code>integer</code> and
  *  <code>currency</code>.  The following options are available on date value: <code>date_full</code>,
  *  <code>date_long</code>, <code>date_medium</code>, and <code>date_short</code>.
@@ -35,77 +20,22 @@ import java.text.NumberFormat;
  *
  *  <p>If placeholders has more than one part separated by semicolon (<code>:</code>), the first part should always
  *  be name of the placeholder.
+ *
  */
-public class Placeholder {
+public abstract class Placeholder {
 
-    private String text;
-    private String name;
-    private Format format;
-    private int width = 0;
+    protected String text;
+    protected Format format;
+    protected int width = 0;
+
 
     /**
-     * Create a new instance of template's placeholder.
+     * Create a new instance of placeholder.
      *
      * @param text a string that defines this placeholder.
      */
-    public Placeholder(String text) {
+    protected Placeholder(String text) {
         this.text = text.trim();
-        parseText(text);
-    }
-
-    /**
-     * Parse formatter such as <code>number</code>, <code>date_full</code>, etc.
-     *
-     * @param text part of text for this placeholder.
-     */
-    private void parseFormatter(String text) {
-        if ("number".equals(text)) {
-            format = NumberFormat.getNumberInstance();
-        } else if ("integer".equals(text)) {
-            format = NumberFormat.getIntegerInstance();
-        } else if ("currency".equals(text)) {
-            format = NumberFormat.getCurrencyInstance();
-        } else if ("date_full".equals(text)) {
-            format = DateFormat.getDateInstance(DateFormat.FULL);
-        } else if ("date_long".equals(text)) {
-            format = DateFormat.getDateInstance(DateFormat.LONG);
-        } else if ("date_medium".equals(text)) {
-            format = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        } else if ("date_short".equals(text)) {
-            format = DateFormat.getDateInstance(DateFormat.SHORT);
-        }
-    }
-
-    /**
-     * Parse width for a placeholder.  By default, <code>width</code> is 0 and no restriction will be applied.
-     *
-     * @param text part of text for this placeholder.
-     */
-    private void parseWidth(String text) {
-        try {
-            width = Integer.valueOf(text);
-        } catch (NumberFormatException e) {
-            return;
-        }
-    }
-
-    /**
-     * Parse placeholder text.
-     *
-     * @param text full text that represent this placeholder.
-     */
-    private void parseText(String text) {
-        if (text.contains(":")) {
-            String[] parts = text.split(":", 2);
-            this.name = parts[0].trim();
-            for (String part: parts[1].split(":")) {
-                part = part.trim();
-                parseFormatter(part);
-                parseWidth(part);
-            }
-        } else {
-            this.name = text;
-        }
     }
 
     /**
@@ -125,24 +55,6 @@ public class Placeholder {
      */
     public void setText(String text) {
         this.text = text;
-    }
-
-    /**
-     * Retrieve the name of this placeholder.
-     *
-     * @return name of this placeholder.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Set the name of this placeholder.
-     *
-     * @param name name of this placeholder.
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -209,5 +121,42 @@ public class Placeholder {
         }
         return result;
     }
+
+    /**
+     * Parse formatter such as <code>number</code>, <code>date_full</code>, etc.
+     *
+     * @param text part of text for this placeholder.
+     */
+    protected void parseFormatter(String text) {
+        if ("number".equals(text)) {
+            format = NumberFormat.getNumberInstance();
+        } else if ("integer".equals(text)) {
+            format = NumberFormat.getIntegerInstance();
+        } else if ("currency".equals(text)) {
+            format = NumberFormat.getCurrencyInstance();
+        } else if ("date_full".equals(text)) {
+            format = DateFormat.getDateInstance(DateFormat.FULL);
+        } else if ("date_long".equals(text)) {
+            format = DateFormat.getDateInstance(DateFormat.LONG);
+        } else if ("date_medium".equals(text)) {
+            format = DateFormat.getDateInstance(DateFormat.MEDIUM);
+        } else if ("date_short".equals(text)) {
+            format = DateFormat.getDateInstance(DateFormat.SHORT);
+        }
+    }
+
+    /**
+     * Parse width for a placeholder.  By default, <code>width</code> is 0 and no restriction will be applied.
+     *
+     * @param text part of text for this placeholder.
+     */
+    protected void parseWidth(String text) {
+        try {
+            width = Integer.valueOf(text);
+        } catch (NumberFormatException e) {
+            return;
+        }
+    }
+
 
 }

@@ -1,7 +1,7 @@
 package simple.escp;
 
 import simple.escp.data.DataSources;
-
+import simple.escp.placeholder.BasicPlaceholder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +37,7 @@ public class TableFillJob {
             StringBuffer text = new StringBuffer();
             for (TableColumn column : tableLine) {
                 FillJob helper = new FillJob(null, DataSources.from(entry));
-                Object value = helper.getValue(new Placeholder(column.getText()));
+                Object value = helper.getValue(new BasicPlaceholder(column.getText()));
                 if ((value instanceof Integer) || (value instanceof Long)) {
                     text.append(String.format("%" + column.getWidth() + "d", value));
                 } else if ((value instanceof Float) || (value instanceof  Double)) {
