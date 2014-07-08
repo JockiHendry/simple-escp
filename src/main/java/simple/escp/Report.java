@@ -191,6 +191,21 @@ public class Report implements Iterable<Page> {
     }
 
     /**
+     * Create a new page for this report that start at specified line.  The line before the specified line
+     * will be filled by an <code>EmptyLine</code>.
+     *
+     * @param plain if <code>true</code> will ignore header and footer.  Set this to <code>false</code> to create
+     *              a <code>Page</code> that doesn't have header and footer.
+     * @param startAtLineNumber start appending from this line number and ignore lines before this line number.
+     * @return the created <code>Page</code>.
+     */
+    public Page newPage(boolean plain, int startAtLineNumber) {
+        Page page = newPage(plain);
+        page.appendEmptyLineUntil(startAtLineNumber);
+        return page;
+    }
+
+    /**
      * Start a line break.  The next call of <code>append()</code> will create a new page and write to this new
      * page instead of current page.
      */
