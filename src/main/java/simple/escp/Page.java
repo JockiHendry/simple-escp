@@ -172,6 +172,35 @@ public class Page {
     }
 
     /**
+     * Add empty line to this page.
+     */
+    public void appendEmptyLine() {
+        append(new EmptyLine());
+    }
+
+    /**
+     * Add empty lines from current line to the specified line number.
+     *
+     * @param lineNumber destination line number.  This line is exclusive (the lines before this line will be
+     *                   empty line but not including this line).
+     */
+    public void appendEmptyLineUntil(int lineNumber) {
+        if (lineNumber <= header.length) {
+            throw new IllegalArgumentException("Can't append empty line before header: " + lineNumber);
+        }
+        if (lineNumber > (pageLength - footer.length)) {
+            throw new IllegalArgumentException("Can't append empty line after footer: " + lineNumber);
+        }
+        int currentLine = header.length + content.size();
+        if (currentLine >= lineNumber) {
+            throw new IllegalArgumentException("Destination line number is less than current (" + currentLine + ")");
+        }
+        for (int i = currentLine + 1; i < lineNumber; i++) {
+            appendEmptyLine();
+        }
+    }
+
+    /**
      * Insert a new <code>Line</code> at the specified <code>lineNumber</code> position.  If the page is full
      * after insertion, the last line of the content (<strong>not</strong> including footer) will be removed
      * and returned.
