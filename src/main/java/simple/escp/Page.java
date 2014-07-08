@@ -221,7 +221,7 @@ public class Page {
         content.add(lineNumber - header.length - 1, line);
         if (isOverflow()) {
             result = content.get(content.size() - 1);
-            content.remove(result);
+            content.remove(content.size() - 1);
         }
         return result;
     }
