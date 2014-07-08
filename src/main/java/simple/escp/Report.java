@@ -308,6 +308,24 @@ public class Report implements Iterable<Page> {
         return false;
     }
 
+    /**
+     * Get all lines in this report combined as one big page.  <code>EmptyLine</code> will be ignored.
+     *
+     * @return all lines in this report.
+     */
+    public List<Line> getFlatLines() {
+        List<Line> result = new ArrayList<>();
+        for (Page page : pages) {
+            for (Line line : page.getLines()) {
+                if (line instanceof EmptyLine) {
+                    continue;
+                }
+                result.add(line);
+            }
+        }
+        return result;
+    }
+
     @Override
     public Iterator<Page> iterator() {
         return pages.iterator();

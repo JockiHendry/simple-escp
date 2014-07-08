@@ -477,4 +477,26 @@ public class ReportTest {
         assertEquals("This is footer.", ((TextLine)report.getPage(2).getLine(3)).getText());
     }
 
+    @Test
+    public void getFlatLines() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(5);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.newPage(false, 4);
+        report.append(new TextLine("This is line 4"), false);
+        report.append(new TextLine("This is in new page"), false);
+
+        List<Line> results = report.getFlatLines();
+        assertEquals(6, results.size());
+        assertEquals("This is header.", ((TextLine)results.get(0)).getText());
+        assertEquals("This is line 4", ((TextLine)results.get(1)).getText());
+        assertEquals("This is footer.", ((TextLine)results.get(2)).getText());
+        assertEquals("This is header.", ((TextLine)results.get(3)).getText());
+        assertEquals("This is in new page", ((TextLine)results.get(4)).getText());
+        assertEquals("This is footer.", ((TextLine)results.get(5)).getText());
+    }
+
 }
