@@ -161,6 +161,17 @@ public class Page {
     }
 
     /**
+     * Add multipe lines to this page.  The lines will be inserted after the last line of this page.
+     *
+     * @param lines the lines that will be added to this page.
+     */
+    public void append(List<? extends Line> lines) {
+        for (Line line : lines) {
+            append(line);
+        }
+    }
+
+    /**
      * Insert a new <code>Line</code> at the specified <code>lineNumber</code> position.  If the page is full
      * after insertion, the last line of the content (<strong>not</strong> including footer) will be removed
      * and returned.

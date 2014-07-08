@@ -6,6 +6,7 @@ import simple.escp.fill.FillJob;
 import static org.junit.Assert.*;
 import static simple.escp.util.EscpUtil.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -238,6 +239,46 @@ public class ReportTest {
         assertEquals("This is line 2 in page 2", page2.getLine(3).toString());
         assertEquals("This is line 3 in page 2", page2.getLine(4).toString());
         assertEquals("This is footer.", page2.getLine(5).toString());
+    }
+
+    @Test
+    public void insertWithNewPageFirstLines() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(10);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        for (int i=0; i<8; i++) {
+            report.append(new TextLine("This is line in page 1."), false);
+        }
+
+        TextLine[] forNewPages = new TextLine[] { new TextLine("Line 2 in new page."),
+            new TextLine("Line 3 in new page."), new TextLine("Line 4 in new page.")};
+        report.insert(new TextLine("This is inserted line."), 1, 2, Arrays.asList(forNewPages));
+
+        assertEquals(2, report.getNumberOfPages());
+        Page page1 = report.getPage(1);
+        assertEquals(10, page1.getNumberOfLines());
+        assertEquals("This is header.", page1.getLine(1).toString());
+        assertEquals("This is inserted line.", page1.getLine(2).toString());
+        assertEquals("This is line in page 1.", page1.getLine(3).toString());
+        assertEquals("This is line in page 1.", page1.getLine(4).toString());
+        assertEquals("This is line in page 1.", page1.getLine(5).toString());
+        assertEquals("This is line in page 1.", page1.getLine(6).toString());
+        assertEquals("This is line in page 1.", page1.getLine(7).toString());
+        assertEquals("This is line in page 1.", page1.getLine(8).toString());
+        assertEquals("This is line in page 1.", page1.getLine(9).toString());
+        assertEquals("This is footer.", page1.getLine(10).toString());
+
+        Page page2 = report.getPage(2);
+        assertEquals(6, page2.getNumberOfLines());
+        assertEquals("This is header.", page2.getLine(1).toString());
+        assertEquals("Line 2 in new page.", page2.getLine(2).toString());
+        assertEquals("Line 3 in new page.", page2.getLine(3).toString());
+        assertEquals("Line 4 in new page.", page2.getLine(4).toString());
+        assertEquals("This is line in page 1.", page2.getLine(5).toString());
+        assertEquals("This is footer.", page2.getLine(6).toString());
     }
 
     @Test

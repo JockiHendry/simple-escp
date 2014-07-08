@@ -241,13 +241,14 @@ public class Report implements Iterable<Page> {
     }
 
     /**
-     * Insert a new line at certain page and certain position.  This may a new page to be created if necessary.
+     * Insert a new line at certain page and certain position.  This may causes a new page to be created if necessary.
      *
      * @param line a new line to be inserted to this report.
      * @param pageNumber the page number in which the new line will be inserted.
      * @param lineNumber the line number in the page where the new line will be inserted.
+     * @param newPageFirstLines these lines will be added to the new page if this insertion creates new page.
      */
-    public void insert(Line line, int pageNumber, int lineNumber) {
+    public void insert(Line line, int pageNumber, int lineNumber, List<? extends Line> newPageFirstLines) {
         if (pageNumber < 1 || pageNumber > pages.size()) {
             throw new IllegalArgumentException("Invalid page number: " + pageNumber);
         }
@@ -257,10 +258,25 @@ public class Report implements Iterable<Page> {
         while (discardedLine != null) {
             if (currentPage == null) {
                 currentPage = newPage(false);
+                if (newPageFirstLines != null) {
+                    currentPage.append(newPageFirstLines);
+                }
             }
-            discardedLine = currentPage.insert(discardedLine, header.length + 1);
+            discardedLine = currentPage.insert(discardedLine, header.length + 1  +
+                (newPageFirstLines == null ? 0 : newPageFirstLines.size()));
             currentPage = nextPage(currentPage);
         }
+    }
+
+    /**
+     * Insert a new line at certain page and certain position.  This may causes a new page to be created if necessary.
+     *
+     * @param line a new line to be inserted to this report.
+     * @param pageNumber the page number in which the new line will be inserted.
+     * @param lineNumber the line number in the page where the new line will be inserted.
+     */
+    public void insert(Line line, int pageNumber, int lineNumber) {
+        insert(line, pageNumber, lineNumber, null);
     }
 
     /**
