@@ -19,6 +19,7 @@ package simple.escp.json;
 import simple.escp.Line;
 import simple.escp.PageFormat;
 import simple.escp.Report;
+import simple.escp.TableColumn;
 import simple.escp.TableLine;
 import simple.escp.TextLine;
 import javax.json.JsonArray;
@@ -157,7 +158,10 @@ public class Parser {
         } else {
             for (int i = 0; i < columns.size(); i++) {
                 JsonObject column = columns.getJsonObject(i);
-                tableLine.addColumn(column.getString("source"), column.getInt("width"));
+                TableColumn tableColumn = tableLine.addColumn(column.getString("source"), column.getInt("width"));
+                if (column.containsKey("caption")) {
+                    tableColumn.setCaption(column.getString("caption"));
+                }
             }
         }
         return tableLine;

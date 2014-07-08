@@ -6,6 +6,7 @@ package simple.escp;
 public class TableColumn {
 
     private String text;
+    private String caption;
     private int width;
 
     /**
@@ -55,4 +56,22 @@ public class TableColumn {
         this.width = width;
     }
 
+    /**
+     * Get the caption for this column.
+     *
+     * @return the caption of this column.  If no caption is defined in this column, this method will return
+     *         column's text instead.
+     */
+    public String getCaption() {
+        return caption != null ? caption : text;
+    }
+
+    /**
+     * Set the caption for this column.
+     *
+     * @param caption new caption for this column.
+     */
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
 }

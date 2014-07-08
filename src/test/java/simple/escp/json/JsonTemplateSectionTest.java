@@ -392,12 +392,66 @@ public class JsonTemplateSectionTest {
 
         TableColumn column = tableLine.getColumnAt(1);
         assertEquals("field1", column.getText());
+        assertEquals("field1", column.getCaption());
         assertEquals(10, column.getWidth());
         column = tableLine.getColumnAt(2);
+        assertEquals("field2", column.getText());
         assertEquals("field2", column.getText());
         assertEquals(15, column.getWidth());
         column = tableLine.getColumnAt(3);
         assertEquals("field3", column.getText());
+        assertEquals("field3", column.getText());
+        assertEquals(8, column.getWidth());
+    }
+
+    @Test
+    public void parseTableWithColumnCaption() {
+         String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"header\": [\"This is header.\"]," +
+                "\"detail\": [{" +
+                    "\"table\": \"sources\"," +
+                    "\"columns\":" +
+                        "[" +
+                            "{ \"source\": \"field1\", \"width\": 10, \"caption\": \"Column A\" }," +
+                            "{ \"source\": \"field2\", \"width\": 15, \"caption\": \"Column B\" }," +
+                            "{ \"source\": \"field3\", \"width\": 8, \"caption\": \"Column C\" }" +
+                        "]" +
+                "}]," +
+                "\"footer\": [\"This is footer.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Report report = jsonTemplate.parse();
+        assertEquals(1, report.getNumberOfPages());
+        Page page = report.getPage(1);
+        assertEquals(3, page.getNumberOfLines());
+        assertEquals("This is header.", page.getLine(1).toString());
+        assertFalse(page.getLine(1).isDynamic());
+        assertEquals("This is footer.", page.getLine(3).toString());
+        assertFalse(page.getLine(3).isDynamic());
+        assertTrue(page.getLine(2).isDynamic());
+        assertTrue(page.getLine(2) instanceof TableLine);
+
+        TableLine tableLine = (TableLine) page.getLine(2);
+        assertEquals("sources", tableLine.getSource());
+        assertEquals(3, tableLine.getNumberOfColumns());
+
+        TableColumn column = tableLine.getColumnAt(1);
+        assertEquals("field1", column.getText());
+        assertEquals("Column A", column.getCaption());
+        assertEquals(10, column.getWidth());
+        column = tableLine.getColumnAt(2);
+        assertEquals("field2", column.getText());
+        assertEquals("Column B", column.getCaption());
+        assertEquals(15, column.getWidth());
+        column = tableLine.getColumnAt(3);
+        assertEquals("field3", column.getText());
+        assertEquals("Column C", column.getCaption());
         assertEquals(8, column.getWidth());
     }
 
