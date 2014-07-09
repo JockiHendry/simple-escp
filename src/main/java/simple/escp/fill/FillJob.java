@@ -1,9 +1,9 @@
 package simple.escp.fill;
 
+import simple.escp.Line;
 import simple.escp.Page;
 import simple.escp.Report;
 import simple.escp.TableLine;
-import simple.escp.TextLine;
 import simple.escp.data.DataSource;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
@@ -195,11 +195,11 @@ public class FillJob {
             TableLine tableLine = page.getTableLines().get(0);
             Placeholder placeholder = new BasicPlaceholder(tableLine.getSource());
             TableFillJob tableFillJob = new TableFillJob(tableLine, (Collection) placeholder.getValue(dataSources));
-            List<String> results = tableFillJob.fill();
+            List<Line> results = tableFillJob.fill(report);
             Collections.reverse(results);
             page.removeLine(tableLine);
-            for (String result : results) {
-                report.insert(new TextLine(result), page.getPageNumber(), tableLine.getLineNumber());
+            for (Line result : results) {
+                report.insert(result, page.getPageNumber(), tableLine.getLineNumber());
             }
         }
     }

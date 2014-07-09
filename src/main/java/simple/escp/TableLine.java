@@ -1,6 +1,8 @@
 package simple.escp;
 
+import simple.escp.util.EscpUtil;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,6 +14,9 @@ public class TableLine implements Line, Iterable<TableColumn> {
     private List<TableColumn> columns = new ArrayList<>();
     private String source;
     private Integer lineNumber;
+    private boolean drawBorder;
+    private TextLine[] header;
+    private TextLine[] footer;
 
     /**
      * Create a new <code>TableLine</code>.
@@ -103,6 +108,139 @@ public class TableLine implements Line, Iterable<TableColumn> {
      */
     public Integer getLineNumber() {
         return this.lineNumber;
+    }
+
+    /**
+     * Determine if this table line should have border drawn around it.  Drawing border will reduce the
+     * width of every columns by one character.  It also will increase number of lines required by the table.
+     *
+     * @return <code>true</code> if this <code>TableLine</code> has border.
+     */
+    public boolean isDrawBorder() {
+        return drawBorder;
+    }
+
+    /**
+     * Set wether to enable drawing solid border for this table line or not.
+     *
+     * @param drawBorder <code>true</code> to enable border for this table.
+     */
+    public void setDrawBorder(boolean drawBorder) {
+        this.drawBorder = drawBorder;
+    }
+
+    /**
+     * Get width of lines in this table in number of characters.
+     *
+     * @return width in number of characters.
+     */
+    public int getWidth() {
+        int result = 0;
+        for (TableColumn column : columns) {
+            result += column.getWidth();
+        }
+        return result;
+    }
+
+    /**
+     * Retrieve the header for this table.  If border for this table is disabled, header will only be a row that
+     * contains column's caption.  If border is enabled, the header is three lines with CP347 pseudo-graphic
+     * characters to simulate a border.
+     *
+     * @return the definition of header.
+     */
+    public TextLine[] getHeader() {
+        if (header == null) {
+            List<TextLine> tmp = new ArrayList<>();
+            StringBuffer line = new StringBuffer();
+
+            // draw header upper border if necessary
+            if (isDrawBorder()) {
+                line.append(EscpUtil.CP347_LIGHT_DOWN_RIGHT);
+                for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+                    TableColumn column = columns.get(columnIndex);
+                    for (int i = 0; i < column.getWidth() - 1; i++) {
+                        line.append(EscpUtil.CP347_LIGHT_HORIZONTAL);
+                    }
+                    if (columnIndex == (columns.size() - 1)) {
+                        line.append(EscpUtil.CP347_LIGHT_DOWN_LEFT);
+                    } else {
+                        line.append(EscpUtil.CP347_LIGHT_DOWN_HORIZONTAL);
+                    }
+                }
+                tmp.add(new TextLine(line.toString()));
+            }
+
+            // draw column name
+            line = new StringBuffer();
+            if (isDrawBorder()) {
+                line.append(EscpUtil.CP347_LIGHT_VERTICAL);
+            }
+            for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+                TableColumn column = columns.get(columnIndex);
+                line.append(column.getCaption());
+                int width = column.getWidth() - column.getCaption().length() - (isDrawBorder() ? 1 : 0);
+                for (int i = 0; i < width; i++) {
+                    line.append(' ');
+                }
+                if (isDrawBorder()) {
+                    line.append(EscpUtil.CP347_LIGHT_VERTICAL);
+                }
+
+            }
+            tmp.add(new TextLine(line.toString()));
+
+            // draw lower border if necessary
+            line = new StringBuffer();
+            if (isDrawBorder()) {
+                line.append(EscpUtil.CP347_LIGHT_VERTICAL_RIGHT);
+                for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+                    TableColumn column = columns.get(columnIndex);
+                    for (int i = 0; i < column.getWidth() - 1; i++) {
+                        line.append(EscpUtil.CP347_LIGHT_HORIZONTAL);
+                    }
+                    if (columnIndex == (columns.size() - 1)) {
+                        line.append(EscpUtil.CP347_LIGHT_VERTICAL_LEFT);
+                    } else {
+                        line.append(EscpUtil.CP347_LIGHT_VERTICAL_HORIZONTAL);
+                    }
+                }
+                tmp.add(new TextLine(line.toString()));
+            }
+            header = tmp.toArray(new TextLine[0]);
+        }
+        return Arrays.copyOf(header, header.length);
+    }
+
+    /**
+     * Retrieve the footer for this table.
+     *
+     * @return the definition of footer.
+     */
+    public TextLine[] getFooter() {
+        if (footer == null) {
+            List<TextLine> tmp = new ArrayList<>();
+            StringBuffer line = new StringBuffer();
+
+            // draw lower border if necessary
+            if (isDrawBorder()) {
+                line.append(EscpUtil.CP347_LIGHT_UP_RIGHT);
+                for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+                    TableColumn column = columns.get(columnIndex);
+                    for (int i = 0; i < column.getWidth() - 1; i++) {
+                        line.append(EscpUtil.CP347_LIGHT_HORIZONTAL);
+                    }
+                    if (columnIndex == (columns.size() - 1)) {
+                        line.append(EscpUtil.CP347_LIGHT_UP_LEFT);
+                    } else {
+                        line.append(EscpUtil.CP347_LIGHT_UP_HORIZONTAL);
+                    }
+                }
+                tmp.add(new TextLine(line.toString()));
+            }
+            footer = tmp.toArray(new TextLine[0]);
+        }
+        return Arrays.copyOf(footer, footer.length);
     }
 
     @Override

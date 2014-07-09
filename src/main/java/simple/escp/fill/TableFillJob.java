@@ -1,11 +1,14 @@
 package simple.escp.fill;
 
+import simple.escp.Line;
+import simple.escp.Report;
 import simple.escp.TableColumn;
 import simple.escp.TableLine;
+import simple.escp.TextLine;
 import simple.escp.data.DataSources;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
-import java.util.ArrayList;
+import simple.escp.util.EscpUtil;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,10 +35,22 @@ public class TableFillJob {
     /**
      * Execute the <code>TableFillJob</code>.
      *
-     * @return a <code>String</code> that may contains ESC/P commands and can be printed.
+     * @param report the source <code>Report</code> in which the table will be placed.  This new table can be seen
+     *               as a subreport for this <code>report</code>.
+     * @return a <code>TextLine</code> that may contains ESC/P commands and can be printed.
      */
-    public List<String> fill() {
-        List<String> result = new ArrayList<>();
+    public List<Line> fill(Report report) {
+
+        Report subreport = new Report(report.getContentLinesPerPage(), tableLine.getHeader(), tableLine.getFooter());
+        int tableLineNumber = tableLine.getLineNumber() == null ? 1 : tableLine.getLineNumber();
+        int startLines = tableLine.getHeader().length + tableLineNumber - report.getHeader().length;
+        if (startLines > subreport.getStartOfFooter()) {
+            throw new IllegalArgumentException("The rest of lines is not enough to store this table without " +
+                "creating a new page. (" + startLines + " > " + subreport.getStartOfFooter() + ")");
+
+        }
+        subreport.newPage(false, startLines);
+
         // Save all placeholders first.
         Placeholder[] placeholders = new BasicPlaceholder[tableLine.getNumberOfColumns()];
         for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
@@ -46,17 +61,24 @@ public class TableFillJob {
             for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
                 TableColumn column = tableLine.getColumnAt(i + 1);
                 Object value = placeholders[i].getValue(DataSources.from(new Object[]{entry}));
-                if ((value instanceof Integer) || (value instanceof Long)) {
-                    text.append(String.format("%" + column.getWidth() + "d", value));
-                } else if ((value instanceof Float) || (value instanceof  Double)) {
-                    text.append(String.format("%" + column.getWidth() + ".1f", value));
-                } else {
-                    text.append(String.format("%-" + column.getWidth() + "s", value.toString()));
+                int width = column.getWidth() - (tableLine.isDrawBorder() ? 1 : 0);
+                if (i == 0 && tableLine.isDrawBorder()) {
+                    text.append(EscpUtil.CP347_LIGHT_VERTICAL);
                 }
-
+                if ((value instanceof Integer) || (value instanceof Long)) {
+                    text.append(String.format("%" + width + "d", value));
+                } else if ((value instanceof Float) || (value instanceof  Double)) {
+                    text.append(String.format("%" + width + ".1f", value));
+                } else {
+                    text.append(String.format("%-" + width + "s", value.toString()));
+                }
+                if (tableLine.isDrawBorder()) {
+                    text.append(EscpUtil.CP347_LIGHT_VERTICAL);
+                }
             }
-            result.add(text.toString());
+            subreport.append(new TextLine(text.toString()), false);
         }
-        return result;
+
+        return subreport.getFlatLines();
     }
 }

@@ -26,11 +26,7 @@ public class Report implements Iterable<Page> {
      * @param report a <code>Report</code> to clone.
      */
     public Report(Report report) {
-        this.pageFormat = report.getPageFormat();
-        this.header = report.getHeader();
-        this.footer = report.getFooter();
-        this.lineBreak = false;
-
+        init(report.getPageFormat(), report.getHeader(), report.getFooter());
         for (Page page : report) {
             for (Line line : page.getContent()) {
                 append(line, false);
@@ -42,14 +38,38 @@ public class Report implements Iterable<Page> {
      * Create a new instance of <code>Report</code>.
      *
      * @param pageFormat the <code>PageFormat</code> for this <code>Report</code>.
+     * @param header header for all pages in this <code>Report</code>.
+     * @param footer footer for all pages in this <code>Report</code>.
+     */
+    public Report(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
+        init(pageFormat, header, footer);
+    }
+
+    /**
+     * Create a new instance of <code>Report</code>.
+     *
+     * @param pageLength length of every pages in this report in number of lines.
+     * @param header header for all pages in this <code>Report</code>.
+     * @param footer footer for all pages in this <code>Report</code>.
+     */
+    public Report(int pageLength, TextLine[] header, TextLine[] footer) {
+        pageFormat = new PageFormat();
+        pageFormat.setPageLength(pageLength);
+        init(pageFormat, header, footer);
+    }
+
+    /**
+     * Initialization setup this report.
+     *
+     * @param pageFormat the <code>PageFormat</code> for this <code>Report</code>.
      * @param header header for all of pages in this <code>Report</code>.
      * @param footer footer for all of pages in this <code>Report</code>.
      */
-    public Report(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
+    private void init(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
         this.pageFormat = pageFormat;
         if ((pageFormat.getPageLength() == null) && (!pageFormat.isUsePageLengthFromPrinter())) {
             throw new IllegalArgumentException("Invalid page format with pageLength undefined when " +
-                "isUsePageLengthFromPrinter is false.");
+                    "isUsePageLengthFromPrinter is false.");
         }
         this.header = (header == null) ? new TextLine[0] : header;
         this.footer = (footer == null) ? new TextLine[0] : footer;
@@ -324,6 +344,27 @@ public class Report implements Iterable<Page> {
             }
         }
         return result;
+    }
+
+    /**
+     * Get the length of content for each page.  Content is the area within the page that doesn't include
+     * header and footer.  Methods such as {@link #append(Line, boolean)} or
+     * {@link #insert(Line, int, int)} works only within this area.
+     *
+     * @return the length of content page in number of lines.
+     */
+    public int getContentLinesPerPage() {
+        return pageFormat.getPageLength() - header.length - footer.length;
+    }
+
+    /**
+     * Get line number that indicates the first line of footer.
+     *
+     * @return line number for the first line of footer.  If this report doesn't have footer, the returned value
+     *         is line number for the last line.
+     */
+    public int getStartOfFooter() {
+        return header.length + getContentLinesPerPage();
     }
 
     @Override

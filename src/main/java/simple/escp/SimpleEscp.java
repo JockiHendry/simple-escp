@@ -31,6 +31,7 @@ import javax.print.attribute.HashAttributeSet;
 import javax.print.attribute.standard.PrinterName;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.logging.Level;
@@ -113,7 +114,9 @@ public class SimpleEscp {
      * @return a <code>DocPrintJob</code> that is associated with this operation.
      */
     public DocPrintJob print(String text)  {
-        InputStream in = new ByteArrayInputStream(text.getBytes(StandardCharsets.US_ASCII));
+        Charset charset = Charset.isSupported("ISO-8859-1") ? Charset.forName("ISO-8859-1") :
+            StandardCharsets.US_ASCII;
+        InputStream in = new ByteArrayInputStream(text.getBytes(charset));
         Doc doc = new SimpleDoc(in, DocFlavor.INPUT_STREAM.AUTOSENSE, null);
         DocPrintJob job = printService.createPrintJob();
         try {

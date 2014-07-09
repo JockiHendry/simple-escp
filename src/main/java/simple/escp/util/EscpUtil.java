@@ -37,6 +37,18 @@ public class EscpUtil {
     public static final int COMMAND_BOTTOM_MARGIN = 78;
     public static final int COMMAND_SELECTTYPEFACE = 107;
 
+    public static final char CP347_LIGHT_VERTICAL               = (char) 179;
+    public static final char CP347_LIGHT_DOWN_RIGHT             = (char) 218;
+    public static final char CP347_LIGHT_HORIZONTAL             = (char) 196;
+    public static final char CP347_LIGHT_DOWN_LEFT              = (char) 191;
+    public static final char CP347_LIGHT_DOWN_HORIZONTAL        = (char) 194;
+    public static final char CP347_LIGHT_VERTICAL_RIGHT         = (char) 195;
+    public static final char CP347_LIGHT_VERTICAL_HORIZONTAL    = (char) 197;
+    public static final char CP347_LIGHT_VERTICAL_LEFT          = (char) 180;
+    public static final char CP347_LIGHT_UP_RIGHT               = (char) 192;
+    public static final char CP347_LIGHT_UP_HORIZONTAL          = (char) 193;
+    public static final char CP347_LIGHT_UP_LEFT                = (char) 217;
+
     public static final String CR = new String(new byte[]{13}, StandardCharsets.US_ASCII);
     public static final String CRLF = new String(new byte[]{13, 10}, StandardCharsets.US_ASCII);
     public static final String CRFF = new String(new byte[]{13, 12}, StandardCharsets.US_ASCII);
