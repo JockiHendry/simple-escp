@@ -20,6 +20,7 @@ import simple.escp.dom.Line;
 import simple.escp.dom.PageFormat;
 import simple.escp.dom.Report;
 import simple.escp.dom.TableColumn;
+import simple.escp.dom.line.ListLine;
 import simple.escp.dom.line.TableLine;
 import simple.escp.dom.line.TextLine;
 import javax.json.JsonArray;
@@ -171,6 +172,28 @@ public class Parser {
     }
 
     /**
+     * Convert <code>JsonObject</code> into <code>ListLine</code>.
+     *
+     * @param list is the JSON object to convert.
+     * @return result in <code>ListLine</code>.
+     */
+    private ListLine jsonToListLine(JsonObject list) {
+        String source = list.getString("list");
+        if (!list.containsKey("line")) {
+            throw new IllegalArgumentException("List must have 'line'.");
+        }
+        String line = list.getString("line");
+        TextLine[] header = null, footer = null;
+        if (list.containsKey("header")) {
+            header = jsonToTextLine(list.getJsonArray("header"));
+        }
+        if (list.containsKey("footer")) {
+            footer = jsonToTextLine(list.getJsonArray("footer"));
+        }
+        return new ListLine(source, line, header, footer);
+    }
+
+    /**
      * Convert <code>JsonArray</code> into <code>Line[]</code>.
      *
      * @param text is the JSON array to convert.
@@ -187,6 +210,8 @@ public class Parser {
                 JsonObject object = text.getJsonObject(i);
                 if (object.containsKey("table")) {
                     result[i] = jsonToTableLine(object);
+                } else if (object.containsKey("list")) {
+                    result[i] = jsonToListLine(object);
                 } else {
                     throw new IllegalArgumentException("Unknown object in JSON: " + object);
                 }
