@@ -110,62 +110,30 @@ simple-escp also supports sections such as header, footer, and detail.  It also 
 {
     "pageFormat": {
         "pageWidth": 50,
-        "pageLength": 8,
+        "pageLength": 13,
         "usePageLengthFromPrinter": false
     },
     "template": {
         "header": [
-            " Company Name                             Page: %{PAGE_NO}",
-            " Invoice No:  ${invoiceNo:10}                     ",
-            "==================================================",
-            " Code    Product's Name                    Qty   ",
-            "=================================================="
+            "   ###       Company Name                 Page %{PAGE_NO}",
+            " #######                                                 ",
+            "#########    Invoice No: ${invoiceNo:10}                 "
         ],
         "detail": [
             {
                 "table": "table_source",
+                "border": true,
                 "columns": [
-                    { "source": "code", "width": 9  },
-                    { "source": "name", "width": 34 },
-                    { "source": "qty",  "width": 6  }
+                    { "source": "code", "width": 9, "caption": "Code" },
+                    { "source": "name", "width": 34, "caption": "Name" },
+                    { "source": "qty",  "width": 6, "caption": "Qty"  }
                 ]
             },
-            "==================================================",
+            "                                                  ",
             "   (Signature)                  (Signature)       "
         ]
     }
 }
-```
-
-The sample result of JSON template above is:
-
-```
- Company Name                             Page: 1
- Invoice No:  INVC-00001                     
-==================================================
- Code    Product's Name                    Qty   
-==================================================
-CODE-0   Product Random 0                  0     
-CODE-1   Product Random 1                  1     
-CODE-2   Product Random 2                  4     
-
-Company Name                             Page: 2
- Invoice No:  INVC-00001                     
-==================================================
- Code    Product's Name                    Qty   
-==================================================
-CODE-3   Product Random 3                  9     
-CODE-4   Product Random 4                  16    
-CODE-5   Product Random 5                  25    
-
- Company Name                             Page: 3
- Invoice No:  INVC-00001                     
-==================================================
- Code    Product's Name                    Qty   
-==================================================
-CODE-6   Product Random 6                  36       
-==================================================
-   (Signature)                  (Signature)   
 ```
 
 Development
