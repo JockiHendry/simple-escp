@@ -122,7 +122,7 @@ public class FillJob {
      * @param page the associated <code>Page</code> for source text.
      * @return source with functions replaced by evaluated value.
      */
-    private String fillFunction(String text, Page page) {
+    protected String fillFunction(String text, Page page) {
         StringBuffer result = new StringBuffer();
         Matcher matcher = FUNCTION_PATTERN.matcher(text);
         while (matcher.find()) {
@@ -143,7 +143,7 @@ public class FillJob {
      * @param text the source text that has placeholders.
      * @return source with placeholders replaced by actual value.
      */
-    private String fillBasicPlaceholder(String text) {
+    protected String fillBasicPlaceholder(String text) {
         StringBuffer result = new StringBuffer();
         Matcher matcher = BASIC_PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
@@ -165,7 +165,7 @@ public class FillJob {
      * @param text the source text that has placeholders.
      * @return source with placeholders replaced by actual value.
      */
-    private String fillScriptPlaceholder(String text) {
+    protected String fillScriptPlaceholder(String text) {
         StringBuffer result = new StringBuffer();
         Matcher matcher = SCRIPT_PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
@@ -183,28 +183,6 @@ public class FillJob {
     }
 
     /**
-     * Fill <code>TableLine</code>.
-     *
-     * @param report the <code>Report</code> that will be filled.  This is not necessary the same as the
-     *               original report becauses <code>FillJob</code> shouldn't change original <code>Report</code>
-     *               so that it can be reused in the next filling.
-     */
-    private void fillTableLine(Report report) {
-        Page page;
-        while ((page = report.getFirstPageWithTableLines()) != null) {
-            TableLine tableLine = page.getTableLines().get(0);
-            Placeholder placeholder = new BasicPlaceholder(tableLine.getSource());
-            TableFillJob tableFillJob = new TableFillJob(tableLine, (Collection) placeholder.getValue(dataSources));
-            List<Line> results = tableFillJob.fill(report);
-            Collections.reverse(results);
-            page.removeLine(tableLine);
-            for (Line result : results) {
-                report.insert(result, page.getPageNumber(), tableLine.getLineNumber());
-            }
-        }
-    }
-
-    /**
      * Execute this <code>FillJob</code> action.  This will perform the action of filling <code>Report</code> with
      * one or more <code>DataSource</code>.  This method will not modify the original <code>Report</code>.
      *
@@ -214,7 +192,8 @@ public class FillJob {
         Report parsedReport = report;
         if (parsedReport.hasDynamicLine()) {
             parsedReport = new Report(report);
-            fillTableLine(parsedReport);
+            TableFillJob tableFillJob = new TableFillJob(parsedReport, dataSources);
+            tableFillJob.fill();
         }
         StringBuffer result = new StringBuffer();
         boolean isAutoLineFeed = parsedReport.getPageFormat().isAutoLineFeed();

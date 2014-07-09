@@ -1,6 +1,8 @@
 package simple.escp.fill;
 
+import simple.escp.data.DataSource;
 import simple.escp.dom.Line;
+import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.dom.TableColumn;
 import simple.escp.dom.line.TableLine;
@@ -10,43 +12,40 @@ import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
 import simple.escp.util.EscpUtil;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * <code>TableFillJob</code> represent the process of filling a <code>TableLine</code> with its source in form
  * of a <code>Collection</code>.
  */
-public class TableFillJob {
-
-    protected TableLine tableLine;
-    protected Collection source;
+public class TableFillJob extends FillJob {
 
     /**
      * Create a new instance of <code>TableFillJob</code>.
      *
-     * @param tableLine the <code>TableLine</code> that need to be filled.
-     * @param source each entry of this <code>Collection</code> will represent a line in the table.
+     * @param report the target destination of this <code>FillJob</code>.  This <code>FillJob</code> will not
+     *               return any value but directly modify destination <code>report</code>.
+     * @param dataSources  global data source for this <code>FillJob</code>.
      */
-    public TableFillJob(TableLine tableLine, Collection source) {
-        this.tableLine = tableLine;
-        this.source = source;
+    public TableFillJob(Report report, DataSource[] dataSources) {
+        super(report, dataSources);
     }
 
     /**
-     * Execute the <code>TableFillJob</code>.
+     * Fill <code>TableLine</code>.
      *
-     * @param report the source <code>Report</code> in which the table will be placed.  This new table can be seen
-     *               as a subreport for this <code>report</code>.
-     * @return a <code>TextLine</code> that may contains ESC/P commands and can be printed.
+     * @param tableLine process this <code>TableLine</code>.
+     * @param source data source for this <code>TableLine</code>.
+     * @return result in form of <code>List</code> of <code>Line</code>.
      */
-    public List<Line> fill(Report report) {
-
+    private List<Line> fillTableLine(TableLine tableLine, Collection source) {
         Report subreport = new Report(report.getContentLinesPerPage(), tableLine.getHeader(), tableLine.getFooter());
         int tableLineNumber = tableLine.getLineNumber() == null ? 1 : tableLine.getLineNumber();
         int startLines = tableLine.getHeader().length + tableLineNumber - report.getHeader().length;
         if (startLines > subreport.getStartOfFooter()) {
             throw new IllegalArgumentException("The rest of lines is not enough to store this table without " +
-                "creating a new page. (" + startLines + " > " + subreport.getStartOfFooter() + ")");
+                    "creating a new page. (" + startLines + " > " + subreport.getStartOfFooter() + ")");
 
         }
         subreport.newPage(false, startLines);
@@ -80,5 +79,28 @@ public class TableFillJob {
         }
 
         return subreport.getFlatLines();
+
+    }
+
+    /**
+     * Execute the <code>TableFillJob</code>.  This <code>FillJob</code> will make changes directly to
+     * <code>Report</code> and doesn't return anything.
+     *
+     * @return always return <code>null</code>.
+     */
+    @Override
+    public String fill() {
+        Page page;
+        while ((page = report.getFirstPageWithTableLines()) != null) {
+            TableLine tableLine = page.getTableLines().get(0);
+            Collection dataSource = (Collection) (new BasicPlaceholder(tableLine.getSource())).getValue(dataSources);
+            List<Line> results = fillTableLine(tableLine, dataSource);
+            Collections.reverse(results);
+            page.removeLine(tableLine);
+            for (Line result : results) {
+                report.insert(result, page.getPageNumber(), tableLine.getLineNumber());
+            }
+        }
+        return null;
     }
 }
