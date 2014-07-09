@@ -15,7 +15,7 @@ repositories {
     }
 }
 dependencies {
-    compile group: 'jockihendry', name: 'simple-escp', version: '0.2'
+    compile group: 'jockihendry', name: 'simple-escp', version: '0.3'
 }
 ```
 
@@ -135,6 +135,10 @@ simple-escp also supports sections such as header, footer, and detail.  It also 
     }
 }
 ```
+
+The output is:
+
+![preview](https://cloud.githubusercontent.com/assets/3104399/3528849/699d5c80-0793-11e4-8f92-22299c7eabca.PNG)
 
 Development
 -----------
