@@ -1,5 +1,7 @@
-package simple.escp;
+package simple.escp.dom.line;
 
+import simple.escp.dom.Line;
+import simple.escp.dom.TableColumn;
 import simple.escp.util.EscpUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * DOM class to represent table.  A table consists of one or more {@link simple.escp.TableColumn}.
+ * DOM class to represent table.  A table consists of one or more {@link simple.escp.dom.TableColumn}.
  */
 public class TableLine implements Line, Iterable<TableColumn> {
 

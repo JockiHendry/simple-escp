@@ -1,7 +1,7 @@
-package simple.escp;
+package simple.escp.dom;
 
 /**
- * This class represents a column in {@link simple.escp.TableLine}.
+ * This class represents a column in {@link simple.escp.dom.line.TableLine}.
  */
 public class TableColumn {
 

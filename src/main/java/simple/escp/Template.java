@@ -16,7 +16,8 @@
 
 package simple.escp;
 
-import java.util.Map;
+import simple.escp.dom.PageFormat;
+import simple.escp.dom.Report;
 
 /**
  *  <code>Template</code> represent a template used for printing.  A single <code>Template</code>

@@ -1,5 +1,8 @@
-package simple.escp;
+package simple.escp.dom;
 
+import simple.escp.dom.line.EmptyLine;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
 import simple.escp.util.EscpUtil;
 import java.util.ArrayList;
 import java.util.Arrays;

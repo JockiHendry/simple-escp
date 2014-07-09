@@ -1,4 +1,6 @@
-package simple.escp;
+package simple.escp.dom.line;
+
+import simple.escp.dom.Line;
 
 /**
  * Implementation of <code>Line</code> for a line that consists of text.

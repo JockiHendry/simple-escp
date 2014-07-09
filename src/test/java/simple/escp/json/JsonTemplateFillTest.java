@@ -18,8 +18,8 @@ package simple.escp.json;
 
 import org.junit.Before;
 import org.junit.Test;
-import simple.escp.Report;
-import simple.escp.TableLine;
+import simple.escp.dom.Report;
+import simple.escp.dom.line.TableLine;
 import simple.escp.fill.FillJob;
 import simple.escp.data.BeanDataSource;
 import simple.escp.data.DataSources;

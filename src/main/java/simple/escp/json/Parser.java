@@ -16,12 +16,12 @@
 
 package simple.escp.json;
 
-import simple.escp.Line;
-import simple.escp.PageFormat;
-import simple.escp.Report;
-import simple.escp.TableColumn;
-import simple.escp.TableLine;
-import simple.escp.TextLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.PageFormat;
+import simple.escp.dom.Report;
+import simple.escp.dom.TableColumn;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;

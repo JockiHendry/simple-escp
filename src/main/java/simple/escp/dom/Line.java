@@ -1,4 +1,4 @@
-package simple.escp;
+package simple.escp.dom;
 
 /**
  * DOM class to represent each line in <code>Page</code>.

@@ -1,10 +1,10 @@
 package simple.escp.fill;
 
-import simple.escp.Line;
-import simple.escp.Report;
-import simple.escp.TableColumn;
-import simple.escp.TableLine;
-import simple.escp.TextLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.Report;
+import simple.escp.dom.TableColumn;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
 import simple.escp.data.DataSources;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;

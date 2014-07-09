@@ -1,9 +1,9 @@
 package simple.escp.fill;
 
-import simple.escp.Line;
-import simple.escp.Page;
-import simple.escp.Report;
-import simple.escp.TableLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.Page;
+import simple.escp.dom.Report;
+import simple.escp.dom.line.TableLine;
 import simple.escp.data.DataSource;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;

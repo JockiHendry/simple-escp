@@ -18,10 +18,10 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import simple.escp.Page;
-import simple.escp.Report;
-import simple.escp.TableColumn;
-import simple.escp.TableLine;
+import simple.escp.dom.Page;
+import simple.escp.dom.Report;
+import simple.escp.dom.TableColumn;
+import simple.escp.dom.line.TableLine;
 import simple.escp.data.MapDataSource;
 import simple.escp.fill.FillJob;
 import simple.escp.util.EscpUtil;

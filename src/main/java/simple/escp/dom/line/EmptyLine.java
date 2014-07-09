@@ -1,4 +1,6 @@
-package simple.escp;
+package simple.escp.dom.line;
+
+import simple.escp.dom.Line;
 
 /**
  * This class represents an empty line that doesn't have any value associated with it.  It usually means that

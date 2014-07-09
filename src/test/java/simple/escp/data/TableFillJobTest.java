@@ -1,11 +1,11 @@
 package simple.escp.data;
 
 import org.junit.Test;
-import simple.escp.Line;
-import simple.escp.Report;
-import simple.escp.TableColumn;
-import simple.escp.TableLine;
-import simple.escp.TextLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.Report;
+import simple.escp.dom.TableColumn;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
 import simple.escp.fill.TableFillJob;
 import java.util.ArrayList;
 import java.util.HashMap;

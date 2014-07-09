@@ -2,6 +2,13 @@ package simple.escp;
 
 import org.junit.Test;
 import simple.escp.data.MapDataSource;
+import simple.escp.dom.line.EmptyLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.Page;
+import simple.escp.dom.PageFormat;
+import simple.escp.dom.Report;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
 import simple.escp.fill.FillJob;
 import static org.junit.Assert.*;
 import static simple.escp.util.EscpUtil.*;

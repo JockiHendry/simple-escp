@@ -3,6 +3,12 @@ package simple.escp;
 import static org.junit.Assert.*;
 import static simple.escp.util.EscpUtil.*;
 import org.junit.Test;
+import simple.escp.dom.line.EmptyLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.Page;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
+
 import java.util.ArrayList;
 import java.util.List;
 
