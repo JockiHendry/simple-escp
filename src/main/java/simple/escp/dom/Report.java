@@ -139,7 +139,7 @@ public class Report implements Iterable<Page> {
     }
 
     /**
-     * Get the first <code>Page</code> in this report that has contains <code>TableLine</code>.
+     * Get the first <code>Page</code> in this report that has <code>TableLine</code>.
      *
      * @return a <code>Page</code> that has at least one <code>TableLine</code>, or <code>null</code> if no page
      *         in this report has <code>TableLine</code>.
@@ -147,6 +147,21 @@ public class Report implements Iterable<Page> {
     public Page getFirstPageWithTableLines() {
         for (Page page : pages) {
             if (!page.getTableLines().isEmpty()) {
+                return page;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the first <code>Page</code> in this report that has <code>ListLine</code>.
+     *
+     * @return a <code>Page</code> that has at least one <code>ListLine</code>, or <code>null</code> if no page
+     *         in this report has <code>ListLine</code>.
+     */
+    public Page getFirstPageWithListLines() {
+        for (Page page : pages) {
+            if (!page.getListLines().isEmpty()) {
                 return page;
             }
         }
