@@ -118,6 +118,20 @@ public class BasicPlaceholderTest {
     }
 
     @Test
+    public void alignmentRight() {
+        assertEquals("  Solid Snake", new BasicPlaceholder("name:13:right").getFormatted("Solid Snake"));
+        assertEquals("           10", new BasicPlaceholder("age:13:right").getFormatted(10));
+        assertEquals("The Solid Sna", new BasicPlaceholder("name:13:right").getFormatted("The Solid Snake"));
+    }
+
+    @Test
+    public void alignmentCenter() {
+        assertEquals(" Solid Snake ", new BasicPlaceholder("name:13:center").getFormatted("Solid Snake"));
+        assertEquals("     10      ", new BasicPlaceholder("age:13:center").getFormatted(10));
+        assertEquals("The Solid Sna", new BasicPlaceholder("name:13:center").getFormatted("The Solid Snake"));
+    }
+
+    @Test
     public void getValueAsStringFromMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("name", "Solid");

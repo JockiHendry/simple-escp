@@ -33,6 +33,7 @@ public abstract class Placeholder {
     protected int width = 0;
     protected boolean sum;
     protected boolean count;
+    protected Alignment alignment;
 
     /**
      * Create a new instance of placeholder.
@@ -137,6 +138,25 @@ public abstract class Placeholder {
     }
 
     /**
+     * Get the alignment for this placeholder.
+     *
+     * @return an instance of <code>Alignment</code> or <code>null</code> if no alignment is specified for this
+     *         placeholder.
+     */
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
+    /**
+     * Set the new alignment for this placeholder.
+     *
+     * @param alignment the new alignment for this placeholder.
+     */
+    public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
+    }
+
+    /**
      * Calculate the sum of <code>Collection</code>.
      *
      * @param value a <code>Collection</code> to sum.
@@ -184,15 +204,10 @@ public abstract class Placeholder {
             result = getFormat().format(result);
         }
         if (getWidth() > 0) {
-            if (result.toString().length() < getWidth()) {
-                StringBuilder tmp = new StringBuilder(result.toString());
-                int numOfSpaces = getWidth() - result.toString().length() + 1;
-                for (int i = 1; i < numOfSpaces; i++) {
-                    tmp.append(' ');
-                }
-                result = tmp.toString();
-            } else if (result.toString().length() > getWidth()) {
-                result = result.toString().substring(0, getWidth());
+            if (getAlignment() == null) {
+                result = LEFT_ALIGNMENT.process(result.toString(), getWidth());
+            } else {
+                result = getAlignment().process(result.toString(), getWidth());
             }
         }
         return result;
@@ -208,21 +223,6 @@ public abstract class Placeholder {
             setSum(true);
         } else if ("count".equals(text)) {
             setCount(true);
-        }
-    }
-
-    /**
-     * Parse an expression in placeholder expression.  The expression should be broken into multiple keywords
-     * that are stored in <code>text</code>.
-     *
-     * @param text an array of string that represent keywords that should be parsed.
-     */
-    protected void parseText(String[] text) {
-        for (String part: text) {
-            part = part.trim();
-            parseFormula(part);
-            parseFormatter(part);
-            parseWidth(part);
         }
     }
 
@@ -263,6 +263,38 @@ public abstract class Placeholder {
     }
 
     /**
+     * Parse alignment for this placeholder, such as <code>"left"</code>, <code>"right"</code>, or
+     * <code>"center"</code>.
+     *
+     * @param text part of text for this placeholder.
+     */
+    protected void parseAlignment(String text) {
+        if ("left".equals(text)) {
+            setAlignment(LEFT_ALIGNMENT);
+        } else if ("right".equals(text)) {
+            setAlignment(RIGHT_ALIGNMENT);
+        } else if ("center".equals(text)) {
+            setAlignment(CENTER_ALIGNMENT);
+        }
+    }
+
+    /**
+     * Parse an expression in placeholder expression.  The expression should be broken into multiple keywords
+     * that are stored in <code>text</code>.
+     *
+     * @param text an array of string that represent keywords that should be parsed.
+     */
+    protected void parseText(String[] text) {
+        for (String part: text) {
+            part = part.trim();
+            parseFormula(part);
+            parseFormatter(part);
+            parseWidth(part);
+            parseAlignment(part);
+        }
+    }
+
+    /**
      * Retrieve a value from specified <code>DataSource</code>.
      *
      * @param dataSources the data sources from where this placeholder retrieves its value.
@@ -293,6 +325,97 @@ public abstract class Placeholder {
      */
     public Object getFormattedValue(DataSource[] dataSources) {
         return getFormatted(getValue(dataSources));
+    }
+
+    /**
+     * Representation of utility class that add alignment to text.
+     */
+    private static interface Alignment {
+
+        /**
+         * Add alignmen to <code>text</code> based on <code>width</code>.  If length of <code>text</code> is
+         * more than <code>width</code>, it should be truncated.
+         *
+         * @param text the text that will be aligned.
+         * @param width maximum number of characters available for this text.
+         * @return aligned text.
+         */
+        public String process(String text, int width);
+    }
+
+    private static LeftAlignment LEFT_ALIGNMENT = new LeftAlignment();
+    private static RightAlignment RIGHT_ALIGNMENT = new RightAlignment();
+    private static CenterAlignment CENTER_ALIGNMENT = new CenterAlignment();
+
+    /**
+     * Represent a left alignment process.
+     */
+    private static class LeftAlignment implements Alignment {
+
+        @Override
+        public String process(String text, int width) {
+            if (text.length() < width) {
+                StringBuilder tmp = new StringBuilder(text);
+                int numOfSpaces = width - text.length() + 1;
+                for (int i = 1; i < numOfSpaces; i++) {
+                    tmp.append(' ');
+                }
+                return tmp.toString();
+            } else if (text.length() > width) {
+                return text.substring(0, width);
+            }
+            return text;
+        }
+
+    }
+
+    /**
+     * Represent a right alignment process.
+     */
+    private static class RightAlignment implements  Alignment {
+
+        @Override
+        public String process(String text, int width) {
+            if (text.length() < width) {
+                StringBuilder tmp = new StringBuilder();
+                int numOfSpaces = width - text.length() + 1;
+                for (int i = 1; i < numOfSpaces; i++) {
+                    tmp.append(' ');
+                }
+                tmp.append(text);
+                return tmp.toString();
+            } else if (text.length() > width) {
+                return text.substring(0, width);
+            }
+            return text;
+        }
+
+    }
+
+    /**
+     * Represent a center alignment process.
+     */
+    private static class CenterAlignment implements Alignment {
+
+        @Override
+        public String process(String text, int width) {
+            if (text.length() < width) {
+                StringBuilder tmp = new StringBuilder();
+                int numOfSpaces = (width - text.length()) / 2;
+                for (int i = 0; i < numOfSpaces; i++) {
+                    tmp.append(' ');
+                }
+                tmp.append(text);
+                while (tmp.length() < width) {
+                    tmp.append(' ');
+                }
+                return tmp.toString();
+            } else if (text.length() > width) {
+                return text.substring(0, width);
+            }
+            return text;
+        }
+
     }
 
 }
