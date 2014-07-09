@@ -1,6 +1,7 @@
 package simple.escp.dom;
 
 import simple.escp.dom.line.EmptyLine;
+import simple.escp.dom.line.ListLine;
 import simple.escp.dom.line.TableLine;
 import simple.escp.dom.line.TextLine;
 import simple.escp.util.EscpUtil;
@@ -359,6 +360,27 @@ public class Page {
                 TableLine tableLine = (TableLine) content.get(i);
                 tableLine.setLineNumber(offset + i);
                 result.add(tableLine);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Get all <code>ListLine</code> in this page.  This method also stores line number for each returned
+     * <code>ListLine</code>.  To inspect line number for <code>ListLine</code>,
+     * use <code>ListLine.getLineNumber()</code> method.
+     *
+     * @return <code>List</code> that contains <code>TableLine</code> in this page.  If no <code>TableLine</code>
+     *         exists in this page, it will return an empty <code>List</code>.
+     */
+    public List<ListLine> getListLines() {
+        List<ListLine> result = new ArrayList<>();
+        int offset = header.length + 1;
+        for (int i = 0; i < content.size(); i++) {
+            if (content.get(i) instanceof ListLine) {
+                ListLine listLine = (ListLine) content.get(i);
+                listLine.setLineNumber(offset + i);
+                result.add(listLine);
             }
         }
         return result;
