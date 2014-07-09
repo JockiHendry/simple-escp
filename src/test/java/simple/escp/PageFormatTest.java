@@ -17,6 +17,8 @@
 package simple.escp;
 
 import org.junit.Test;
+import simple.escp.dom.PageFormat;
+
 import static org.junit.Assert.*;
 
 public class PageFormatTest {

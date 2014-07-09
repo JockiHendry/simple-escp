@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package simple.escp;
+package simple.escp.dom;
 
 import simple.escp.util.EscpUtil;
 

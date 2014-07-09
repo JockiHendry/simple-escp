@@ -18,7 +18,7 @@ package simple.escp.json;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import simple.escp.FillJob;
+import simple.escp.fill.FillJob;
 import simple.escp.data.MapDataSource;
 import simple.escp.util.EscpUtil;
 import static simple.escp.util.EscpUtil.*;

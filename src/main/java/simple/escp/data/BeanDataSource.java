@@ -125,4 +125,18 @@ public class BeanDataSource implements DataSource {
     public Object getSource() {
         return source;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getMembers() {
+        String[] result = new String[propertyDescriptors.length];
+        int i = 0;
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            result[i++] = propertyDescriptor.getName();
+        }
+        return result;
+    }
+
 }

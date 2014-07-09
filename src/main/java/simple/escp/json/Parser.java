@@ -16,11 +16,13 @@
 
 package simple.escp.json;
 
-import simple.escp.Line;
-import simple.escp.PageFormat;
-import simple.escp.Report;
-import simple.escp.TableLine;
-import simple.escp.TextLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.PageFormat;
+import simple.escp.dom.Report;
+import simple.escp.dom.TableColumn;
+import simple.escp.dom.line.ListLine;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
@@ -151,16 +153,44 @@ public class Parser {
 
     private TableLine jsonToTableLine(JsonObject table) {
         TableLine tableLine = new TableLine(table.getString("table"));
+        if (table.containsKey("border")) {
+            tableLine.setDrawBorder(table.getBoolean("border", false));
+        }
         JsonArray columns = table.getJsonArray("columns");
         if (columns == null) {
             throw new IllegalArgumentException("Table must have 'columns'.");
         } else {
             for (int i = 0; i < columns.size(); i++) {
                 JsonObject column = columns.getJsonObject(i);
-                tableLine.addColumn(column.getString("source"), column.getInt("width"));
+                TableColumn tableColumn = tableLine.addColumn(column.getString("source"), column.getInt("width"));
+                if (column.containsKey("caption")) {
+                    tableColumn.setCaption(column.getString("caption"));
+                }
             }
         }
         return tableLine;
+    }
+
+    /**
+     * Convert <code>JsonObject</code> into <code>ListLine</code>.
+     *
+     * @param list is the JSON object to convert.
+     * @return result in <code>ListLine</code>.
+     */
+    private ListLine jsonToListLine(JsonObject list) {
+        String source = list.getString("list");
+        if (!list.containsKey("line")) {
+            throw new IllegalArgumentException("List must have 'line'.");
+        }
+        String line = list.getString("line");
+        TextLine[] header = null, footer = null;
+        if (list.containsKey("header")) {
+            header = jsonToTextLine(list.getJsonArray("header"));
+        }
+        if (list.containsKey("footer")) {
+            footer = jsonToTextLine(list.getJsonArray("footer"));
+        }
+        return new ListLine(source, line, header, footer);
     }
 
     /**
@@ -180,6 +210,8 @@ public class Parser {
                 JsonObject object = text.getJsonObject(i);
                 if (object.containsKey("table")) {
                     result[i] = jsonToTableLine(object);
+                } else if (object.containsKey("list")) {
+                    result[i] = jsonToListLine(object);
                 } else {
                     throw new IllegalArgumentException("Unknown object in JSON: " + object);
                 }

@@ -1,0 +1,16 @@
+{
+    "pageFormat": {
+        "pageLength": 5,
+        "usePageLengthFromPrinter": false
+    },
+    "template": [
+        "This is detail 1.",
+        {
+            "list": "persons",
+            "line": "Page %{PAGE_NO}: ${firstName} ${lastName} as ${nickname}",
+            "header": [ "This is header of list." ],
+            "footer": [ "This is footer of list." ]
+        },
+        "This is detail 2."
+    ]
+}

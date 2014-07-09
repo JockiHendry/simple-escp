@@ -1,5 +1,9 @@
-package simple.escp;
+package simple.escp.dom;
 
+import simple.escp.dom.line.EmptyLine;
+import simple.escp.dom.line.ListLine;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
 import simple.escp.util.EscpUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,6 +165,46 @@ public class Page {
     }
 
     /**
+     * Add multipe lines to this page.  The lines will be inserted after the last line of this page.
+     *
+     * @param lines the lines that will be added to this page.
+     */
+    public void append(List<? extends Line> lines) {
+        for (Line line : lines) {
+            append(line);
+        }
+    }
+
+    /**
+     * Add empty line to this page.
+     */
+    public void appendEmptyLine() {
+        append(new EmptyLine());
+    }
+
+    /**
+     * Add empty lines from current line to the specified line number.
+     *
+     * @param lineNumber destination line number.  This line is exclusive (the lines before this line will be
+     *                   empty line but not including this line).
+     */
+    public void appendEmptyLineUntil(int lineNumber) {
+        if (lineNumber <= header.length) {
+            throw new IllegalArgumentException("Can't append empty line before header: " + lineNumber);
+        }
+        if (lineNumber > (pageLength - footer.length)) {
+            throw new IllegalArgumentException("Can't append empty line after footer: " + lineNumber);
+        }
+        int currentLine = header.length + content.size();
+        if (currentLine >= lineNumber) {
+            throw new IllegalArgumentException("Destination line number is less than current (" + currentLine + ")");
+        }
+        for (int i = currentLine + 1; i < lineNumber; i++) {
+            appendEmptyLine();
+        }
+    }
+
+    /**
      * Insert a new <code>Line</code> at the specified <code>lineNumber</code> position.  If the page is full
      * after insertion, the last line of the content (<strong>not</strong> including footer) will be removed
      * and returned.
@@ -181,7 +225,7 @@ public class Page {
         content.add(lineNumber - header.length - 1, line);
         if (isOverflow()) {
             result = content.get(content.size() - 1);
-            content.remove(result);
+            content.remove(content.size() - 1);
         }
         return result;
     }
@@ -316,6 +360,27 @@ public class Page {
                 TableLine tableLine = (TableLine) content.get(i);
                 tableLine.setLineNumber(offset + i);
                 result.add(tableLine);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Get all <code>ListLine</code> in this page.  This method also stores line number for each returned
+     * <code>ListLine</code>.  To inspect line number for <code>ListLine</code>,
+     * use <code>ListLine.getLineNumber()</code> method.
+     *
+     * @return <code>List</code> that contains <code>TableLine</code> in this page.  If no <code>TableLine</code>
+     *         exists in this page, it will return an empty <code>List</code>.
+     */
+    public List<ListLine> getListLines() {
+        List<ListLine> result = new ArrayList<>();
+        int offset = header.length + 1;
+        for (int i = 0; i < content.size(); i++) {
+            if (content.get(i) instanceof ListLine) {
+                ListLine listLine = (ListLine) content.get(i);
+                listLine.setLineNumber(offset + i);
+                result.add(listLine);
             }
         }
         return result;

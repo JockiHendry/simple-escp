@@ -16,7 +16,7 @@
 
 package simple.escp.json;
 
-import simple.escp.Report;
+import simple.escp.dom.Report;
 import simple.escp.Template;
 import javax.json.Json;
 import javax.json.JsonNumber;

@@ -1,28 +1,27 @@
 {
     "pageFormat": {
         "pageWidth": 50,
-        "pageLength": 8,
+        "pageLength": 13,
         "usePageLengthFromPrinter": false
     },
     "template": {
         "header": [
-            " Company Name                             Page: %{PAGE_NO}",
-            " Invoice No:  ${invoiceNo:10}                     ",
-            "==================================================",
-            " Code    Product's Name                    Qty   ",
-            "=================================================="
+            "   ###       Company Name                 Page %{PAGE_NO}",
+            " #######                                                 ",
+            "#########    Invoice No: ${invoiceNo:10}                 ",
+            " #######                                                 ",
+            "   ###                                                   "
         ],
         "detail": [
             {
                 "table": "table_source",
+                "border": true,
                 "columns": [
                     { "source": "code", "width": 9  },
                     { "source": "name", "width": 34 },
                     { "source": "qty",  "width": 6  }
                 ]
             },
-            "==================================================",
-            "                                                  ",
             "                                                  ",
             "   (Signature)                  (Signature)       "
         ]

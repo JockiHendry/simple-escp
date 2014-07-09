@@ -1,4 +1,7 @@
-package simple.escp;
+package simple.escp.dom;
+
+import simple.escp.dom.line.EmptyLine;
+import simple.escp.dom.line.TextLine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,11 +29,7 @@ public class Report implements Iterable<Page> {
      * @param report a <code>Report</code> to clone.
      */
     public Report(Report report) {
-        this.pageFormat = report.getPageFormat();
-        this.header = report.getHeader();
-        this.footer = report.getFooter();
-        this.lineBreak = false;
-
+        init(report.getPageFormat(), report.getHeader(), report.getFooter());
         for (Page page : report) {
             for (Line line : page.getContent()) {
                 append(line, false);
@@ -42,14 +41,38 @@ public class Report implements Iterable<Page> {
      * Create a new instance of <code>Report</code>.
      *
      * @param pageFormat the <code>PageFormat</code> for this <code>Report</code>.
+     * @param header header for all pages in this <code>Report</code>.
+     * @param footer footer for all pages in this <code>Report</code>.
+     */
+    public Report(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
+        init(pageFormat, header, footer);
+    }
+
+    /**
+     * Create a new instance of <code>Report</code>.
+     *
+     * @param pageLength length of every pages in this report in number of lines.
+     * @param header header for all pages in this <code>Report</code>.
+     * @param footer footer for all pages in this <code>Report</code>.
+     */
+    public Report(int pageLength, TextLine[] header, TextLine[] footer) {
+        pageFormat = new PageFormat();
+        pageFormat.setPageLength(pageLength);
+        init(pageFormat, header, footer);
+    }
+
+    /**
+     * Initialization setup this report.
+     *
+     * @param pageFormat the <code>PageFormat</code> for this <code>Report</code>.
      * @param header header for all of pages in this <code>Report</code>.
      * @param footer footer for all of pages in this <code>Report</code>.
      */
-    public Report(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
+    private void init(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
         this.pageFormat = pageFormat;
         if ((pageFormat.getPageLength() == null) && (!pageFormat.isUsePageLengthFromPrinter())) {
             throw new IllegalArgumentException("Invalid page format with pageLength undefined when " +
-                "isUsePageLengthFromPrinter is false.");
+                    "isUsePageLengthFromPrinter is false.");
         }
         this.header = (header == null) ? new TextLine[0] : header;
         this.footer = (footer == null) ? new TextLine[0] : footer;
@@ -116,7 +139,7 @@ public class Report implements Iterable<Page> {
     }
 
     /**
-     * Get the first <code>Page</code> in this report that has contains <code>TableLine</code>.
+     * Get the first <code>Page</code> in this report that has <code>TableLine</code>.
      *
      * @return a <code>Page</code> that has at least one <code>TableLine</code>, or <code>null</code> if no page
      *         in this report has <code>TableLine</code>.
@@ -124,6 +147,21 @@ public class Report implements Iterable<Page> {
     public Page getFirstPageWithTableLines() {
         for (Page page : pages) {
             if (!page.getTableLines().isEmpty()) {
+                return page;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the first <code>Page</code> in this report that has <code>ListLine</code>.
+     *
+     * @return a <code>Page</code> that has at least one <code>ListLine</code>, or <code>null</code> if no page
+     *         in this report has <code>ListLine</code>.
+     */
+    public Page getFirstPageWithListLines() {
+        for (Page page : pages) {
+            if (!page.getListLines().isEmpty()) {
                 return page;
             }
         }
@@ -191,6 +229,21 @@ public class Report implements Iterable<Page> {
     }
 
     /**
+     * Create a new page for this report that start at specified line.  The line before the specified line
+     * will be filled by an <code>EmptyLine</code>.
+     *
+     * @param plain if <code>true</code> will ignore header and footer.  Set this to <code>false</code> to create
+     *              a <code>Page</code> that doesn't have header and footer.
+     * @param startAtLineNumber start appending from this line number and ignore lines before this line number.
+     * @return the created <code>Page</code>.
+     */
+    public Page newPage(boolean plain, int startAtLineNumber) {
+        Page page = newPage(plain);
+        page.appendEmptyLineUntil(startAtLineNumber);
+        return page;
+    }
+
+    /**
      * Start a line break.  The next call of <code>append()</code> will create a new page and write to this new
      * page instead of current page.
      */
@@ -241,13 +294,14 @@ public class Report implements Iterable<Page> {
     }
 
     /**
-     * Insert a new line at certain page and certain position.  This may a new page to be created if necessary.
+     * Insert a new line at certain page and certain position.  This may causes a new page to be created if necessary.
      *
      * @param line a new line to be inserted to this report.
      * @param pageNumber the page number in which the new line will be inserted.
      * @param lineNumber the line number in the page where the new line will be inserted.
+     * @param newPageFirstLines these lines will be added to the new page if this insertion creates new page.
      */
-    public void insert(Line line, int pageNumber, int lineNumber) {
+    public void insert(Line line, int pageNumber, int lineNumber, List<? extends Line> newPageFirstLines) {
         if (pageNumber < 1 || pageNumber > pages.size()) {
             throw new IllegalArgumentException("Invalid page number: " + pageNumber);
         }
@@ -257,10 +311,25 @@ public class Report implements Iterable<Page> {
         while (discardedLine != null) {
             if (currentPage == null) {
                 currentPage = newPage(false);
+                if (newPageFirstLines != null) {
+                    currentPage.append(newPageFirstLines);
+                }
             }
-            discardedLine = currentPage.insert(discardedLine, header.length + 1);
+            discardedLine = currentPage.insert(discardedLine, header.length + 1  +
+                (newPageFirstLines == null ? 0 : newPageFirstLines.size()));
             currentPage = nextPage(currentPage);
         }
+    }
+
+    /**
+     * Insert a new line at certain page and certain position.  This may causes a new page to be created if necessary.
+     *
+     * @param line a new line to be inserted to this report.
+     * @param pageNumber the page number in which the new line will be inserted.
+     * @param lineNumber the line number in the page where the new line will be inserted.
+     */
+    public void insert(Line line, int pageNumber, int lineNumber) {
+        insert(line, pageNumber, lineNumber, null);
     }
 
     /**
@@ -275,6 +344,45 @@ public class Report implements Iterable<Page> {
             }
         }
         return false;
+    }
+
+    /**
+     * Get all lines in this report combined as one big page.  <code>EmptyLine</code> will be ignored.
+     *
+     * @return all lines in this report.
+     */
+    public List<Line> getFlatLines() {
+        List<Line> result = new ArrayList<>();
+        for (Page page : pages) {
+            for (Line line : page.getLines()) {
+                if (line instanceof EmptyLine) {
+                    continue;
+                }
+                result.add(line);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Get the length of content for each page.  Content is the area within the page that doesn't include
+     * header and footer.  Methods such as {@link #append(Line, boolean)} or
+     * {@link #insert(Line, int, int)} works only within this area.
+     *
+     * @return the length of content page in number of lines.
+     */
+    public int getContentLinesPerPage() {
+        return pageFormat.getPageLength() - header.length - footer.length;
+    }
+
+    /**
+     * Get line number that indicates the first line of footer.
+     *
+     * @return line number for the first line of footer.  If this report doesn't have footer, the returned value
+     *         is line number for the last line.
+     */
+    public int getStartOfFooter() {
+        return header.length + getContentLinesPerPage();
     }
 
     @Override

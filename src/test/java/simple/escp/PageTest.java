@@ -3,6 +3,13 @@ package simple.escp;
 import static org.junit.Assert.*;
 import static simple.escp.util.EscpUtil.*;
 import org.junit.Test;
+import simple.escp.dom.line.EmptyLine;
+import simple.escp.dom.Line;
+import simple.escp.dom.Page;
+import simple.escp.dom.line.ListLine;
+import simple.escp.dom.line.TableLine;
+import simple.escp.dom.line.TextLine;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -253,6 +260,53 @@ public class PageTest {
         assertEquals(2, page.getTableLines().size());
         assertEquals(3, page.getTableLines().get(0).getLineNumber().intValue());
         assertEquals(4, page.getTableLines().get(1).getLineNumber().intValue());
+    }
+
+    @Test
+    public void getListLines() {
+        List<Line> content = new ArrayList<>();
+        content.add(new TextLine("This is content 1"));
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+        assertEquals(0, page.getListLines().size());
+
+        page.append(new ListLine("test", "every line", null, null));
+        assertEquals(1, page.getListLines().size());
+        assertEquals(3, page.getListLines().get(0).getLineNumber().intValue());
+        page.append(new ListLine("test", "every line", null, null));
+        assertEquals(2, page.getListLines().size());
+        assertEquals(3, page.getListLines().get(0).getLineNumber().intValue());
+        assertEquals(4, page.getListLines().get(1).getLineNumber().intValue());
+    }
+
+    @Test
+    public void appendEmptyLineUntil() {
+        List<Line> content = new ArrayList<>();
+        TextLine line1 = new TextLine("This is content 1");
+        content.add(line1);
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+        page.appendEmptyLineUntil(4);
+
+        assertEquals(2, page.getContent().size());
+        assertEquals("This is header 1", ((TextLine)page.getLine(1)).getText());
+        assertEquals("This is content 1", ((TextLine)page.getLine(2)).getText());
+        assertEquals(EmptyLine.class, page.getLine(3).getClass());
+        assertEquals("This is footer 1", ((TextLine)page.getLine(4)).getText());
+
+        content = new ArrayList<>();
+        header = new TextLine[] { new TextLine("This is header 1") };
+        footer = new TextLine[] { new TextLine("This is footer 1") };
+        page = new Page(content, header, footer, 1, 5);
+        page.appendEmptyLineUntil(4);
+
+        assertEquals(2, page.getContent().size());
+        assertEquals("This is header 1", ((TextLine)page.getLine(1)).getText());
+        assertEquals(EmptyLine.class, page.getLine(2).getClass());
+        assertEquals(EmptyLine.class, page.getLine(3).getClass());
+        assertEquals("This is footer 1", ((TextLine)page.getLine(4)).getText());
     }
 
 }

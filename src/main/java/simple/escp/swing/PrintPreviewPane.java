@@ -16,7 +16,7 @@
 
 package simple.escp.swing;
 
-import simple.escp.FillJob;
+import simple.escp.fill.FillJob;
 import simple.escp.SimpleEscp;
 import simple.escp.Template;
 import simple.escp.data.DataSources;
@@ -28,9 +28,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.JViewport;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.Vector;
 
@@ -81,8 +86,10 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
     public PrintPreviewPane(String text, int pageLength, int pageWidth) {
         this.text = text;
         outputPane = new OutputPane(text, pageLength, pageWidth);
+        MouseHandler mouseHandler = new MouseHandler();
+        outputPane.addMouseListener(mouseHandler);
+        outputPane.addMouseMotionListener(mouseHandler);
         scrollPane = new JScrollPane(outputPane);
-
         toolbar = new JToolBar();
         printButton = new JButton("Print");
         printButton.addActionListener(this);
@@ -115,5 +122,51 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
             return;
         }
         new SimpleEscp((String) printerNameComboBox.getSelectedItem()).print(text);
+    }
+
+    /**
+     * Handler for mouse related events in <code>scrollPane</code>.
+     */
+    private class MouseHandler extends MouseAdapter {
+
+        private int x, y;
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            x = e.getX();
+            y = e.getY();
+            scrollPane.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            scrollPane.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            JViewport viewport = scrollPane.getViewport();
+            Point point = viewport.getViewPosition();
+            int newX = point.x - (e.getX() - x);
+            int maxX = outputPane.getWidth() - viewport.getWidth();
+            int newY = point.y - (e.getY() - y);
+            int maxY = outputPane.getHeight() - viewport.getHeight();
+
+            if (newX < 0) {
+                newX = 0;
+            }
+            if (newX > maxX) {
+                newX = maxX;
+            }
+            if (newY < 0) {
+                newY = 0;
+            }
+            if (newY > maxY) {
+                newY = maxY;
+            }
+
+            viewport.setViewPosition(new Point(newX, newY));
+        }
+
     }
 }

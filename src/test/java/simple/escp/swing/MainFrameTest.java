@@ -38,7 +38,7 @@ public class MainFrameTest extends JFrame {
         Map<String, Object> value = new HashMap<>();
         value.put("invoiceNo", "INVC-00001");
         List<Map<String, Object>> tables = new ArrayList<>();
-        for (int i=0; i<30; i++) {
+        for (int i=0; i<5; i++) {
             Map<String, Object> line = new HashMap<>();
             line.put("code", String.format("CODE-%d", i));
             line.put("name", String.format("Product Random %d", i));

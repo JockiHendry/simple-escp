@@ -1,13 +1,16 @@
-package simple.escp;
+package simple.escp.fill;
 
+import simple.escp.dom.Page;
+import simple.escp.dom.Report;
 import simple.escp.data.DataSource;
-import simple.escp.exception.InvalidPlaceholder;
+import simple.escp.placeholder.BasicPlaceholder;
+import simple.escp.placeholder.Placeholder;
+import simple.escp.placeholder.ScriptPlaceholder;
 import simple.escp.util.EscpUtil;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,12 +25,14 @@ import java.util.regex.Pattern;
  */
 public class FillJob {
 
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([a-zA-Z0-9_@:]+)\\}");
-    public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{([a-zA-Z0-9_]+)\\}");
+    public static final Pattern BASIC_PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{(.+?)\\}");
+    public static final Pattern SCRIPT_PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(.+?)\\}\\}");
+    public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{(.+?)\\}");
 
     protected Report report;
     protected DataSource[] dataSources;
     protected Map<String, Placeholder> placeholders = new HashMap<>();
+    protected ScriptEngine scriptEngine;
 
     /**
      * Create a new <code>FillJob</code> with empty data source.
@@ -57,6 +62,14 @@ public class FillJob {
     public FillJob(Report report, DataSource[] dataSources) {
         this.report = report;
         this.dataSources = Arrays.copyOf(dataSources, dataSources.length);
+
+        // Create script engine for ScriptPlaceholder
+        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+        scriptEngineManager.setBindings(new DataSourceBinding(this.dataSources));
+        this.scriptEngine = scriptEngineManager.getEngineByName("groovy");
+        if (this.scriptEngine == null) {
+            this.scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
+        }
     }
 
     /**
@@ -98,55 +111,13 @@ public class FillJob {
     }
 
     /**
-     * Retrieve a value for a <code>Placeholder</code> in form of <code>String</code>.  See also
-     * {@link #getValue(Placeholder)}.
-     *
-     * @param placeholder the <code>Placeholder</code> whose value will be retrieved.
-     * @return the value for the <code>placeholder</code>.
-     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for <code>placeholder</code> is
-     *         data source.
-     */
-    public String getValueAsString(Placeholder placeholder) {
-        return getValue(placeholder).toString();
-    }
-
-    /**
-     * Retrieve a value for a <code>Placeholder</code> from <code>DataSource</code>.
-     *
-     * @param placeholder the <code>Placeholder</code> whose value will be retrieved.
-     * @return the value for the <code>placeholder</code>.
-     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for <code>placeholder</code> in
-     *         data source.
-     */
-    public Object getValue(Placeholder placeholder) {
-        return placeholder.getFormatted(getValue(placeholder.getName()));
-    }
-
-    /**
-     * Retrieve a value for a member name from <code>DataSource</code>.
-     *
-     * @param name the member name that is in <code>DataSource</code>.
-     * @return the value for the member name.
-     * @throws simple.escp.exception.InvalidPlaceholder if can't find the value for the member name in
-     *         data source.
-     */
-    public Object getValue(String name) {
-        for (DataSource dataSource: dataSources) {
-            if (dataSource.has(name)) {
-                return dataSource.get(name);
-            }
-        }
-        throw new InvalidPlaceholder("Can't find data source's member for [" + name + "]");
-    }
-
-    /**
      * This method will evaluate functions.
      *
      * @param text the source text that has functions.
      * @param page the associated <code>Page</code> for source text.
      * @return source with functions replaced by evaluated value.
      */
-    private String fillFunction(String text, Page page) {
+    protected String fillFunction(String text, Page page) {
         StringBuffer result = new StringBuffer();
         Matcher matcher = FUNCTION_PATTERN.matcher(text);
         while (matcher.find()) {
@@ -167,41 +138,43 @@ public class FillJob {
      * @param text the source text that has placeholders.
      * @return source with placeholders replaced by actual value.
      */
-    private String fillPlaceholder(String text) {
+    protected String fillBasicPlaceholder(String text) {
         StringBuffer result = new StringBuffer();
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
+        Matcher matcher = BASIC_PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
             String placeholderText = matcher.group(1);
             Placeholder placeholder = placeholders.get(placeholderText);
             if (placeholder == null) {
-                placeholder = new Placeholder(placeholderText);
+                placeholder = new BasicPlaceholder(placeholderText);
                 placeholders.put(placeholderText, placeholder);
             }
-            matcher.appendReplacement(result, getValueAsString(placeholder));
+            matcher.appendReplacement(result, placeholder.getValueAsString(dataSources));
         }
         matcher.appendTail(result);
         return result.toString();
     }
 
     /**
-     * Fill <code>TableLine</code>.
+     * This method will fill placeholders by executing the script inside that placeholder.
      *
-     * @param report the <code>Report</code> that will be filled.  This is not necessary the same as the
-     *               original report becauses <code>FillJob</code> shouldn't change original <code>Report</code>
-     *               so that it can be reused in the next filling.
+     * @param text the source text that has placeholders.
+     * @return source with placeholders replaced by actual value.
      */
-    private void fillTableLine(Report report) {
-        Page page;
-        while ((page = report.getFirstPageWithTableLines()) != null) {
-            TableLine tableLine = page.getTableLines().get(0);
-            TableFillJob tableFillJob = new TableFillJob(tableLine, (Collection) getValue(tableLine.getSource()));
-            List<String> results = tableFillJob.fill();
-            Collections.reverse(results);
-            page.removeLine(tableLine);
-            for (String result : results) {
-                report.insert(new TextLine(result), page.getPageNumber(), tableLine.getLineNumber());
+    protected String fillScriptPlaceholder(String text) {
+        StringBuffer result = new StringBuffer();
+        Matcher matcher = SCRIPT_PLACEHOLDER_PATTERN.matcher(text);
+        while (matcher.find()) {
+            String placeholderText = matcher.group(1);
+            Placeholder placeholder = placeholders.get(placeholderText);
+            if (placeholder == null) {
+                placeholder = new ScriptPlaceholder(placeholderText, scriptEngine);
+                placeholders.put(placeholderText, placeholder);
             }
+            matcher.appendReplacement(result, placeholder.getValueAsString(dataSources));
         }
+        matcher.appendTail(result);
+        return result.toString();
+
     }
 
     /**
@@ -214,7 +187,10 @@ public class FillJob {
         Report parsedReport = report;
         if (parsedReport.hasDynamicLine()) {
             parsedReport = new Report(report);
-            fillTableLine(parsedReport);
+            TableFillJob tableFillJob = new TableFillJob(parsedReport, dataSources);
+            ListFillJob listFillJob = new ListFillJob(parsedReport, dataSources);
+            tableFillJob.fill();
+            listFillJob.fill();
         }
         StringBuffer result = new StringBuffer();
         boolean isAutoLineFeed = parsedReport.getPageFormat().isAutoLineFeed();
@@ -222,7 +198,8 @@ public class FillJob {
         result.append(parsedReport.getPageFormat().build());
         for (Page page : parsedReport) {
             String pageText = page.convertToString(isAutoLineFeed, isAutoFormFeed);
-            pageText = fillPlaceholder(pageText);
+            pageText = fillBasicPlaceholder(pageText);
+            pageText = fillScriptPlaceholder(pageText);
             pageText = fillFunction(pageText, page);
             result.append(pageText);
         }
@@ -232,5 +209,5 @@ public class FillJob {
         result.append(EscpUtil.escInitalize());
         return result.toString();
     }
-
+    
 }

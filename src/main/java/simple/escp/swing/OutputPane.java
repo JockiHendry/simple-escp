@@ -22,11 +22,13 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,20 @@ import java.util.List;
  */
 public class OutputPane extends JPanel {
 
-    private static final Font FONT = new Font(Font.MONOSPACED, Font.PLAIN, 20);
+    private static final Font FONT;
+    private static final int DEFAULT_FONT_SIZE = 20;
+
+    static {
+        Font defaultFont;
+        try {
+            defaultFont = Font.createFont(Font.TRUETYPE_FONT, Thread.currentThread().getContextClassLoader().
+                getResourceAsStream("DejaVuSansMono.ttf")).deriveFont(Font.PLAIN, DEFAULT_FONT_SIZE);
+        } catch (FontFormatException | IOException e) {
+            defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, DEFAULT_FONT_SIZE);
+        }
+        FONT = defaultFont;
+    }
+
     private static final BasicStroke DASH_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
         BasicStroke.JOIN_MITER, 10.0f, new float[] {1.0f}, 0.0f);
     private static final float MARGIN_LEFT = 10.0f;
@@ -136,12 +151,26 @@ public class OutputPane extends JPanel {
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_INITIALIZE), "");
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_ONE_PER_EIGHT_LINE_SPACING), "");
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_ONE_PER_SIX_INCH_LINE_SPACING), "");
-            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_MASTER_SELECT) + "(.|\\n)", "");
-            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_SELECTTYPEFACE) + "(.|\\n)", "");
-            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_LEFT_MARGIN) + "(.|\\n)", "");
-            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_RIGHT_MARGIN) + "(.|\\n)", "");
-            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_BOTTOM_MARGIN) + "(.|\\n)", "");
-            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_PAGE_LENGTH) + "(.|\\n)", "");
+            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_MASTER_SELECT) + "(.|\\r|\\n)", "");
+            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_SELECTTYPEFACE) + "(.|\\r|\\n)", "");
+            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_LEFT_MARGIN) + "(.|\\r|\\n)", "");
+            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_RIGHT_MARGIN) + "(.|\\r|\\n)", "");
+            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_BOTTOM_MARGIN) + "(.|\\r|\\n)", "");
+            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_PAGE_LENGTH) + "(.|\\r|\\n)", "");
+            line = line.replaceAll(EscpUtil.CRFF, "");
+
+            // Replace box drawing characters
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_HORIZONTAL), "\u2500");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_VERTICAL), "\u2502");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_DOWN_RIGHT), "\u250c");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_DOWN_LEFT), "\u2510");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_DOWN_HORIZONTAL), "\u252c");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_VERTICAL_RIGHT), "\u251c");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_VERTICAL_HORIZONTAL), "\u253c");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_VERTICAL_LEFT), "\u2524");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_UP_RIGHT), "\u2514");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_UP_HORIZONTAL), "\u2534");
+            line = line.replaceAll(String.valueOf(EscpUtil.CP347_LIGHT_UP_LEFT), "\u2518");
 
             g2.drawString(line, x, y);
             y += CHAR_HEIGHT;
