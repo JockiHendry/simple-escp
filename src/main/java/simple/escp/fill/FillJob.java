@@ -1,9 +1,7 @@
 package simple.escp.fill;
 
-import simple.escp.dom.Line;
 import simple.escp.dom.Page;
 import simple.escp.dom.Report;
-import simple.escp.dom.line.TableLine;
 import simple.escp.data.DataSource;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
@@ -12,10 +10,7 @@ import simple.escp.util.EscpUtil;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -193,7 +188,9 @@ public class FillJob {
         if (parsedReport.hasDynamicLine()) {
             parsedReport = new Report(report);
             TableFillJob tableFillJob = new TableFillJob(parsedReport, dataSources);
+            ListFillJob listFillJob = new ListFillJob(parsedReport, dataSources);
             tableFillJob.fill();
+            listFillJob.fill();
         }
         StringBuffer result = new StringBuffer();
         boolean isAutoLineFeed = parsedReport.getPageFormat().isAutoLineFeed();
@@ -212,5 +209,5 @@ public class FillJob {
         result.append(EscpUtil.escInitalize());
         return result.toString();
     }
-
+    
 }

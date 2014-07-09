@@ -213,6 +213,63 @@ public class JsonTemplateFillTest {
     }
 
     @Test
+    public void fillOneList() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_list.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None", "David", "None"));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+            INIT + escPageLength(5) +
+            "This is detail 1." + CRLF +
+            "This is header of list." + CRLF +
+            "Page 1: David None as None" + CRLF +
+            "Page 1: Solid Snake as David" + CRLF +
+            "This is footer of list." + CRLF + CRFF +
+            "This is header of list." + CRLF +
+            "Page 2: Jocki Hendry as Snake" + CRLF +
+            "This is footer of list." + CRLF +
+            "This is detail 2." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
+    public void fillTwoList() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/multiple_list.json").toURI());
+        List<Person> persons1 = new ArrayList<>();
+        persons1.add(new Person("None", "David", "None"));
+        persons1.add(new Person("David", "Solid", "Snake"));
+        persons1.add(new Person("Snake", "Jocki", "Hendry"));
+        List<Person> persons2 = new ArrayList<>();
+        persons2.add(new Person("FooBar", "Foo", "Bar"));
+        persons2.add(new Person("BarFoo", "Bar", "Foo"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons1", persons1);
+        source.put("persons2", persons2);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+            INIT + escPageLength(5) +
+            "This is detail 1." + CRLF +
+            "Page 1: David None as None" + CRLF +
+            "Page 1: Solid Snake as David" + CRLF +
+            "Page 1: Jocki Hendry as Snake" + CRLF +
+            "This is detail 2." + CRLF + CRFF +
+            "This is header of second detail." + CRLF +
+            "Page 2: Foo Bar as FooBar" + CRLF +
+            "Page 2: Bar Foo as BarFoo" + CRLF +
+            "This is footer of second detail." + CRLF +
+            "This is detail 3." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
     public void placeholderFormatting() {
          String jsonString =
         "{" +
