@@ -38,11 +38,7 @@ public class ScriptPlaceholder extends Placeholder {
         if (text.contains(":")) {
             String[] parts = text.split(":", 2);
             this.script = parts[0].trim();
-            for (String part: parts[1].split(":")) {
-                part = part.trim();
-                parseFormatter(part);
-                parseWidth(part);
-            }
+            parseText(parts[1].split(":"));
         } else {
             this.script = text;
         }

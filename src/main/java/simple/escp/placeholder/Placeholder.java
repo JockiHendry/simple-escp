@@ -2,9 +2,11 @@ package simple.escp.placeholder;
 
 import simple.escp.data.DataSource;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.NumberFormat;
+import java.util.Collection;
 
 /**
  *  <code>Placeholder</code> represent a placeholder in template, such as <code>${name}</code> or
@@ -29,7 +31,8 @@ public abstract class Placeholder {
     protected String text;
     protected Format format;
     protected int width = 0;
-
+    protected boolean sum;
+    protected boolean count;
 
     /**
      * Create a new instance of placeholder.
@@ -98,6 +101,70 @@ public abstract class Placeholder {
     }
 
     /**
+     * Determine if this placeholder is for displaying sum of value.
+     *
+     * @return <code>true</code> if this placeholder is for displaying sum of value.
+     */
+    public boolean isSum() {
+        return sum;
+    }
+
+    /**
+     * Set this placeholder to display sum of value instead of the value.
+     *
+     * @param sum if <code>true</code>, this placeholder will return sum of value.
+     */
+    public void setSum(boolean sum) {
+        this.sum = sum;
+    }
+
+    /**
+     * Determine if this placeholder is for displaying count of value.
+     *
+     * @return <code>true</code> if this placeholder is for displaying count of value.
+     */
+    public boolean isCount() {
+        return count;
+    }
+
+    /**
+     * Set this placeholder to display count of value instead of the value.
+     *
+     * @param count if <code>true</code>, this placeholder will return count of value.
+     */
+    public void setCount(boolean count) {
+        this.count = count;
+    }
+
+    /**
+     * Calculate the sum of <code>Collection</code>.
+     *
+     * @param value a <code>Collection</code> to sum.
+     * @return sum of all values in the <code>Collection</code>.
+     */
+    private BigDecimal getSumValue(Collection value) {
+        BigDecimal result = BigDecimal.ZERO;
+        for (Object v : value) {
+            if (v instanceof Number) {
+                result = result.add(BigDecimal.valueOf(((Number) v).doubleValue()));
+            } else {
+                throw new IllegalArgumentException("sum operation require number: " + v);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Calculate the count of elements in a <code>Collection</code>.
+     *
+     * @param value a <code>Collection</code> to count for.
+     * @return count of elements inside this <code>Collection</code>.
+     */
+    public Object getCountValue(Collection value) {
+        return value.size();
+    }
+
+    /**
      * Get a formatted version, including width limit, of a value.
      *
      * @param value the value passed to this placehoder.
@@ -106,6 +173,13 @@ public abstract class Placeholder {
      */
     public Object getFormatted(Object value) {
         Object result = value;
+
+        if (isSum()) {
+            result = getSumValue((Collection) value);
+        } else if (isCount()) {
+            result = getCountValue((Collection) value);
+        }
+
         if (getFormat() != null) {
             result = getFormat().format(result);
         }
@@ -122,6 +196,34 @@ public abstract class Placeholder {
             }
         }
         return result;
+    }
+
+    /**
+     * Parse aggregation formula such as <code>"sum"</code> and <code>"count"</code> in placeholder text.
+     *
+     * @param text part of text for this placeholder.
+     */
+    protected void parseFormula(String text) {
+        if ("sum".equals(text)) {
+            setSum(true);
+        } else if ("count".equals(text)) {
+            setCount(true);
+        }
+    }
+
+    /**
+     * Parse an expression in placeholder expression.  The expression should be broken into multiple keywords
+     * that are stored in <code>text</code>.
+     *
+     * @param text an array of string that represent keywords that should be parsed.
+     */
+    protected void parseText(String[] text) {
+        for (String part: text) {
+            part = part.trim();
+            parseFormula(part);
+            parseFormatter(part);
+            parseWidth(part);
+        }
     }
 
     /**

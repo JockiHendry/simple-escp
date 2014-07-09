@@ -19,12 +19,15 @@ package simple.escp.placeholder;
 import org.junit.Test;
 import simple.escp.data.DataSource;
 import simple.escp.data.DataSources;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -84,6 +87,34 @@ public class BasicPlaceholderTest {
         assertEquals("TheSolidSn", new BasicPlaceholder("name:10").getFormatted("TheSolidSnake"));
         assertEquals("124", new BasicPlaceholder("result:integer:3").getFormatted(123.55));
         assertEquals("Snack     ", new BasicPlaceholder("name:10").getFormatted("Snack"));
+    }
+
+    @Test
+    public void formattedValueSum() {
+        List<Integer> data = new ArrayList<>();
+        data.add(10);
+        data.add(20);
+        data.add(30);
+        assertEquals(new BigDecimal("60.0"), new BasicPlaceholder("total:sum").getFormatted(data));
+
+        List<BigDecimal> data2 = new ArrayList<>();
+        data2.add(new BigDecimal("10.25"));
+        data2.add(new BigDecimal("20.75"));
+        assertEquals(NumberFormat.getCurrencyInstance().format(31), new BasicPlaceholder("total:sum:currency").getFormatted(data2));
+    }
+
+    @Test
+    public void formattedValueCount() {
+        List<Integer> data = new ArrayList<>();
+        data.add(10);
+        data.add(20);
+        data.add(30);
+        assertEquals(3, new BasicPlaceholder("total:count").getFormatted(data));
+
+        List<BigDecimal> data2 = new ArrayList<>();
+        data2.add(new BigDecimal("10.25"));
+        data2.add(new BigDecimal("20.75"));
+        assertEquals(NumberFormat.getCurrencyInstance().format(2), new BasicPlaceholder("total:count:currency").getFormatted(data2));
     }
 
     @Test
