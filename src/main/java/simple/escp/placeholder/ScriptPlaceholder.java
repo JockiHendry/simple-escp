@@ -1,6 +1,8 @@
 package simple.escp.placeholder;
 
 import simple.escp.data.DataSource;
+import simple.escp.exception.InvalidPlaceholder;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import java.util.logging.Level;
@@ -70,8 +72,7 @@ public class ScriptPlaceholder extends Placeholder {
         try {
             return scriptEngine.eval(script);
         } catch (ScriptException e) {
-            logger.log(Level.SEVERE, "Can't execute script: [" + getText() + "]");
-            return null;
+            throw new InvalidPlaceholder("Can't execute script [" + script + "]", e);
         }
     }
 

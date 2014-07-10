@@ -163,6 +163,30 @@ public class JsonTemplateFillTest {
     }
 
     @Test
+    public void fillOneTableWithFormatting() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table_with_format.json").toURI());
+        PersonAggregate personAggregate = new PersonAggregate();
+        personAggregate.add(new Person("None", "David", "None"));
+        personAggregate.add(new Person("David", "Solid", "Snake"));
+        personAggregate.add(new Person("Snake", "Jocki", "Hendry"));
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(personAggregate)).fill();
+        assertEquals(
+            INIT + escPageLength(3) +
+            "This is detail 1." + CRLF +
+            " firstNamelastName             nickname " + CRLF +
+            "     DavidNone                   None   " + CRLF + CRFF +
+            " firstNamelastName             nickname " + CRLF +
+            "     SolidSnake                 David   " + CRLF +
+            "     JockiHendry                Snake   " + CRLF + CRFF +
+            " firstNamelastName             nickname " + CRLF +
+            "newFirstNanewLastName          newNick  " + CRLF +
+            "This is detail 2." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
     public void fillOneTableWithNullValue() throws URISyntaxException, IOException {
         JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
         List<Person> persons = new ArrayList<>();
@@ -385,6 +409,23 @@ public class JsonTemplateFillTest {
         );
     }
 
+
+    public static class PersonAggregate {
+        private List<Person> persons = new ArrayList<>();
+
+        public List<Person> getPersons() {
+            return persons;
+        }
+
+        public void setPersons(List<Person> persons) {
+            this.persons = persons;
+        }
+
+        public List<Person> add(Person person) {
+            persons.add(person);
+            return persons;
+        }
+    }
 
     public static class Person {
         private String id;

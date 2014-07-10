@@ -2,7 +2,9 @@ package simple.escp.dom.line;
 
 import simple.escp.dom.Line;
 import simple.escp.dom.TableColumn;
+import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.util.EscpUtil;
+import simple.escp.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -180,15 +182,13 @@ public class TableLine implements Line, Iterable<TableColumn> {
             }
             for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
                 TableColumn column = columns.get(columnIndex);
-                line.append(column.getCaption());
-                int width = column.getWidth() - column.getCaption().length() - (isDrawBorder() ? 1 : 0);
-                for (int i = 0; i < width; i++) {
-                    line.append(' ');
-                }
+                int width = column.getWidth() - (isDrawBorder() ? 1 : 0);
+                StringUtil.ALIGNMENT alignment = (new BasicPlaceholder(column.getText())).getAlignment();
+                if (alignment == null) alignment = StringUtil.ALIGNMENT.LEFT;
+                line.append(StringUtil.align(column.getCaption(), width, alignment));
                 if (isDrawBorder()) {
                     line.append(EscpUtil.CP347_LIGHT_VERTICAL);
                 }
-
             }
             tmp.add(new TextLine(line.toString()));
 
