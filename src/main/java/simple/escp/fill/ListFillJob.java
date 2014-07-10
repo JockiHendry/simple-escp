@@ -7,7 +7,8 @@ import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.dom.line.ListLine;
 import simple.escp.dom.line.TextLine;
-import simple.escp.placeholder.BasicPlaceholder;
+import simple.escp.placeholder.ScriptPlaceholder;
+import javax.script.ScriptContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +51,8 @@ public class ListFillJob extends FillJob {
 
         for (Object entry: source) {
             dataSources = new DataSource[] {DataSources.from(entry)};
+            DataSourceBinding lineContext = new DataSourceBinding(dataSources);
+            scriptEngine.setBindings(lineContext, ScriptContext.ENGINE_SCOPE);
             String result = fillBasicPlaceholder(listLine.getLineSource());
             result = fillScriptPlaceholder(result);
             subreport.append(new TextLine(result), false);
@@ -70,7 +73,7 @@ public class ListFillJob extends FillJob {
         DataSource[] globalDataSources = Arrays.copyOf(dataSources, dataSources.length);
         while ((page = report.getFirstPageWithListLines()) != null) {
             ListLine listLine = page.getListLines().get(0);
-            Collection dataSource = (Collection) (new BasicPlaceholder(listLine.getSource())).
+            Collection dataSource = (Collection) (new ScriptPlaceholder(listLine.getSource(), scriptEngine)).
                 getValue(globalDataSources);
             List<Line> results = fillListLine(listLine, dataSource);
             Collections.reverse(results);

@@ -311,6 +311,31 @@ public class JsonTemplateFillTest {
     }
 
     @Test
+    public void fillOneListWithFormatting() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_list_with_format.json").toURI());
+        PersonAggregate personAggregate = new PersonAggregate();
+        personAggregate.add(new Person("None", "David", "None"));
+        personAggregate.add(new Person("David", "Solid", "Snake"));
+        personAggregate.add(new Person("Snake", "Jocki", "Hendry"));
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(personAggregate)).fill();
+        assertEquals(
+            INIT + escPageLength(5) +
+            "This is detail 1." + CRLF +
+            "This is header of list." + CRLF +
+            "Page 1: Dav None       as David None" + CRLF +
+            "Page 1: Sol Snake      as Solid Snak" + CRLF +
+            "This is footer of list." + CRLF + CRFF +
+            "This is header of list." + CRLF +
+            "Page 2: Joc Hendry     as Jocki Hend" + CRLF +
+            "Page 2: new newLastNam as newFirstNa" + CRLF +
+            "This is footer of list." + CRLF +
+            "This is detail 2." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
     public void fillOneListWithNullValue() throws URISyntaxException, IOException {
         JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_list.json").toURI());
         List<Person> persons = new ArrayList<>();
@@ -425,6 +450,7 @@ public class JsonTemplateFillTest {
             persons.add(person);
             return persons;
         }
+
     }
 
     public static class Person {

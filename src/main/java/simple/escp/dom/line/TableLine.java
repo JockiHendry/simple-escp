@@ -184,7 +184,9 @@ public class TableLine implements Line, Iterable<TableColumn> {
                 TableColumn column = columns.get(columnIndex);
                 int width = column.getWidth() - (isDrawBorder() ? 1 : 0);
                 StringUtil.ALIGNMENT alignment = (new BasicPlaceholder(column.getText())).getAlignment();
-                if (alignment == null) alignment = StringUtil.ALIGNMENT.LEFT;
+                if (alignment == null) {
+                    alignment = StringUtil.ALIGNMENT.LEFT;
+                }
                 line.append(StringUtil.align(column.getCaption(), width, alignment));
                 if (isDrawBorder()) {
                     line.append(EscpUtil.CP347_LIGHT_VERTICAL);
