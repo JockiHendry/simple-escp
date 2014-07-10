@@ -162,6 +162,30 @@ public class JsonTemplateFillTest {
         );
     }
 
+    @Test
+    public void fillOneTableWithNullValue() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person(null, "David", null));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+                INIT + escPageLength(3) +
+                        "This is detail 1." + CRLF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "David                                   " + CRLF + CRFF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "Solid     Snake               David     " + CRLF +
+                        "Jocki     Hendry              Snake     " + CRLF + CRFF +
+                        "This is detail 2." + CRLF +
+                        CRFF + INIT,
+                result
+        );
+    }
+
     private String times(char c, int times) {
         StringBuffer result = new StringBuffer();
         for (int i=0; i<times; i++) {
@@ -259,6 +283,32 @@ public class JsonTemplateFillTest {
             "This is detail 2." + CRLF +
             CRFF + INIT,
             result
+        );
+    }
+
+    @Test
+    public void fillOneListWithNullValue() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_list.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person(null, "David", null));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+                INIT + escPageLength(5) +
+                        "This is detail 1." + CRLF +
+                        "This is header of list." + CRLF +
+                        "Page 1: David  as " + CRLF +
+                        "Page 1: Solid Snake as David" + CRLF +
+                        "This is footer of list." + CRLF + CRFF +
+                        "This is header of list." + CRLF +
+                        "Page 2: Jocki Hendry as Snake" + CRLF +
+                        "This is footer of list." + CRLF +
+                        "This is detail 2." + CRLF +
+                        CRFF + INIT,
+                result
         );
     }
 

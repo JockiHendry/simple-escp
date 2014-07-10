@@ -53,6 +53,12 @@ public class ScriptPlaceholderTest {
     }
 
     @Test
+    public void getFormattedNullValue() {
+        assertEquals("", new ScriptPlaceholder("name", null).getFormatted(null));
+        assertEquals("          ", new ScriptPlaceholder("name::10", null).getFormatted(null));
+    }
+
+    @Test
     public void formattedValueSum() {
         List<Integer> data = new ArrayList<>();
         data.add(10);

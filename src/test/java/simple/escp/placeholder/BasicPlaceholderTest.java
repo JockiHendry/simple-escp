@@ -83,6 +83,13 @@ public class BasicPlaceholderTest {
     }
 
     @Test
+    public void formattedNullValue() {
+        assertEquals("", new BasicPlaceholder("payment:number").getFormatted(null));
+        assertEquals("", new BasicPlaceholder("rate:integer").getFormatted(null));
+        assertEquals("          ", new BasicPlaceholder("name:10").getFormatted(null));
+    }
+
+    @Test
     public void formattedValueWidth() {
         assertEquals("TheSolidSn", new BasicPlaceholder("name:10").getFormatted("TheSolidSnake"));
         assertEquals("124", new BasicPlaceholder("result:integer:3").getFormatted(123.55));

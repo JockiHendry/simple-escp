@@ -70,7 +70,11 @@ public class TableFillJob extends FillJob {
                 } else if ((value instanceof Float) || (value instanceof  Double)) {
                     valueAsString = String.format("%" + width + ".1f", value);
                 } else {
-                    valueAsString = String.format("%-" + width + "s", value.toString());
+                    if (value == null) {
+                        valueAsString = String.format("%" + width + "s", " ");
+                    } else {
+                        valueAsString = String.format("%-" + width + "s", value.toString());
+                    }
                 }
                 if (valueAsString.length() > width) {
                     valueAsString = valueAsString.substring(0, width);

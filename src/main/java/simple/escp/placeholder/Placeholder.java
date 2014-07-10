@@ -1,7 +1,7 @@
 package simple.escp.placeholder;
 
 import simple.escp.data.DataSource;
-
+import simple.escp.exception.InvalidPlaceholder;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.Format;
@@ -194,23 +194,43 @@ public abstract class Placeholder {
     public Object getFormatted(Object value) {
         Object result = value;
 
-        if (isSum()) {
-            result = getSumValue((Collection) value);
-        } else if (isCount()) {
-            result = getCountValue((Collection) value);
+        if (value != null) {
+            if (isSum()) {
+                if (!(value instanceof Collection)) {
+                    throw new InvalidPlaceholder("Expected collection for placeholder [" + getText() + "] for " +
+                        "sum operation but received value [" + value + "].");
+                } else {
+                    result = getSumValue((Collection) value);
+                }
+            } else if (isCount()) {
+                if (!(value instanceof Collection)) {
+                    throw new InvalidPlaceholder("Expected collection for placeholder [" + getText() + "] for " +
+                        "count operation but received value [" + value + "].");
+                } else {
+                    result = getCountValue((Collection) value);
+                }
+            }
+
+            if (getFormat() != null) {
+                try {
+                    result = getFormat().format(result);
+                } catch (IllegalArgumentException e) {
+                    throw new InvalidPlaceholder("Can't format value [" + result + "] for placeholder [" +
+                            getText() + "].", e);
+                }
+            }
         }
 
-        if (getFormat() != null) {
-            result = getFormat().format(result);
-        }
         if (getWidth() > 0) {
+            result = (result != null) ? result : "";
             if (getAlignment() == null) {
                 result = LEFT_ALIGNMENT.process(result.toString(), getWidth());
             } else {
                 result = getAlignment().process(result.toString(), getWidth());
             }
         }
-        return result;
+
+        return (result != null) ? result : "";
     }
 
     /**
