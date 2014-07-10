@@ -64,13 +64,18 @@ public class TableFillJob extends FillJob {
                 if (i == 0 && tableLine.isDrawBorder()) {
                     text.append(EscpUtil.CP347_LIGHT_VERTICAL);
                 }
+                String valueAsString = "";
                 if ((value instanceof Integer) || (value instanceof Long)) {
-                    text.append(String.format("%" + width + "d", value));
+                    valueAsString = String.format("%" + width + "d", value);
                 } else if ((value instanceof Float) || (value instanceof  Double)) {
-                    text.append(String.format("%" + width + ".1f", value));
+                    valueAsString = String.format("%" + width + ".1f", value);
                 } else {
-                    text.append(String.format("%-" + width + "s", value.toString()));
+                    valueAsString = String.format("%-" + width + "s", value.toString());
                 }
+                if (valueAsString.length() > width) {
+                    valueAsString = valueAsString.substring(0, width);
+                }
+                text.append(valueAsString);
                 if (tableLine.isDrawBorder()) {
                     text.append(EscpUtil.CP347_LIGHT_VERTICAL);
                 }

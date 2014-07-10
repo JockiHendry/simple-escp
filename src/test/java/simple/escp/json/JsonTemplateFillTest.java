@@ -138,6 +138,30 @@ public class JsonTemplateFillTest {
         );
     }
 
+    @Test
+    public void fillOneTableWithOverflowedString() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None12345678901234567890", "David12345678901234567890", "None12345678901234567890"));
+        persons.add(new Person("David12345678901234567890", "Solid12345678901234567890", "Snake12345678901234567890"));
+        persons.add(new Person("Snake12345678901234567890", "Jocki12345678901234567890", "Hendry12345678901234567890"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+                INIT + escPageLength(3) +
+                        "This is detail 1." + CRLF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "David12345None1234567890123456None123456" + CRLF + CRFF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "Solid12345Snake123456789012345David12345" + CRLF +
+                        "Jocki12345Hendry12345678901234Snake12345" + CRLF + CRFF +
+                        "This is detail 2." + CRLF +
+                        CRFF + INIT,
+                result
+        );
+    }
+
     private String times(char c, int times) {
         StringBuffer result = new StringBuffer();
         for (int i=0; i<times; i++) {
