@@ -13,11 +13,10 @@ import java.util.List;
 /**
  * DOM class to represent table.  A table consists of one or more {@link simple.escp.dom.TableColumn}.
  */
-public class TableLine implements Line, Iterable<TableColumn> {
+public class TableLine extends Line implements Iterable<TableColumn> {
 
     private List<TableColumn> columns = new ArrayList<>();
     private String source;
-    private Integer lineNumber;
     private boolean drawBorder;
     private TextLine[] header;
     private TextLine[] footer;
@@ -93,25 +92,6 @@ public class TableLine implements Line, Iterable<TableColumn> {
     @Override
     public boolean isDynamic() {
         return true;
-    }
-
-    /**
-     * Set a line number for this table line.  See also {@link #getLineNumber()}.
-     *
-     * @param lineNumber the line number starting from <code>1</code>.
-     */
-    public void setLineNumber(Integer lineNumber) {
-        this.lineNumber = lineNumber;
-    }
-
-    /**
-     * Retrieve line number for this table line.
-     *
-     * @return line number starting from <code>1</code>.  The first line number is counted from header if it is
-     *         exists.  This method will return <code>null</code> if line number hasn't been set previously.
-     */
-    public Integer getLineNumber() {
-        return this.lineNumber;
     }
 
     /**

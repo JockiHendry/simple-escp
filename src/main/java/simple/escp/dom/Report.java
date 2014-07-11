@@ -98,12 +98,40 @@ public class Report implements Iterable<Page> {
     }
 
     /**
+     * Create a copy of every <code>TextLine</code> in header.  The modification to the copy will not
+     * affect the original header stored in this report.
+     *
+     * @return the copy of current header.
+     */
+    public TextLine[] copyHeader() {
+        TextLine[] result = new TextLine[header.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new TextLine(header[i]);
+        }
+        return result;
+    }
+
+    /**
      * Get the footer for this page.
      *
      * @return footer for this page.
      */
     public TextLine[] getFooter() {
         return Arrays.copyOf(footer, footer.length);
+    }
+
+    /**
+     * Create a copy of every <code>TextLine</code> in footer.  The modification to the copy will not
+     * affect the original footer stored in this report.
+     *
+     * @return the copy of current footer.
+     */
+    public TextLine[] copyFooter() {
+        TextLine[] result = new TextLine[footer.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new TextLine(footer[i]);
+        }
+        return result;
     }
 
     /**
@@ -221,7 +249,8 @@ public class Report implements Iterable<Page> {
         if (plain) {
             page = new Page(new ArrayList<Line>(), null, null, lastPageNumber, pageFormat.getPageLength());
         } else {
-            page = new Page(new ArrayList<Line>(), header, footer, lastPageNumber, pageFormat.getPageLength());
+            page = new Page(new ArrayList<Line>(), copyHeader(), copyFooter(), lastPageNumber,
+                pageFormat.getPageLength());
         }
         pages.add(page);
         currentPage = page;
@@ -387,6 +416,12 @@ public class Report implements Iterable<Page> {
 
     @Override
     public Iterator<Page> iterator() {
+        int globalLineNumber = 1;
+        for (Page page : pages) {
+            for (Line line : page.getLines()) {
+                line.setGlobalLineNumber(globalLineNumber++);
+            }
+        }
         return pages.iterator();
     }
 }

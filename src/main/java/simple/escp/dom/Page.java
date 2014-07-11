@@ -248,12 +248,15 @@ public class Page {
         Line[] result = new Line[getNumberOfLines()];
         int index = 0;
         for (TextLine line : header) {
+            line.setLineNumber(index + 1);
             result[index++] = line;
         }
         for (Line line : content) {
+            line.setLineNumber(index + 1);
             result[index++] = line;
         }
         for (Line line : footer) {
+            line.setLineNumber(index + 1);
             result[index++] = line;
         }
         return result;

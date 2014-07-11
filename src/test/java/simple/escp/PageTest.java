@@ -103,6 +103,9 @@ public class PageTest {
         assertEquals("This is header 1", page.getLines()[0].toString());
         assertEquals("This is content", page.getLines()[1].toString());
         assertEquals("This is footer 1", page.getLines()[2].toString());
+        assertEquals(1, page.getLines()[0].getLineNumber().intValue());
+        assertEquals(2, page.getLines()[1].getLineNumber().intValue());
+        assertEquals(3, page.getLines()[2].getLineNumber().intValue());
     }
 
     @Test
