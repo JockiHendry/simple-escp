@@ -3,15 +3,18 @@ package simple.escp.fill;
 import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.data.DataSource;
+import simple.escp.fill.function.Function;
+import simple.escp.fill.function.PageNoFunction;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
 import simple.escp.placeholder.ScriptPlaceholder;
 import simple.escp.util.EscpUtil;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +31,12 @@ public class FillJob {
 
     public static final Pattern BASIC_PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{(.+?)\\}");
     public static final Pattern SCRIPT_PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(.+?)\\}\\}");
-    public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{(.+?)\\}");
+    public static final List<Function> FUNCTIONS;
+
+    static {
+        FUNCTIONS = new ArrayList<>();
+        FUNCTIONS.add(new PageNoFunction());
+    }
 
     protected Report report;
     protected DataSource[] dataSources;
@@ -112,28 +120,6 @@ public class FillJob {
     }
 
     /**
-     * This method will evaluate functions.
-     *
-     * @param text the source text that has functions.
-     * @param page the associated <code>Page</code> for source text.
-     * @return source with functions replaced by evaluated value.
-     */
-    protected String fillFunction(String text, Page page) {
-        StringBuffer result = new StringBuffer();
-        Matcher matcher = FUNCTION_PATTERN.matcher(text);
-        while (matcher.find()) {
-            String function = matcher.group(1);
-
-            // PAGE_NO
-            if ("PAGE_NO".equals(function)) {
-                matcher.appendReplacement(result, String.valueOf(page.getPageNumber()));
-            }
-        }
-        matcher.appendTail(result);
-        return result.toString();
-    }
-
-    /**
      * This method will fill placeholders with value from both supplied <code>Map</code> and Java Bean object.
      *
      * @param text the source text that has placeholders.
@@ -197,13 +183,20 @@ public class FillJob {
         boolean isAutoLineFeed = parsedReport.getPageFormat().isAutoLineFeed();
         boolean isAutoFormFeed = parsedReport.getPageFormat().isAutoFormFeed();
         result.append(parsedReport.getPageFormat().build());
+
+        // process functions
+        for (Function function : FUNCTIONS) {
+            function.process(parsedReport);
+        }
+
+        // process placeholders
         for (Page page : parsedReport) {
             String pageText = page.convertToString(isAutoLineFeed, isAutoFormFeed);
             pageText = fillBasicPlaceholder(pageText);
             pageText = fillScriptPlaceholder(pageText);
-            pageText = fillFunction(pageText, page);
             result.append(pageText);
         }
+
         if (isAutoFormFeed && !result.toString().endsWith(EscpUtil.CRFF)) {
             result.append(EscpUtil.CRFF);
         }
