@@ -3,6 +3,7 @@ package simple.escp.fill;
 import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.data.DataSource;
+import simple.escp.fill.function.AsciiFunction;
 import simple.escp.fill.function.Function;
 import simple.escp.fill.function.PageNoFunction;
 import simple.escp.placeholder.BasicPlaceholder;
@@ -36,6 +37,7 @@ public class FillJob {
     static {
         FUNCTIONS = new ArrayList<>();
         FUNCTIONS.add(new PageNoFunction());
+        FUNCTIONS.add(new AsciiFunction());
     }
 
     protected Report report;
