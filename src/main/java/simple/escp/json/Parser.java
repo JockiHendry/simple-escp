@@ -162,6 +162,12 @@ public class Parser {
         } else {
             for (int i = 0; i < columns.size(); i++) {
                 JsonObject column = columns.getJsonObject(i);
+                if (!column.containsKey("source")) {
+                    throw new IllegalArgumentException("Can't find 'source' for column " + i);
+                }
+                if (!column.containsKey("width")) {
+                    throw new IllegalArgumentException("Can't find 'width' for column " + i);
+                }
                 TableColumn tableColumn = tableLine.addColumn(column.getString("source"), column.getInt("width"));
                 if (column.containsKey("caption")) {
                     tableColumn.setCaption(column.getString("caption"));
