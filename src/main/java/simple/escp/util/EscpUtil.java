@@ -42,6 +42,11 @@ public class EscpUtil {
     public static final int COMMAND_CANCEL_ITALIC = 53;
     public static final int COMMAND_SELECT_DOUBLESTRIKE = 71;
     public static final int COMMAND_CANCEL_DOUBLESTRIKE = 72;
+    public static final int COMMAND_SELECT_UNDERLINE = 45;
+    public static final int COMMAND_CANCEL_UNDERLINE = 45;
+    public static final int COMMAND_SELECT_SUBSCRIPT = 83;
+    public static final int COMMAND_SELECT_SUPERSCRIPT = 83;
+    public static final int COMMAND_CANCEL_SUBSCRIPT_OR_SUPERSCRIPT = 84;
 
     public static final char CP347_LIGHT_VERTICAL               = (char) 179;
     public static final char CP347_LIGHT_DOWN_RIGHT             = (char) 218;
@@ -255,7 +260,7 @@ public class EscpUtil {
      * @return string of ESC - 1 command.
      */
     public static String escSelectUnderline() {
-        return esc(45, 1);
+        return esc(COMMAND_SELECT_UNDERLINE, 1);
     }
 
     /**
@@ -264,7 +269,34 @@ public class EscpUtil {
      * @return string of ESC - 0 command.
      */
     public static String escCancelUnderline() {
-        return esc(45, 0);
+        return esc(COMMAND_CANCEL_UNDERLINE, 0);
+    }
+
+    /**
+     * Generate ESC S 1 for subscript printing.
+     *
+     * @return string of ESC S 1 command.
+     */
+    public static String escSelectSubscript() {
+        return esc(COMMAND_SELECT_SUBSCRIPT, 1);
+    }
+
+    /**
+     * Generate ESC S 0 for superscript printing.
+     *
+     * @return string of ESC S 0 command.
+     */
+    public static String escSelectSuperscript() {
+        return esc(COMMAND_SELECT_SUPERSCRIPT, 0);
+    }
+
+    /**
+     * Generate ESC T to cancel subscript or superscript printing.
+     *
+     * @return string of ESC T command.
+     */
+    public static String escCancelSuperscriptOrSubscript() {
+        return esc(COMMAND_CANCEL_SUBSCRIPT_OR_SUPERSCRIPT);
     }
 
     /**

@@ -157,6 +157,30 @@ public class EscpUtilTest {
     }
 
     @Test
+    public void escSubscript() {
+        String result = EscpUtil.escSelectSubscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 83, result.charAt(1));
+        assertEquals((char)  1, result.charAt(2));
+
+        result = EscpUtil.escCancelSuperscriptOrSubscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 84, result.charAt(1));
+    }
+
+    @Test
+    public void escSuperscript() {
+        String result = EscpUtil.escSelectSuperscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 83, result.charAt(1));
+        assertEquals((char)  0, result.charAt(2));
+
+        result = EscpUtil.escCancelSuperscriptOrSubscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 84, result.charAt(1));
+    }
+
+    @Test
     public void crlf() {
         String result = EscpUtil.CR;
         assertEquals(1, result.length());

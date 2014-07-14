@@ -284,4 +284,18 @@ public class SimpleEscpTest {
         template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, null, null);
     }
+
+    @Test
+    public void printSuperscriptAndSubscript() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"superscript: Normal %{SUPER}part with superscript%{SUPER} normal.\"," +
+                "\"subscript: Normal %{SUB}part with subscript%{SUB} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
 }

@@ -167,4 +167,40 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void superscript() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"This is normal%{SUPER}This is superscript%{SUPER}\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "This is normal" + escSelectSuperscript() + "This is superscript" + escCancelSuperscriptOrSubscript() +
+            CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
+    @Test
+    public void subscript() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"This is normal%{SUB}This is subscript%{SUB}\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "This is normal" + escSelectSubscript() + "This is subscript" + escCancelSuperscriptOrSubscript() +
+            CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
 }
