@@ -107,4 +107,24 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void italic() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"%{ITALIC}This is italic%{ITALIC}\"," +
+                "\"This is normal\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            escSelectItalicFont() + "This is italic" + escCancelItalicFont() + CRLF +
+            "This is normal" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
 }

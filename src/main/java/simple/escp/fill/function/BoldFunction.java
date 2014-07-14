@@ -4,7 +4,6 @@ import simple.escp.dom.Line;
 import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.util.EscpUtil;
-
 import java.util.regex.Matcher;
 
 /**

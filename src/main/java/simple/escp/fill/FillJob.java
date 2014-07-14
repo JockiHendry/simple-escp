@@ -6,6 +6,7 @@ import simple.escp.data.DataSource;
 import simple.escp.fill.function.AsciiFunction;
 import simple.escp.fill.function.BoldFunction;
 import simple.escp.fill.function.Function;
+import simple.escp.fill.function.ItalicFunction;
 import simple.escp.fill.function.PageNoFunction;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
@@ -38,6 +39,7 @@ public class FillJob {
     static {
         FUNCTIONS = new ArrayList<>();
         FUNCTIONS.add(new BoldFunction());
+        FUNCTIONS.add(new ItalicFunction());
         FUNCTIONS.add(new PageNoFunction());
         FUNCTIONS.add(new AsciiFunction());
     }

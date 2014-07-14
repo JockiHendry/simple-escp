@@ -122,6 +122,17 @@ public class EscpUtilTest {
     }
 
     @Test
+    public void escItalic() {
+        String result = EscpUtil.escSelectItalicFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 52, result.charAt(1));
+
+        result = EscpUtil.escCancelItalicFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 53, result.charAt(1));
+    }
+
+    @Test
     public void crlf() {
         String result = EscpUtil.CR;
         assertEquals(1, result.length());

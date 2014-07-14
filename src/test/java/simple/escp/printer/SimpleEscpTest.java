@@ -246,4 +246,16 @@ public class SimpleEscpTest {
         simpleEscp.print(template, null, null);
     }
 
+    @Test
+    public void printItalic() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"italic: Normal %{ITALIC}italic%{ITALIC} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
 }

@@ -38,6 +38,8 @@ public class EscpUtil {
     public static final int COMMAND_SELECTTYPEFACE = 107;
     public static final int COMMAND_SELECTBOLD = 69;
     public static final int COMMAND_CANCELBOLD = 70;
+    public static final int COMMAND_SELECTITALIC = 52;
+    public static final int COMMAND_CANCELITALIC = 53;
 
     public static final char CP347_LIGHT_VERTICAL               = (char) 179;
     public static final char CP347_LIGHT_DOWN_RIGHT             = (char) 218;
@@ -207,6 +209,24 @@ public class EscpUtil {
      */
     public static String escCancelBoldFont() {
         return esc(COMMAND_CANCELBOLD);
+    }
+
+    /**
+     * Generate ESC 4 for select italic font.
+     *
+     * @return string of ESC 4 command.
+     */
+    public static String escSelectItalicFont() {
+        return esc(COMMAND_SELECTITALIC);
+    }
+
+    /**
+     * Generate ESC 5 to cancel italic font.
+     *
+     * @return string of ESC 5 command.
+     */
+    public static String escCancelItalicFont() {
+        return esc(COMMAND_CANCELITALIC);
     }
 
     /**
