@@ -258,4 +258,17 @@ public class SimpleEscpTest {
         template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, null, null);
     }
+
+    @Test
+    public void printDoubleStrike() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"strike: Normal %{DOUBLE}double strike%{DOUBLE} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
 }

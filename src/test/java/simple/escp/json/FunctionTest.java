@@ -127,4 +127,25 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void doubleStrike() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"%{DOUBLE}This is double-strike%{DOUBLE}\"," +
+                "\"This is normal\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            escSelectDoubleStrikeFont() + "This is double-strike" + escCancelDoubleStrikeFont() + CRLF +
+            "This is normal" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
+
 }

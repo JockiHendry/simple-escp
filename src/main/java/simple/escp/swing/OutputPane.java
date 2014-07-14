@@ -152,7 +152,7 @@ public class OutputPane extends JPanel {
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_ONE_PER_EIGHT_LINE_SPACING), "");
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_ONE_PER_SIX_INCH_LINE_SPACING), "");
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_MASTER_SELECT) + "(.|\\r|\\n)", "");
-            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_SELECTTYPEFACE) + "(.|\\r|\\n)", "");
+            line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_SELECT_TYPEFACE) + "(.|\\r|\\n)", "");
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_LEFT_MARGIN) + "(.|\\r|\\n)", "");
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_RIGHT_MARGIN) + "(.|\\r|\\n)", "");
             line = line.replaceAll(EscpUtil.esc(EscpUtil.COMMAND_BOTTOM_MARGIN) + "(.|\\r|\\n)", "");

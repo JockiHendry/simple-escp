@@ -133,6 +133,17 @@ public class EscpUtilTest {
     }
 
     @Test
+    public void escDoubleStrike() {
+        String result = EscpUtil.escSelectDoubleStrikeFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 71, result.charAt(1));
+
+        result = EscpUtil.escCancelDoubleStrikeFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 72, result.charAt(1));
+    }
+
+    @Test
     public void crlf() {
         String result = EscpUtil.CR;
         assertEquals(1, result.length());
