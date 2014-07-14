@@ -144,6 +144,19 @@ public class EscpUtilTest {
     }
 
     @Test
+    public void escUnderline() {
+        String result = EscpUtil.escSelectUnderline();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 45, result.charAt(1));
+        assertEquals((char)  1, result.charAt(2));
+
+        result = EscpUtil.escCancelUnderline();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 45, result.charAt(1));
+        assertEquals((char)  0, result.charAt(2));
+    }
+
+    @Test
     public void crlf() {
         String result = EscpUtil.CR;
         assertEquals(1, result.length());

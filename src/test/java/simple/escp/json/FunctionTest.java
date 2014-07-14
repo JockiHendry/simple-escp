@@ -147,5 +147,24 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void underline() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"%{UNDERLINE}This is underline%{UNDERLINE}\"," +
+                "\"This is normal\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            escSelectUnderline() + "This is underline" + escCancelUnderline() + CRLF +
+            "This is normal" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
 
 }

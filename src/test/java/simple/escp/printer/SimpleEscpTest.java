@@ -271,4 +271,17 @@ public class SimpleEscpTest {
         template.getPageFormat().setAutoFormFeed(false);
         simpleEscp.print(template, null, null);
     }
+
+    @Test
+    public void printUnderline() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"underline: Normal %{UNDERLINE}part with underline%{UNDERLINE} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
 }

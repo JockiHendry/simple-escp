@@ -9,6 +9,7 @@ import simple.escp.fill.function.DoubleStrikeFunction;
 import simple.escp.fill.function.Function;
 import simple.escp.fill.function.ItalicFunction;
 import simple.escp.fill.function.PageNoFunction;
+import simple.escp.fill.function.UnderlineFunction;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
 import simple.escp.placeholder.ScriptPlaceholder;
@@ -41,6 +42,7 @@ public class FillJob {
         FUNCTIONS = new ArrayList<>();
         FUNCTIONS.add(new BoldFunction());
         FUNCTIONS.add(new ItalicFunction());
+        FUNCTIONS.add(new UnderlineFunction());
         FUNCTIONS.add(new DoubleStrikeFunction());
         FUNCTIONS.add(new PageNoFunction());
         FUNCTIONS.add(new AsciiFunction());

@@ -250,6 +250,24 @@ public class EscpUtil {
     }
 
     /**
+     * Generate ESC - 1 to turn underline on.
+     *
+     * @return string of ESC - 1 command.
+     */
+    public static String escSelectUnderline() {
+        return esc(45, 1);
+    }
+
+    /**
+     * Generate ESC - 0 to turn underline off.
+     *
+     * @return string of ESC - 0 command.
+     */
+    public static String escCancelUnderline() {
+        return esc(45, 0);
+    }
+
+    /**
      * This enum represents available character pitchs.
      */
     public enum CHARACTER_PITCH {
