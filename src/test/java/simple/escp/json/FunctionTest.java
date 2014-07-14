@@ -87,4 +87,24 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void bold() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"%{BOLD}This is bold%{BOLD}\"," +
+                "\"This is normal\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            escSelectBoldFont() + "This is bold" + escCancelBoldFont() + CRLF +
+            "This is normal" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
 }

@@ -36,6 +36,8 @@ public class EscpUtil {
     public static final int COMMAND_LEFT_MARGIN = 108;
     public static final int COMMAND_BOTTOM_MARGIN = 78;
     public static final int COMMAND_SELECTTYPEFACE = 107;
+    public static final int COMMAND_SELECTBOLD = 69;
+    public static final int COMMAND_CANCELBOLD = 70;
 
     public static final char CP347_LIGHT_VERTICAL               = (char) 179;
     public static final char CP347_LIGHT_DOWN_RIGHT             = (char) 218;
@@ -187,6 +189,24 @@ public class EscpUtil {
      */
     public static String escSelectTypeface(TYPEFACE typeface) {
         return esc(COMMAND_SELECTTYPEFACE, typeface.getValue());
+    }
+
+    /**
+     * Generate ESC E for select bold font.
+     *
+     * @return string of ESC E command.
+     */
+    public static String escSelectBoldFont() {
+        return esc(COMMAND_SELECTBOLD);
+    }
+
+    /**
+     * Generate ESC F for cancel bold font.
+     *
+     * @return string of ESC F command.
+     */
+    public static String escCancelBoldFont() {
+        return esc(COMMAND_CANCELBOLD);
     }
 
     /**

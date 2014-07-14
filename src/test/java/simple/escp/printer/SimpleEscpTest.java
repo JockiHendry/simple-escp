@@ -233,4 +233,17 @@ public class SimpleEscpTest {
         simpleEscp.print(template, null, null);
     }
 
+    @Test
+    public void printBold() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"bold: Normal %{BOLD}bold%{BOLD} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
+
 }

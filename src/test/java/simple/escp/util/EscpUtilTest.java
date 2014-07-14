@@ -111,6 +111,17 @@ public class EscpUtilTest {
     }
 
     @Test
+    public void escBold() {
+        String result = EscpUtil.escSelectBoldFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 69, result.charAt(1));
+
+        result = EscpUtil.escCancelBoldFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 70, result.charAt(1));
+    }
+
+    @Test
     public void crlf() {
         String result = EscpUtil.CR;
         assertEquals(1, result.length());
