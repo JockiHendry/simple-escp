@@ -104,7 +104,7 @@ import java.util.logging.Logger;
  */
 public class JsonTemplate extends Template {
 
-    private static Logger logger = Logger.getLogger("simple.escp.json.JsonTemplate");
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private String originalText;
 
@@ -125,6 +125,7 @@ public class JsonTemplate extends Template {
      */
     public JsonTemplate(File file) throws IOException {
         this.originalText = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        LOG.fine("JSON content: " + this.originalText);
     }
 
     /**
@@ -136,6 +137,7 @@ public class JsonTemplate extends Template {
      */
     public JsonTemplate(File file, Charset charset) throws IOException {
         this.originalText = new String(Files.readAllBytes(file.toPath()), charset);
+        LOG.fine("JSON content: " + this.originalText);
     }
 
     /**
@@ -173,6 +175,7 @@ public class JsonTemplate extends Template {
             sw.write(c);
         }
         this.originalText = sw.getBuffer().toString();
+        LOG.fine("JSON content: " + this.originalText);
     }
 
     /**
@@ -187,6 +190,7 @@ public class JsonTemplate extends Template {
         } else if (jsonValue.getValueType() == JsonValue.ValueType.STRING) {
             return Integer.valueOf(((JsonString) jsonValue).getString());
         }
+        LOG.warning("Can't convert " + jsonValue.toString() + " to number.");
         throw new IllegalArgumentException("Can't convert " + jsonValue.toString() + " to number.");
     }
 
@@ -310,7 +314,9 @@ public class JsonTemplate extends Template {
         if (report == null) {
             try (JsonReader reader = Json.createReader(new StringReader(originalText))) {
                 JsonObject json = reader.readObject();
+                LOG.fine("Parse pageFormat for [" + json + "]");
                 parsePageFormat(json);
+                LOG.fine("Parse template for [" + json + "]");
                 parseTemplateText(json);
             }
         }

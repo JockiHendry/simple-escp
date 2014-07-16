@@ -2,11 +2,11 @@ package simple.escp.dom;
 
 import simple.escp.dom.line.EmptyLine;
 import simple.escp.dom.line.TextLine;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * DOM class to represent a print result in form of collection of empty, one or more <code>Page</code>.
@@ -14,6 +14,8 @@ import java.util.List;
  * call <code>fill()</code> method of this class.
  */
 public class Report implements Iterable<Page> {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private List<Page> pages = new ArrayList<>();
     private int lastPageNumber = 0;
@@ -247,8 +249,10 @@ public class Report implements Iterable<Page> {
         lastPageNumber++;
         Page page;
         if (plain) {
+            LOG.fine("Creating a new page without any header and footer.");
             page = new Page(new ArrayList<Line>(), null, null, lastPageNumber, pageFormat.getPageLength());
         } else {
+            LOG.fine("Creating a new page that has report's header and footer.");
             page = new Page(new ArrayList<Line>(), copyHeader(), copyFooter(), lastPageNumber,
                 pageFormat.getPageLength());
         }
@@ -346,6 +350,7 @@ public class Report implements Iterable<Page> {
             }
             discardedLine = currentPage.insert(discardedLine, header.length + 1  +
                 (newPageFirstLines == null ? 0 : newPageFirstLines.size()));
+            LOG.fine("Discarded line for next page is [" + discardedLine + "]");
             currentPage = nextPage(currentPage);
         }
     }

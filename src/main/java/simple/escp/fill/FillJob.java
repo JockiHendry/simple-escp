@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,8 @@ import java.util.regex.Pattern;
  * The new instance can reuse existing <code>Report</code> or <code>DataSource</code>.
  */
 public class FillJob {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     public static final Pattern BASIC_PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{(.+?)\\}");
     public static final Pattern SCRIPT_PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(.+?)\\}\\}");
@@ -97,6 +100,7 @@ public class FillJob {
         scriptEngineManager.setBindings(new DataSourceBinding(this.dataSources));
         this.scriptEngine = scriptEngineManager.getEngineByName("groovy");
         if (this.scriptEngine == null) {
+            LOG.info("Can't find Groovy script engine, will use JavaScript script engine.");
             this.scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
         }
 
@@ -155,6 +159,7 @@ public class FillJob {
         Matcher matcher = BASIC_PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
             String placeholderText = matcher.group(1);
+            LOG.fine("Found basic placeholder text [" + placeholderText + "]");
             Placeholder placeholder = placeholders.get(placeholderText);
             if (placeholder == null) {
                 placeholder = new BasicPlaceholder(placeholderText);
@@ -177,6 +182,7 @@ public class FillJob {
         Matcher matcher = SCRIPT_PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
             String placeholderText = matcher.group(1);
+            LOG.fine("Found script placeholder text [" + placeholderText + "]");
             Placeholder placeholder = placeholders.get(placeholderText);
             if (placeholder == null) {
                 placeholder = new ScriptPlaceholder(placeholderText, scriptEngine);
@@ -198,6 +204,7 @@ public class FillJob {
     public String fill() {
         Report parsedReport = report;
         if (parsedReport.hasDynamicLine()) {
+            LOG.fine("This report has dynamic line.");
             parsedReport = new Report(report);
             TableFillJob tableFillJob = new TableFillJob(parsedReport, dataSources);
             ListFillJob listFillJob = new ListFillJob(parsedReport, dataSources);
@@ -211,6 +218,7 @@ public class FillJob {
 
         // process functions
         for (Function function : FUNCTIONS) {
+            LOG.fine("Executing function [" + function + "]");
             function.process(parsedReport);
         }
 

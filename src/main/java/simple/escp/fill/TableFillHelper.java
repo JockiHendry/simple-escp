@@ -15,11 +15,14 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A helper class used internally by {@link simple.escp.fill.TableFillJob}.
  */
 public class TableFillHelper {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private Report report;
     private TableLine tableLine;
@@ -51,6 +54,7 @@ public class TableFillHelper {
      */
     private void preparePlaceholders() {
         placeholders = new ScriptPlaceholder[tableLine.getNumberOfColumns()];
+        LOG.fine("Preparing " + placeholders.length + " placeholders");
         for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
             TableColumn column = tableLine.getColumnAt(i + 1);
             placeholders[i] = new ScriptPlaceholder(column.getText(), scriptEngine);
@@ -86,6 +90,7 @@ public class TableFillHelper {
     public List<Line> process() {
         int rowNumber = 1;
         for (Object entry: source) {
+            LOG.fine("Row number [" + rowNumber + "] Source [" + entry + "]");
             StringBuffer text = new StringBuffer();
             DataSource[] entryDataSources = DataSources.from(new Object[]{entry});
             DataSourceBinding lineContext = new DataSourceBinding(entryDataSources);

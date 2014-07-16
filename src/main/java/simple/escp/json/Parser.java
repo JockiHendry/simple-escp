@@ -26,11 +26,14 @@ import simple.escp.dom.line.TextLine;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import java.util.logging.Logger;
 
 /**
  * A helper class for parsing.
  */
 public class Parser {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private Report result;
     private Integer pageLength;
@@ -133,12 +136,15 @@ public class Parser {
      */
 
     private TextLine[] jsonToTextLine(JsonArray text) {
+        LOG.fine("Converting [" + text + "] into TextLine.");
         int size = (text == null ? 0 : text.size());
         TextLine[] result = new TextLine[size];
         for (int i = 0; i < size; i++) {
             JsonValue value = text.get(i);
             if (value.getValueType() == JsonValue.ValueType.STRING) {
                 result[i] = new TextLine(text.getString(i));
+            } else {
+                LOG.warning("[" + value + "] is not a string and will be skipped.");
             }
         }
         return result;
@@ -152,6 +158,7 @@ public class Parser {
      */
 
     private TableLine jsonToTableLine(JsonObject table) {
+        LOG.fine("Converting [" + table + "] into TableLine.");
         TableLine tableLine = new TableLine(table.getString("table"));
         if (table.containsKey("border")) {
             tableLine.setDrawBorder(table.getBoolean("border", false));
@@ -187,6 +194,7 @@ public class Parser {
      * @return result in <code>ListLine</code>.
      */
     private ListLine jsonToListLine(JsonObject list) {
+        LOG.fine("Converting [" + list + "] into ListLine.");
         String source = list.getString("list");
         if (!list.containsKey("line")) {
             throw new IllegalArgumentException("List must have 'line'.");
@@ -209,6 +217,7 @@ public class Parser {
      * @return result in <code>Line[]</code>.
      */
     private Line[] jsonToLine(JsonArray text) {
+        LOG.fine("Converting [" + text + "] into Line.");
         int size = (text == null ? 0 : text.size());
         Line[] result = new Line[size];
         for (int i = 0; i < size; i++) {
@@ -222,7 +231,8 @@ public class Parser {
                 } else if (object.containsKey("list")) {
                     result[i] = jsonToListLine(object);
                 } else {
-                    throw new IllegalArgumentException("Unknown object in JSON: " + object);
+                    LOG.warning("Found unsupported object [" + object + "]");
+                    throw new IllegalArgumentException("Unsupported object: " + object);
                 }
             }
         }
@@ -239,15 +249,18 @@ public class Parser {
     public Report parse() {
         result = new Report(pageFormat, jsonToTextLine(header), jsonToTextLine(footer));
         if (firstPage != null) {
+            LOG.fine("Parsing firstPage section");
             result.appendSinglePage(jsonToLine(firstPage), true);
             result.lineBreak();
         }
         if (detail != null) {
+            LOG.fine("Parsing detail section");
             for (Line line: jsonToLine(detail)) {
                 result.append(line, false);
             }
         }
         if (lastPage != null) {
+            LOG.fine("Parsing lastPage section");
             result.lineBreak();
             result.appendSinglePage(jsonToLine(lastPage), true);
         }

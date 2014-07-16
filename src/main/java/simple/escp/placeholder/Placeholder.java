@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 /**
  *  <code>Placeholder</code> represent a placeholder in template, such as <code>${name}</code> or
@@ -28,6 +29,8 @@ import java.util.Collection;
  *
  */
 public abstract class Placeholder {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     protected String text;
     protected Format format;
@@ -194,17 +197,21 @@ public abstract class Placeholder {
      */
     public Object getFormatted(Object value) {
         Object result = value;
-
+        LOG.fine("Formatting [" + value + "]");
         if (value != null) {
             if (isSum()) {
+                LOG.fine("Calculating sum for [" + value + "]");
                 if (!(value instanceof Collection)) {
+                    LOG.warning("Can't calculate sum for [" + value + "] because it is not a Collection.");
                     throw new InvalidPlaceholder("Expected collection for placeholder [" + getText() + "] for " +
                         "sum operation but received value [" + value + "].");
                 } else {
                     result = getSumValue((Collection) value);
                 }
             } else if (isCount()) {
+                LOG.fine("Calculating count for [" + value + "]");
                 if (!(value instanceof Collection)) {
+                    LOG.warning("Can't calculate count for [" + value + "] because it is not a Collection.");
                     throw new InvalidPlaceholder("Expected collection for placeholder [" + getText() + "] for " +
                         "count operation but received value [" + value + "].");
                 } else {
@@ -214,8 +221,10 @@ public abstract class Placeholder {
 
             if (getFormat() != null) {
                 try {
+                    LOG.fine("Formatting [" + result + "] as [" + getFormat() + "]");
                     result = getFormat().format(result);
                 } catch (IllegalArgumentException e) {
+                    LOG.warning("Can't format [" + result + "] as [" + getFormat() + "]");
                     throw new InvalidPlaceholder("Can't format value [" + result + "] for placeholder [" +
                             getText() + "].", e);
                 }
@@ -225,8 +234,10 @@ public abstract class Placeholder {
         if (getWidth() > 0) {
             result = (result != null) ? result : "";
             if (getAlignment() == null) {
+                LOG.fine("Left-align for [" + result + "] in width [" + getWidth() + "]");
                 result = StringUtil.alignLeft(result.toString(), getWidth());
             } else {
+                LOG.fine(getAlignment() + " for [" + result + "] in width [" + getWidth() + "]");
                 result = StringUtil.align(result.toString(), getWidth(), getAlignment());
             }
         }
@@ -279,6 +290,7 @@ public abstract class Placeholder {
         try {
             width = Integer.valueOf(text);
         } catch (NumberFormatException e) {
+            LOG.warning("Can't convert [" + text + "] to number");
             return;
         }
     }
@@ -308,6 +320,7 @@ public abstract class Placeholder {
     protected void parseText(String[] text) {
         for (String part: text) {
             part = part.trim();
+            LOG.fine("Processing part [" + part + "]");
             parseFormula(part);
             parseFormatter(part);
             parseWidth(part);

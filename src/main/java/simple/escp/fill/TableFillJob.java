@@ -4,24 +4,21 @@ import simple.escp.data.DataSource;
 import simple.escp.dom.Line;
 import simple.escp.dom.Page;
 import simple.escp.dom.Report;
-import simple.escp.dom.TableColumn;
 import simple.escp.dom.line.TableLine;
-import simple.escp.dom.line.TextLine;
-import simple.escp.data.DataSources;
 import simple.escp.exception.InvalidPlaceholder;
-import simple.escp.placeholder.Placeholder;
 import simple.escp.placeholder.ScriptPlaceholder;
-import simple.escp.util.EscpUtil;
-import javax.script.ScriptContext;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * <code>TableFillJob</code> represent the process of filling a <code>TableLine</code> with its source in form
  * of a <code>Collection</code>.
  */
 public class TableFillJob extends FillJob {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     /**
      * Create a new instance of <code>TableFillJob</code>.
@@ -53,6 +50,7 @@ public class TableFillJob extends FillJob {
                     "creating a new page. (" + startLines + " > " + subreport.getStartOfFooter() + ")");
 
         }
+        LOG.fine("Table start at line [" + startLines + "]");
         subreport.newPage(false, startLines);
         TableFillHelper helper = new TableFillHelper(subreport, scriptEngine, tableLine, source);
         return helper.process();
@@ -71,10 +69,12 @@ public class TableFillJob extends FillJob {
             TableLine tableLine = page.getTableLines().get(0);
             Collection dataSource = (Collection) (new ScriptPlaceholder(tableLine.getSource(), scriptEngine)).
                 getValue(dataSources);
+            LOG.fine("Datasource is [" + dataSource + "]");
             List<Line> results = fillTableLine(tableLine, dataSource);
             Collections.reverse(results);
             page.removeLine(tableLine);
             for (Line result : results) {
+                LOG.fine("Add new line [" + result.toString() + "]");
                 report.insert(result, page.getPageNumber(), tableLine.getLineNumber());
             }
         }

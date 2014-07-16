@@ -13,12 +13,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * <code>ListFillJob</code> represent the process of filling a <code>ListLine</code> with its source in form of
  * a <code>Collection</code>.
  */
 public class ListFillJob extends FillJob {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     /**
      * Create a new instance of <code>ListFillJob</code>.
@@ -47,6 +50,7 @@ public class ListFillJob extends FillJob {
                     "creating a new page. (" + startLines + " > " + subreport.getStartOfFooter() + ")");
 
         }
+        LOG.fine("List start at line [" + startLines + "]");
         subreport.newPage(false, startLines);
 
         for (Object entry: source) {
@@ -55,6 +59,7 @@ public class ListFillJob extends FillJob {
             scriptEngine.setBindings(lineContext, ScriptContext.ENGINE_SCOPE);
             String result = fillBasicPlaceholder(listLine.getLineSource());
             result = fillScriptPlaceholder(result);
+            LOG.fine("Add new line [" + result + "] from source [" + entry + "]");
             subreport.append(new TextLine(result), false);
         }
 
@@ -79,6 +84,7 @@ public class ListFillJob extends FillJob {
             Collections.reverse(results);
             page.removeLine(listLine);
             for (Line result : results) {
+                LOG.fine("Add new line [" + result.toString() + "]");
                 report.insert(result, page.getPageNumber(), listLine.getLineNumber());
             }
         }

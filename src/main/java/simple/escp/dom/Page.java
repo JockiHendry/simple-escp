@@ -8,12 +8,15 @@ import simple.escp.util.EscpUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * DOM class to represent one page.  A <code>Page</code> may contains header and footer.
  * A page also has its page number.
  */
 public class Page {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private TextLine[] header;
     private TextLine[] footer;
@@ -225,6 +228,7 @@ public class Page {
         content.add(lineNumber - header.length - 1, line);
         if (isOverflow()) {
             result = content.get(content.size() - 1);
+            LOG.fine("Content overflow and the last line will be removed [" + result + "]");
             content.remove(content.size() - 1);
         }
         return result;

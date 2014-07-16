@@ -3,11 +3,14 @@ package simple.escp.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A factory class to create <code>DataSource</code>.
  */
 public abstract class DataSources {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     /**
      * Create a new <code>DataSource</code> from an <code>Object</code>.  This method will select the
@@ -19,8 +22,10 @@ public abstract class DataSources {
     @SuppressWarnings("unchecked")
     public static DataSource from(Object object) {
         if (object instanceof Map) {
+            LOG.info("Creating new MapDataSource for [" + object + "]");
             return new MapDataSource((Map) object);
         } else {
+            LOG.info("Creating new BeanDataSource for [" + object + "]");
             return new BeanDataSource(object);
         }
     }

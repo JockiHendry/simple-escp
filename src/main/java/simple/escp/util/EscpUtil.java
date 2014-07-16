@@ -184,7 +184,7 @@ public class EscpUtil {
      */
     public static String escBottomMargin(int value) {
         if ((value < 1) || (value > MAX_PAGE_LENGTH)) {
-            throw new IllegalArgumentException("Invalid value for bototm margin: " + value + " (valid: 1 to " +
+            throw new IllegalArgumentException("Invalid value for bottom margin: " + value + " (valid: 1 to " +
                 MAX_PAGE_LENGTH + ")");
         }
         return esc(COMMAND_BOTTOM_MARGIN, value);
