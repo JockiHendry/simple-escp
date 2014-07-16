@@ -17,8 +17,9 @@
                 "table": "table_source",
                 "border": true,
                 "columns": [
+                    { "source": "row :: right", "width": 4 },
                     { "source": "code", "width": 9  },
-                    { "source": "name", "width": 34, "wrap": true },
+                    { "source": "name", "width": 30, "wrap": true },
                     { "source": "qty",  "width": 6  }
                 ]
             },

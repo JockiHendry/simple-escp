@@ -84,12 +84,15 @@ public class TableFillHelper {
      * @return a collection of <code>Line</code>.
      */
     public List<Line> process() {
+        int rowNumber = 1;
         for (Object entry: source) {
             StringBuffer text = new StringBuffer();
             DataSource[] entryDataSources = DataSources.from(new Object[]{entry});
             DataSourceBinding lineContext = new DataSourceBinding(entryDataSources);
+            lineContext.put("row", rowNumber++);
             scriptEngine.setBindings(lineContext, ScriptContext.ENGINE_SCOPE);
             for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
+                lineContext.put("col", i + 1);
                 TableColumn column = tableLine.getColumnAt(i + 1);
                 String value = placeholders[i].getValueAsString(entryDataSources);
                 if (column.isWrap()) {
