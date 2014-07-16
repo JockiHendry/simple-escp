@@ -88,6 +88,29 @@ public class FunctionTest {
     }
 
     @Test
+    public void asciiWithRepeat() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"detail\": [" +
+                    "\"Result: %{177 R10}\"," +
+                    "\"Result: %{176 R 5}\"]" +
+                "}" +
+            "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "Result: " + (char) 177 + (char) 177 + (char) 177 + (char) 177 + (char) 177 + (char) 177 + (char) 177 + (char) 177 + (char) 177 + (char) 177 + CRLF +
+            "Result: " + (char) 176 + (char) 176 + (char) 176 + (char) 176 + (char) 176 + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
+    @Test
     public void bold() {
         String jsonString =
         "{" +
