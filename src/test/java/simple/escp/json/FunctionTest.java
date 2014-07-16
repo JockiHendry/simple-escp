@@ -226,4 +226,56 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void autoIncrement() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"Result: %{INC AUTO_NO}\"," +
+                "\"Result: %{INC AUTO_A}\"," +
+                "\"Result: %{INC AUTO_NO}\"," +
+                "\"Result: %{INC AUTO_NO}\"," +
+                "\"Result: %{INC AUTO_A}\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "Result: 1" + CRLF +
+            "Result: 1" + CRLF +
+            "Result: 2" + CRLF +
+            "Result: 3" + CRLF +
+            "Result: 2" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
+    @Test
+    public void autoIncrementDuplicate() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"Result: %{INC AUTO_NO}\"," +
+                "\"Result: %{INC AUTO_A}\"," +
+                "\"Result: %{INC AUTO_NO}\"," +
+                "\"Result: %{INC AUTO_NO}\"," +
+                "\"Result: %{INC AUTO_A}\"" +
+            "]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "Result: 1" + CRLF +
+            "Result: 1" + CRLF +
+            "Result: 2" + CRLF +
+            "Result: 3" + CRLF +
+            "Result: 2" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
 }

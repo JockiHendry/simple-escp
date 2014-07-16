@@ -31,4 +31,9 @@ public class BoldFunction extends Function {
         return result;
     }
 
+    @Override
+    public void reset() {
+        bold = false;
+    }
+
 }

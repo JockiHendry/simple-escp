@@ -30,4 +30,9 @@ public class ItalicFunction extends Function {
         italic = !italic;
         return result;
     }
+
+    @Override
+    public void reset() {
+        italic = false;
+    }
 }

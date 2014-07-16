@@ -30,4 +30,9 @@ public class DoubleStrikeFunction extends Function {
         doubleStrike = !doubleStrike;
         return result;
     }
+
+    @Override
+    public void reset() {
+        doubleStrike = false;
+    }
 }

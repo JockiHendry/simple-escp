@@ -36,4 +36,9 @@ public class AsciiFunction extends Function {
         }
         return result.toString();
     }
+
+    @Override
+    public void reset() {
+        // Do nothing.
+    }
 }

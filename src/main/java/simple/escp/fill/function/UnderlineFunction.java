@@ -31,4 +31,9 @@ public class UnderlineFunction extends Function {
         return result;
     }
 
+    @Override
+    public void reset() {
+        underline = false;
+    }
+
 }

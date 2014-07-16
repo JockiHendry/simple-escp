@@ -22,4 +22,9 @@ public class PageNoFunction extends Function {
     public String process(Matcher matcher, Report report, Page page, Line line) {
         return String.valueOf(page.getPageNumber());
     }
+
+    @Override
+    public void reset() {
+        // Do nothing
+    }
 }

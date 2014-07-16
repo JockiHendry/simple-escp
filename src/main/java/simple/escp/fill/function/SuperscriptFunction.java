@@ -31,4 +31,9 @@ public class SuperscriptFunction extends Function {
         return result;
     }
 
+    @Override
+    public void reset() {
+        superscript = false;
+    }
+
 }

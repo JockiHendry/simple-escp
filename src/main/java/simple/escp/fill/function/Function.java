@@ -56,6 +56,12 @@ public abstract class Function {
     public abstract String process(Matcher matcher, Report report, Page page, Line line);
 
     /**
+     * This method will called when starting a new fill job.  It should clears or reset states of this function that
+     * should not be persistent across different fill jobs.
+     */
+    public abstract void reset();
+
+    /**
      * Find this function in <code>report</code> and translates them into actual value.  This method will
      * process all lines in all pages of <code>report</code>.
      *

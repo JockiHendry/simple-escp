@@ -31,4 +31,9 @@ public class SubscriptFunction extends Function {
         return result;
     }
 
+    @Override
+    public void reset() {
+        subscript = false;
+    }
+
 }

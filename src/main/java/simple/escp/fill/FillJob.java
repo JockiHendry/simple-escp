@@ -4,6 +4,7 @@ import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.data.DataSource;
 import simple.escp.fill.function.AsciiFunction;
+import simple.escp.fill.function.AutoIncrementFunction;
 import simple.escp.fill.function.BoldFunction;
 import simple.escp.fill.function.DoubleStrikeFunction;
 import simple.escp.fill.function.Function;
@@ -50,6 +51,7 @@ public class FillJob {
         FUNCTIONS.add(new SubscriptFunction());
         FUNCTIONS.add(new PageNoFunction());
         FUNCTIONS.add(new AsciiFunction());
+        FUNCTIONS.add(new AutoIncrementFunction());
     }
 
     protected Report report;
@@ -92,6 +94,11 @@ public class FillJob {
         this.scriptEngine = scriptEngineManager.getEngineByName("groovy");
         if (this.scriptEngine == null) {
             this.scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
+        }
+
+        // Reset functions
+        for (Function function : FUNCTIONS) {
+            function.reset();
         }
     }
 
