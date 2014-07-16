@@ -172,6 +172,9 @@ public class Parser {
                 if (column.containsKey("caption")) {
                     tableColumn.setCaption(column.getString("caption"));
                 }
+                if (column.containsKey("wrap")) {
+                    tableColumn.setWrap(column.getBoolean("wrap", false));
+                }
             }
         }
         return tableLine;

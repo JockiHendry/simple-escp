@@ -8,6 +8,7 @@ public class TableColumn {
     private String text;
     private String caption;
     private int width;
+    private boolean wrap;
 
     /**
      * Construct a new <code>TableColumn</code>.
@@ -73,5 +74,25 @@ public class TableColumn {
      */
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    /**
+     * Determine if the content of this column should be wrapped or truncated when the size of content is
+     * more than column's width.
+     *
+     * @return <code>true</code> if content should be wrapped or <code>false</code> if content should be truncated.
+     */
+    public boolean isWrap() {
+        return wrap;
+    }
+
+    /**
+     * Enable or disable wrapping.
+     *
+     * @param wrap if <code>true</code> will wrap the overflowed content (move it to the next row).  If
+     *             <code>wrap</code> is <code>false</code>, the overflowed content will be truncated.
+     */
+    public void setWrap(boolean wrap) {
+        this.wrap = wrap;
     }
 }

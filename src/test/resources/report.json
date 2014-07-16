@@ -18,7 +18,7 @@
                 "border": true,
                 "columns": [
                     { "source": "code", "width": 9  },
-                    { "source": "name", "width": 34 },
+                    { "source": "name", "width": 34, "wrap": true },
                     { "source": "qty",  "width": 6  }
                 ]
             },

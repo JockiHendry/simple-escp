@@ -163,6 +163,36 @@ public class JsonTemplateFillTest {
     }
 
     @Test
+     public void fillOneTableWithWrappedString() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table_wrap.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None12345678901234567890", "David12345678901234567890", "None12345678901234567890"));
+        persons.add(new Person("David12345678901234567890", "Solid", "Snake12345678901234567890"));
+        persons.add(new Person("Snake12345678901234567890", "Jocki", "Hendry12345678901234567890"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+            INIT + escPageLength(3) +
+            "This is detail 1." + CRLF +
+            "firstName lastName            nickname  " + CRLF +
+            "David12345None1234567890123456None123456" + CRLF + CRFF +
+            "firstName lastName            nickname  " + CRLF +
+            "67890123457890                          " + CRLF +
+            "67890                                   " + CRLF + CRFF +
+            "firstName lastName            nickname  " + CRLF +
+            "Solid     Snake123456789012345David12345" + CRLF +
+            "          67890                         " + CRLF + CRFF +
+            "firstName lastName            nickname  " + CRLF +
+            "Jocki     Hendry12345678901234Snake12345" + CRLF +
+            "          567890                        " + CRLF + CRFF +
+            "This is detail 2." + CRLF + CRFF +
+            INIT,
+            result
+        );
+    }
+
+    @Test
     public void fillOneTableWithFormatting() throws URISyntaxException, IOException {
         JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table_with_format.json").toURI());
         PersonAggregate personAggregate = new PersonAggregate();

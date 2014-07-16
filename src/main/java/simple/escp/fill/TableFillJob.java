@@ -54,34 +54,8 @@ public class TableFillJob extends FillJob {
 
         }
         subreport.newPage(false, startLines);
-
-        // Save all placeholders first.
-        Placeholder[] placeholders = new ScriptPlaceholder[tableLine.getNumberOfColumns()];
-        for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
-            TableColumn column = tableLine.getColumnAt(i + 1);
-            placeholders[i] = new ScriptPlaceholder(column.getText(), scriptEngine);
-            placeholders[i].setWidth(column.getWidth() - (tableLine.isDrawBorder() ? 1 : 0));
-        }
-        for (Object entry: source) {
-            StringBuffer text = new StringBuffer();
-            for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
-                DataSource[] entryDataSources = DataSources.from(new Object[]{entry});
-                DataSourceBinding lineContext = new DataSourceBinding(entryDataSources);
-                scriptEngine.setBindings(lineContext, ScriptContext.ENGINE_SCOPE);
-                String value = placeholders[i].getValueAsString(entryDataSources);
-                if (i == 0 && tableLine.isDrawBorder()) {
-                    text.append(EscpUtil.CP347_LIGHT_VERTICAL);
-                }
-                text.append(value);
-                if (tableLine.isDrawBorder()) {
-                    text.append(EscpUtil.CP347_LIGHT_VERTICAL);
-                }
-            }
-            subreport.append(new TextLine(text.toString()), false);
-        }
-
-        return subreport.getFlatLines();
-
+        TableFillHelper helper = new TableFillHelper(subreport, scriptEngine, tableLine, source);
+        return helper.process();
     }
 
     /**
