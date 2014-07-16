@@ -305,7 +305,36 @@ public class FunctionTest {
             INIT,
             new FillJob(jsonTemplate.parse()).fill()
         );
-
     }
+
+    @Test
+    public void globalLineNo() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"header\": [\"Halaman %{PAGE_NO}\"]," +
+                "\"detail\": [" +
+                "\"Line %{GLOBAL_LINE_NO}\"," +
+                "\"Line %{GLOBAL_LINE_NO}\"," +
+                "\"Line %{GLOBAL_LINE_NO}\"," +
+                "\"Line %{GLOBAL_LINE_NO}\"," +
+                "\"Line %{GLOBAL_LINE_NO}\"," +
+                "\"Line %{GLOBAL_LINE_NO}\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "Halaman 1" + CRLF + "Line 2" + CRLF + "Line 3" + CRLF + CRFF +
+            "Halaman 2" + CRLF + "Line 5" + CRLF + "Line 6" + CRLF + CRFF +
+            "Halaman 3" + CRLF + "Line 8" + CRLF + "Line 9" + CRLF + CRFF +
+            INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+    }
+
 
 }
