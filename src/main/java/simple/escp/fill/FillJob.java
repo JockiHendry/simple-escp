@@ -9,6 +9,7 @@ import simple.escp.fill.function.BoldFunction;
 import simple.escp.fill.function.DoubleStrikeFunction;
 import simple.escp.fill.function.Function;
 import simple.escp.fill.function.ItalicFunction;
+import simple.escp.fill.function.LineNoFunction;
 import simple.escp.fill.function.PageNoFunction;
 import simple.escp.fill.function.SubscriptFunction;
 import simple.escp.fill.function.SuperscriptFunction;
@@ -52,6 +53,7 @@ public class FillJob {
         FUNCTIONS.add(new PageNoFunction());
         FUNCTIONS.add(new AsciiFunction());
         FUNCTIONS.add(new AutoIncrementFunction());
+        FUNCTIONS.add(new LineNoFunction());
     }
 
     protected Report report;

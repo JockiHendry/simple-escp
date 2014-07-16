@@ -278,4 +278,34 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void lineNo() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"header\": [\"Halaman %{PAGE_NO}\"]," +
+                "\"detail\": [" +
+                "\"Line %{LINE_NO}\"," +
+                "\"Line %{LINE_NO}\"," +
+                "\"Line %{LINE_NO}\"," +
+                "\"Line %{LINE_NO}\"," +
+                "\"Line %{LINE_NO}\"," +
+                "\"Line %{LINE_NO}\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(
+            INIT +
+            "Halaman 1" + CRLF + "Line 2" + CRLF + "Line 3" + CRLF + CRFF +
+            "Halaman 2" + CRLF + "Line 2" + CRLF + "Line 3" + CRLF + CRFF +
+            "Halaman 3" + CRLF + "Line 2" + CRLF + "Line 3" + CRLF + CRFF +
+            INIT,
+            new FillJob(jsonTemplate.parse()).fill()
+        );
+
+    }
+
 }
