@@ -2,11 +2,11 @@ package simple.escp.dom;
 
 import simple.escp.dom.line.EmptyLine;
 import simple.escp.dom.line.TextLine;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * DOM class to represent a print result in form of collection of empty, one or more <code>Page</code>.
@@ -14,6 +14,8 @@ import java.util.List;
  * call <code>fill()</code> method of this class.
  */
 public class Report implements Iterable<Page> {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private List<Page> pages = new ArrayList<>();
     private int lastPageNumber = 0;
@@ -26,15 +28,18 @@ public class Report implements Iterable<Page> {
     /**
      * Create a clone from another report.
      *
-     * @param report a <code>Report</code> to clone.
+     * @param anotherReport a <code>Report</code> to clone.
      */
-    public Report(Report report) {
-        init(report.getPageFormat(), report.getHeader(), report.getFooter());
-        for (Page page : report) {
-            for (Line line : page.getContent()) {
-                append(line, false);
-            }
+    public Report(Report anotherReport) {
+        init(anotherReport.getPageFormat(), anotherReport.getHeader(), anotherReport.getFooter());
+        pages = new ArrayList<>();
+        for (Page page : anotherReport) {
+            pages.add(new Page(page, anotherReport.getPageFormat().getPageLength()));
         }
+        if (!pages.isEmpty()) {
+            currentPage = pages.get(pages.size() - 1);
+        }
+        lastPageNumber = anotherReport.getLastPageNumber();
     }
 
     /**
@@ -74,8 +79,8 @@ public class Report implements Iterable<Page> {
             throw new IllegalArgumentException("Invalid page format with pageLength undefined when " +
                     "isUsePageLengthFromPrinter is false.");
         }
-        this.header = (header == null) ? new TextLine[0] : header;
-        this.footer = (footer == null) ? new TextLine[0] : footer;
+        this.header = (header == null) ? new TextLine[0] : Arrays.copyOf(header, header.length);
+        this.footer = (footer == null) ? new TextLine[0] : Arrays.copyOf(footer, footer.length);
         this.lineBreak = false;
     }
 
@@ -98,12 +103,40 @@ public class Report implements Iterable<Page> {
     }
 
     /**
+     * Create a copy of every <code>TextLine</code> in header.  The modification to the copy will not
+     * affect the original header stored in this report.
+     *
+     * @return the copy of current header.
+     */
+    public TextLine[] copyHeader() {
+        TextLine[] result = new TextLine[header.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new TextLine(header[i]);
+        }
+        return result;
+    }
+
+    /**
      * Get the footer for this page.
      *
      * @return footer for this page.
      */
     public TextLine[] getFooter() {
         return Arrays.copyOf(footer, footer.length);
+    }
+
+    /**
+     * Create a copy of every <code>TextLine</code> in footer.  The modification to the copy will not
+     * affect the original footer stored in this report.
+     *
+     * @return the copy of current footer.
+     */
+    public TextLine[] copyFooter() {
+        TextLine[] result = new TextLine[footer.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new TextLine(footer[i]);
+        }
+        return result;
     }
 
     /**
@@ -219,9 +252,12 @@ public class Report implements Iterable<Page> {
         lastPageNumber++;
         Page page;
         if (plain) {
+            LOG.fine("Creating a new page without any header and footer.");
             page = new Page(new ArrayList<Line>(), null, null, lastPageNumber, pageFormat.getPageLength());
         } else {
-            page = new Page(new ArrayList<Line>(), header, footer, lastPageNumber, pageFormat.getPageLength());
+            LOG.fine("Creating a new page that has report's header and footer.");
+            page = new Page(new ArrayList<Line>(), copyHeader(), copyFooter(), lastPageNumber,
+                pageFormat.getPageLength());
         }
         pages.add(page);
         currentPage = page;
@@ -317,6 +353,7 @@ public class Report implements Iterable<Page> {
             }
             discardedLine = currentPage.insert(discardedLine, header.length + 1  +
                 (newPageFirstLines == null ? 0 : newPageFirstLines.size()));
+            LOG.fine("Discarded line for next page is [" + discardedLine + "]");
             currentPage = nextPage(currentPage);
         }
     }
@@ -387,6 +424,12 @@ public class Report implements Iterable<Page> {
 
     @Override
     public Iterator<Page> iterator() {
+        int globalLineNumber = 1;
+        for (Page page : pages) {
+            for (Line line : page.getLines()) {
+                line.setGlobalLineNumber(globalLineNumber++);
+            }
+        }
         return pages.iterator();
     }
 }

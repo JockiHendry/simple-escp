@@ -5,7 +5,7 @@ import simple.escp.dom.Line;
 /**
  * Implementation of <code>Line</code> for a line that consists of text.
  */
-public class TextLine implements Line {
+public class TextLine extends Line {
 
     private String text;
 
@@ -16,6 +16,17 @@ public class TextLine implements Line {
      */
     public TextLine(String text) {
         this.text = text;
+    }
+
+    /**
+     * Create a new instance as a copy from another <code>TextLine</code>.
+     *
+     * @param another the instance to copy.
+     */
+    public TextLine(TextLine another) {
+        this(another.getText());
+        setLineNumber(another.getLineNumber());
+        setGlobalLineNumber(another.getGlobalLineNumber());
     }
 
     /**

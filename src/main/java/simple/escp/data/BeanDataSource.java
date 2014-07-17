@@ -7,11 +7,14 @@ import java.beans.Introspector;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
 
 /**
  * A <code>BeanDataSource</code> is a <code>DataSource</code> that obtains its value from a Java Bean object.
  */
 public class BeanDataSource implements DataSource {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private Object source;
     private PropertyDescriptor[] propertyDescriptors;
@@ -46,6 +49,7 @@ public class BeanDataSource implements DataSource {
                 return methodDescriptor;
             }
         }
+        LOG.fine("Can't find method [" + methodName + "] in this bean.");
         return null;
     }
 
@@ -62,6 +66,7 @@ public class BeanDataSource implements DataSource {
                 return propertyDescriptor;
             }
         }
+        LOG.fine("Can't find property [" + propertyName + "] in this bean.");
         return null;
     }
 

@@ -7,17 +7,21 @@ import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.dom.line.ListLine;
 import simple.escp.dom.line.TextLine;
-import simple.escp.placeholder.BasicPlaceholder;
+import simple.escp.placeholder.ScriptPlaceholder;
+import javax.script.ScriptContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * <code>ListFillJob</code> represent the process of filling a <code>ListLine</code> with its source in form of
  * a <code>Collection</code>.
  */
 public class ListFillJob extends FillJob {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     /**
      * Create a new instance of <code>ListFillJob</code>.
@@ -46,12 +50,16 @@ public class ListFillJob extends FillJob {
                     "creating a new page. (" + startLines + " > " + subreport.getStartOfFooter() + ")");
 
         }
+        LOG.fine("List start at line [" + startLines + "]");
         subreport.newPage(false, startLines);
 
         for (Object entry: source) {
             dataSources = new DataSource[] {DataSources.from(entry)};
+            DataSourceBinding lineContext = new DataSourceBinding(dataSources);
+            scriptEngine.setBindings(lineContext, ScriptContext.ENGINE_SCOPE);
             String result = fillBasicPlaceholder(listLine.getLineSource());
             result = fillScriptPlaceholder(result);
+            LOG.fine("Add new line [" + result + "] from source [" + entry + "]");
             subreport.append(new TextLine(result), false);
         }
 
@@ -70,12 +78,13 @@ public class ListFillJob extends FillJob {
         DataSource[] globalDataSources = Arrays.copyOf(dataSources, dataSources.length);
         while ((page = report.getFirstPageWithListLines()) != null) {
             ListLine listLine = page.getListLines().get(0);
-            Collection dataSource = (Collection) (new BasicPlaceholder(listLine.getSource())).
+            Collection dataSource = (Collection) (new ScriptPlaceholder(listLine.getSource(), scriptEngine)).
                 getValue(globalDataSources);
             List<Line> results = fillListLine(listLine, dataSource);
             Collections.reverse(results);
             page.removeLine(listLine);
             for (Line result : results) {
+                LOG.fine("Add new line [" + result.toString() + "]");
                 report.insert(result, page.getPageNumber(), listLine.getLineNumber());
             }
         }

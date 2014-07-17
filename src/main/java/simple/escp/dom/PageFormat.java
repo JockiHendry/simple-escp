@@ -274,7 +274,7 @@ public class PageFormat {
      * @return a string that contains ESC/P commands.
      */
     public String build() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(EscpUtil.escInitalize());
 
         // set line spacing

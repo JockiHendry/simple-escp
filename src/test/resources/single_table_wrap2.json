@@ -1,0 +1,19 @@
+{
+    "pageFormat": {
+        "pageLength": 3,
+        "usePageLengthFromPrinter": false
+    },
+    "template": [
+        "This is detail 1.",
+        {
+            "table": "persons",
+            "border": true,
+            "columns": [
+                { "source": "firstName", "width": 10, "wrap": true },
+                { "source": "lastName", "width": 20, "wrap": true },
+                { "source": "nickname", "width": 10 }
+            ]
+        },
+        "This is detail 2."
+    ]
+}

@@ -233,4 +233,69 @@ public class SimpleEscpTest {
         simpleEscp.print(template, null, null);
     }
 
+    @Test
+    public void printBold() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"bold: Normal %{BOLD}bold%{BOLD} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
+
+    @Test
+    public void printItalic() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"italic: Normal %{ITALIC}italic%{ITALIC} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
+
+    @Test
+    public void printDoubleStrike() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"strike: Normal %{DOUBLE}double strike%{DOUBLE} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
+
+    @Test
+    public void printUnderline() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"underline: Normal %{UNDERLINE}part with underline%{UNDERLINE} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
+
+    @Test
+    public void printSuperscriptAndSubscript() {
+        SimpleEscp simpleEscp = new SimpleEscp();
+        String json = "{" +
+            "\"template\": [" +
+                "\"superscript: Normal %{SUPER}part with superscript%{SUPER} normal.\"," +
+                "\"subscript: Normal %{SUB}part with subscript%{SUB} normal.\"" +
+            "]" +
+        "}";
+        Template template = new JsonTemplate(json);
+        template.getPageFormat().setAutoFormFeed(false);
+        simpleEscp.print(template, null, null);
+    }
 }

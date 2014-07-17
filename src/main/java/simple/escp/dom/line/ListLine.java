@@ -7,13 +7,12 @@ import java.util.Arrays;
  * DOM class to represent list.  A list is something like <code>{@link simple.escp.dom.line.TableLine}</code> but
  * doesn't have columnar layout.
  */
-public class ListLine implements Line {
+public class ListLine extends Line {
 
     private String source;
     private String lineSource;
     private TextLine[] header;
     private TextLine[] footer;
-    private Integer lineNumber;
 
     /**
      * Create a new <code>ListLine</code>.
@@ -68,26 +67,6 @@ public class ListLine implements Line {
     public TextLine[] getFooter() {
         return Arrays.copyOf(footer, footer.length);
     }
-
-    /**
-     * Set a line number for this list line.  See also {@link #getLineNumber()}.
-     *
-     * @param lineNumber the line number starting from <code>1</code>.
-     */
-    public void setLineNumber(Integer lineNumber) {
-        this.lineNumber = lineNumber;
-    }
-
-    /**
-     * Retrieve line number for this list line.
-     *
-     * @return line number starting from <code>1</code>.  The first line number is counted from header if it is
-     *         exists.  This method will return <code>null</code> if line number hasn't been set previously.
-     */
-    public Integer getLineNumber() {
-        return this.lineNumber;
-    }
-
 
     @Override
     public boolean isDynamic() {

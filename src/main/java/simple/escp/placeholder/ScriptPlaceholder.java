@@ -1,6 +1,8 @@
 package simple.escp.placeholder;
 
 import simple.escp.data.DataSource;
+import simple.escp.exception.InvalidPlaceholder;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import java.util.logging.Level;
@@ -12,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class ScriptPlaceholder extends Placeholder {
 
-    private static Logger logger = Logger.getLogger("simple.escp.placeholder.ScriptPlaceholder");
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private String script;
     private ScriptEngine scriptEngine;
@@ -35,6 +37,7 @@ public class ScriptPlaceholder extends Placeholder {
      * @param text full text that represent this placeholder.
      */
     private void parseText(String text) {
+        LOG.fine("Parsing [" + text + "]");
         if (text.contains(":")) {
             String[] parts = text.split(":", 2);
             this.script = parts[0].trim();
@@ -70,8 +73,8 @@ public class ScriptPlaceholder extends Placeholder {
         try {
             return scriptEngine.eval(script);
         } catch (ScriptException e) {
-            logger.log(Level.SEVERE, "Can't execute script: [" + getText() + "]");
-            return null;
+            LOG.log(Level.WARNING, "Error durring executing script.", e);
+            throw new InvalidPlaceholder("Can't execute script [" + script + "]", e);
         }
     }
 

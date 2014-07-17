@@ -138,8 +138,140 @@ public class JsonTemplateFillTest {
         );
     }
 
+    @Test
+    public void fillOneTableWithOverflowedString() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None12345678901234567890", "David12345678901234567890", "None12345678901234567890"));
+        persons.add(new Person("David12345678901234567890", "Solid12345678901234567890", "Snake12345678901234567890"));
+        persons.add(new Person("Snake12345678901234567890", "Jocki12345678901234567890", "Hendry12345678901234567890"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+                INIT + escPageLength(3) +
+                        "This is detail 1." + CRLF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "David12345None1234567890123456None123456" + CRLF + CRFF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "Solid12345Snake123456789012345David12345" + CRLF +
+                        "Jocki12345Hendry12345678901234Snake12345" + CRLF + CRFF +
+                        "This is detail 2." + CRLF +
+                        CRFF + INIT,
+                result
+        );
+    }
+
+    @Test
+     public void fillOneTableWithWrappedString() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table_wrap.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None12345678901234567890", "David12345678901234567890", "None12345678901234567890"));
+        persons.add(new Person("David12345678901234567890", "Solid", "Snake12345678901234567890"));
+        persons.add(new Person("Snake12345678901234567890", "Jocki", "Hendry12345678901234567890"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+            INIT + escPageLength(3) +
+            "This is detail 1." + CRLF +
+            "firstName lastName            nickname  " + CRLF +
+            "David12345None1234567890123456None123456" + CRLF + CRFF +
+            "firstName lastName            nickname  " + CRLF +
+            "67890123457890                          " + CRLF +
+            "67890                                   " + CRLF + CRFF +
+            "firstName lastName            nickname  " + CRLF +
+            "Solid     Snake123456789012345David12345" + CRLF +
+            "          67890                         " + CRLF + CRFF +
+            "firstName lastName            nickname  " + CRLF +
+            "Jocki     Hendry12345678901234Snake12345" + CRLF +
+            "          567890                        " + CRLF + CRFF +
+            "This is detail 2." + CRLF + CRFF +
+            INIT,
+            result
+        );
+    }
+
+    @Test
+     public void fillOneTableWithAutonumber() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table_autonumber.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None12345678901234567890", "David12345678901234567890", "None12345678901234567890"));
+        persons.add(new Person("David12345678901234567890", "Solid", "Snake12345678901234567890"));
+        persons.add(new Person("Snake12345678901234567890", "Jocki", "Hendry12345678901234567890"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+            INIT + escPageLength(3) +
+            "This is detail 1." + CRLF +
+            "row firstName lastName            nickname  col " + CRLF +
+            "1   David12345None1234567890123456None1234565   " + CRLF + CRFF +
+            "row firstName lastName            nickname  col " + CRLF +
+            "    67890123457890                              " + CRLF +
+            "    67890                                       " + CRLF + CRFF +
+            "row firstName lastName            nickname  col " + CRLF +
+            "2   Solid     Snake123456789012345David123455   " + CRLF +
+            "              67890                             " + CRLF + CRFF +
+            "row firstName lastName            nickname  col " + CRLF +
+            "3   Jocki     Hendry12345678901234Snake123455   " + CRLF +
+            "              567890                            " + CRLF + CRFF +
+            "This is detail 2." + CRLF + CRFF +
+            INIT,
+            result
+        );
+    }
+
+    @Test
+    public void fillOneTableWithFormatting() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table_with_format.json").toURI());
+        PersonAggregate personAggregate = new PersonAggregate();
+        personAggregate.add(new Person("None", "David", "None"));
+        personAggregate.add(new Person("David", "Solid", "Snake"));
+        personAggregate.add(new Person("Snake", "Jocki", "Hendry"));
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(personAggregate)).fill();
+        assertEquals(
+            INIT + escPageLength(3) +
+            "This is detail 1." + CRLF +
+            " firstNamelastName             nickname " + CRLF +
+            "     DavidNone                   None   " + CRLF + CRFF +
+            " firstNamelastName             nickname " + CRLF +
+            "     SolidSnake                 David   " + CRLF +
+            "     JockiHendry                Snake   " + CRLF + CRFF +
+            " firstNamelastName             nickname " + CRLF +
+            "newFirstNanewLastName          newNick  " + CRLF +
+            "This is detail 2." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
+    public void fillOneTableWithNullValue() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person(null, "David", null));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+                INIT + escPageLength(3) +
+                        "This is detail 1." + CRLF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "David                                   " + CRLF + CRFF +
+                        "firstName lastName            nickname  " + CRLF +
+                        "Solid     Snake               David     " + CRLF +
+                        "Jocki     Hendry              Snake     " + CRLF + CRFF +
+                        "This is detail 2." + CRLF +
+                        CRFF + INIT,
+                result
+        );
+    }
+
     private String times(char c, int times) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i=0; i<times; i++) {
             result.append(c);
         }
@@ -239,6 +371,57 @@ public class JsonTemplateFillTest {
     }
 
     @Test
+    public void fillOneListWithFormatting() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_list_with_format.json").toURI());
+        PersonAggregate personAggregate = new PersonAggregate();
+        personAggregate.add(new Person("None", "David", "None"));
+        personAggregate.add(new Person("David", "Solid", "Snake"));
+        personAggregate.add(new Person("Snake", "Jocki", "Hendry"));
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(personAggregate)).fill();
+        assertEquals(
+            INIT + escPageLength(5) +
+            "This is detail 1." + CRLF +
+            "This is header of list." + CRLF +
+            "Page 1: Dav None       as David None" + CRLF +
+            "Page 1: Sol Snake      as Solid Snak" + CRLF +
+            "This is footer of list." + CRLF + CRFF +
+            "This is header of list." + CRLF +
+            "Page 2: Joc Hendry     as Jocki Hend" + CRLF +
+            "Page 2: new newLastNam as newFirstNa" + CRLF +
+            "This is footer of list." + CRLF +
+            "This is detail 2." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
+    public void fillOneListWithNullValue() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_list.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person(null, "David", null));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        String result = new FillJob(jsonTemplate.parse(), DataSources.from(source)).fill();
+        assertEquals(
+                INIT + escPageLength(5) +
+                        "This is detail 1." + CRLF +
+                        "This is header of list." + CRLF +
+                        "Page 1: David  as " + CRLF +
+                        "Page 1: Solid Snake as David" + CRLF +
+                        "This is footer of list." + CRLF + CRFF +
+                        "This is header of list." + CRLF +
+                        "Page 2: Jocki Hendry as Snake" + CRLF +
+                        "This is footer of list." + CRLF +
+                        "This is detail 2." + CRLF +
+                        CRFF + INIT,
+                result
+        );
+    }
+
+    @Test
     public void fillTwoList() throws URISyntaxException, IOException {
         JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/multiple_list.json").toURI());
         List<Person> persons1 = new ArrayList<>();
@@ -311,6 +494,47 @@ public class JsonTemplateFillTest {
         );
     }
 
+    @Test
+    public void customVariable() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"Your first name is {{firstName}} {{custom}}.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, Object> source = new HashMap<>();
+        source.put("firstName", "Jocki");
+        source.put("custom", "Hendry");
+        FillJob fillJob = new FillJob(jsonTemplate.parse(), DataSources.from(source));
+        fillJob.addScriptVariable("custom", "ABCDEF");
+        fillJob.removeScriptVariable("firstName");
+        String result = fillJob.fill();
+        assertEquals(
+            INIT +
+            "Your first name is Jocki ABCDEF." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    public static class PersonAggregate {
+        private List<Person> persons = new ArrayList<>();
+
+        public List<Person> getPersons() {
+            return persons;
+        }
+
+        public void setPersons(List<Person> persons) {
+            this.persons = persons;
+        }
+
+        public List<Person> add(Person person) {
+            persons.add(person);
+            return persons;
+        }
+
+    }
 
     public static class Person {
         private String id;

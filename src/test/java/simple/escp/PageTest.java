@@ -103,6 +103,9 @@ public class PageTest {
         assertEquals("This is header 1", page.getLines()[0].toString());
         assertEquals("This is content", page.getLines()[1].toString());
         assertEquals("This is footer 1", page.getLines()[2].toString());
+        assertEquals(1, page.getLines()[0].getLineNumber().intValue());
+        assertEquals(2, page.getLines()[1].getLineNumber().intValue());
+        assertEquals(3, page.getLines()[2].getLineNumber().intValue());
     }
 
     @Test
@@ -307,6 +310,52 @@ public class PageTest {
         assertEquals(EmptyLine.class, page.getLine(2).getClass());
         assertEquals(EmptyLine.class, page.getLine(3).getClass());
         assertEquals("This is footer 1", ((TextLine)page.getLine(4)).getText());
+    }
+
+    @Test
+    public void setLine() {
+        List<Line> content = new ArrayList<>();
+        TextLine line1 = new TextLine("This is content 1");
+        TextLine line2 = new TextLine("This is content 2");
+        TextLine line3 = new TextLine("This is content 3");
+        content.add(line1);
+        content.add(line2);
+        content.add(line3);
+        TextLine[] header = new TextLine[] { new TextLine("This is header 1") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer 1") };
+        Page page = new Page(content, header, footer, 1, 5);
+
+        page.setLine(1, new TextLine("This is new header"));
+        page.setLine(2, new TextLine("This is new content 1"));
+        page.setLine(3, new TextLine("This is new content 2"));
+        page.setLine(4, new TextLine("This is new content 3"));
+        page.setLine(5, new TextLine("This is new footer"));
+
+        assertEquals("This is new header", ((TextLine)page.getLine(1)).getText());
+        assertEquals("This is new content 1", ((TextLine)page.getLine(2)).getText());
+        assertEquals("This is new content 2", ((TextLine)page.getLine(3)).getText());
+        assertEquals("This is new content 3", ((TextLine)page.getLine(4)).getText());
+        assertEquals("This is new footer", ((TextLine)page.getLine(5)).getText());
+    }
+
+    @Test
+    public void setLineWithoutHeaderAndFooter() {
+        List<Line> content = new ArrayList<>();
+        TextLine line1 = new TextLine("This is content 1");
+        TextLine line2 = new TextLine("This is content 2");
+        TextLine line3 = new TextLine("This is content 3");
+        content.add(line1);
+        content.add(line2);
+        content.add(line3);
+        Page page = new Page(content, null, null, 1, 5);
+
+        page.setLine(1, new TextLine("This is new content 1"));
+        page.setLine(2, new TextLine("This is new content 2"));
+        page.setLine(3, new TextLine("This is new content 3"));
+
+        assertEquals("This is new content 1", ((TextLine)page.getLine(1)).getText());
+        assertEquals("This is new content 2", ((TextLine)page.getLine(2)).getText());
+        assertEquals("This is new content 3", ((TextLine)page.getLine(3)).getText());
     }
 
 }

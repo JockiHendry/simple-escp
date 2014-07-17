@@ -4,22 +4,21 @@ import simple.escp.data.DataSource;
 import simple.escp.dom.Line;
 import simple.escp.dom.Page;
 import simple.escp.dom.Report;
-import simple.escp.dom.TableColumn;
 import simple.escp.dom.line.TableLine;
-import simple.escp.dom.line.TextLine;
-import simple.escp.data.DataSources;
-import simple.escp.placeholder.BasicPlaceholder;
-import simple.escp.placeholder.Placeholder;
-import simple.escp.util.EscpUtil;
+import simple.escp.exception.InvalidPlaceholder;
+import simple.escp.placeholder.ScriptPlaceholder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * <code>TableFillJob</code> represent the process of filling a <code>TableLine</code> with its source in form
  * of a <code>Collection</code>.
  */
 public class TableFillJob extends FillJob {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     /**
      * Create a new instance of <code>TableFillJob</code>.
@@ -40,6 +39,9 @@ public class TableFillJob extends FillJob {
      * @return result in form of <code>List</code> of <code>Line</code>.
      */
     private List<Line> fillTableLine(TableLine tableLine, Collection source) {
+        if (source == null) {
+            throw new InvalidPlaceholder("Source for table can't be null.");
+        }
         Report subreport = new Report(report.getContentLinesPerPage(), tableLine.getHeader(), tableLine.getFooter());
         int tableLineNumber = tableLine.getLineNumber() == null ? 1 : tableLine.getLineNumber();
         int startLines = tableLine.getHeader().length + tableLineNumber - report.getHeader().length;
@@ -48,38 +50,10 @@ public class TableFillJob extends FillJob {
                     "creating a new page. (" + startLines + " > " + subreport.getStartOfFooter() + ")");
 
         }
+        LOG.fine("Table start at line [" + startLines + "]");
         subreport.newPage(false, startLines);
-
-        // Save all placeholders first.
-        Placeholder[] placeholders = new BasicPlaceholder[tableLine.getNumberOfColumns()];
-        for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
-            placeholders[i] = new BasicPlaceholder(tableLine.getColumnAt(i + 1).getText());
-        }
-        for (Object entry: source) {
-            StringBuffer text = new StringBuffer();
-            for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
-                TableColumn column = tableLine.getColumnAt(i + 1);
-                Object value = placeholders[i].getValue(DataSources.from(new Object[]{entry}));
-                int width = column.getWidth() - (tableLine.isDrawBorder() ? 1 : 0);
-                if (i == 0 && tableLine.isDrawBorder()) {
-                    text.append(EscpUtil.CP347_LIGHT_VERTICAL);
-                }
-                if ((value instanceof Integer) || (value instanceof Long)) {
-                    text.append(String.format("%" + width + "d", value));
-                } else if ((value instanceof Float) || (value instanceof  Double)) {
-                    text.append(String.format("%" + width + ".1f", value));
-                } else {
-                    text.append(String.format("%-" + width + "s", value.toString()));
-                }
-                if (tableLine.isDrawBorder()) {
-                    text.append(EscpUtil.CP347_LIGHT_VERTICAL);
-                }
-            }
-            subreport.append(new TextLine(text.toString()), false);
-        }
-
-        return subreport.getFlatLines();
-
+        TableFillHelper helper = new TableFillHelper(subreport, scriptEngine, tableLine, source);
+        return helper.process();
     }
 
     /**
@@ -93,11 +67,14 @@ public class TableFillJob extends FillJob {
         Page page;
         while ((page = report.getFirstPageWithTableLines()) != null) {
             TableLine tableLine = page.getTableLines().get(0);
-            Collection dataSource = (Collection) (new BasicPlaceholder(tableLine.getSource())).getValue(dataSources);
+            Collection dataSource = (Collection) (new ScriptPlaceholder(tableLine.getSource(), scriptEngine)).
+                getValue(dataSources);
+            LOG.fine("Datasource is [" + dataSource + "]");
             List<Line> results = fillTableLine(tableLine, dataSource);
             Collections.reverse(results);
             page.removeLine(tableLine);
             for (Line result : results) {
+                LOG.fine("Add new line [" + result.toString() + "]");
                 report.insert(result, page.getPageNumber(), tableLine.getLineNumber());
             }
         }

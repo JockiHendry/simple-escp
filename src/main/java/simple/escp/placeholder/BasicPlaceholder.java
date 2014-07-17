@@ -18,11 +18,14 @@ package simple.escp.placeholder;
 
 import simple.escp.data.DataSource;
 import simple.escp.exception.InvalidPlaceholder;
+import java.util.logging.Logger;
 
 /**
  *  This class represent a <code>Placeholder</code> that retrieves its value simply from property or method name.
  */
 public class BasicPlaceholder extends Placeholder {
+
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private String name;
 
@@ -42,6 +45,7 @@ public class BasicPlaceholder extends Placeholder {
      * @param text full text that represent this placeholder.
      */
     private void parseText(String text) {
+        LOG.fine("Parsing [" + text + "]");
         if (text.contains(":")) {
             String[] parts = text.split(":", 2);
             this.name = parts[0].trim();
@@ -76,9 +80,11 @@ public class BasicPlaceholder extends Placeholder {
     public Object getValue(DataSource[] dataSources) {
         for (DataSource dataSource: dataSources) {
             if (dataSource.has(name)) {
+                LOG.fine("Use the following datasource: [" + dataSource + "]");
                 return dataSource.get(name);
             }
         }
+        LOG.warning("Can't find datasource that has member [" + name + "]");
         throw new InvalidPlaceholder("Can't find data source's member for [" + name + "]");
     }
 

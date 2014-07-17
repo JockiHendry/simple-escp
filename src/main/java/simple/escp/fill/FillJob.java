@@ -3,15 +3,31 @@ package simple.escp.fill;
 import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.data.DataSource;
+import simple.escp.fill.function.AsciiFunction;
+import simple.escp.fill.function.AutoIncrementFunction;
+import simple.escp.fill.function.BoldFunction;
+import simple.escp.fill.function.DoubleStrikeFunction;
+import simple.escp.fill.function.Function;
+import simple.escp.fill.function.GlobalLineNoFunction;
+import simple.escp.fill.function.ItalicFunction;
+import simple.escp.fill.function.LineNoFunction;
+import simple.escp.fill.function.PageNoFunction;
+import simple.escp.fill.function.SubscriptFunction;
+import simple.escp.fill.function.SuperscriptFunction;
+import simple.escp.fill.function.UnderlineFunction;
 import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
 import simple.escp.placeholder.ScriptPlaceholder;
 import simple.escp.util.EscpUtil;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,9 +41,26 @@ import java.util.regex.Pattern;
  */
 public class FillJob {
 
+    private static final Logger LOG = Logger.getLogger("simple.escp");
+
     public static final Pattern BASIC_PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{(.+?)\\}");
     public static final Pattern SCRIPT_PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(.+?)\\}\\}");
-    public static final Pattern FUNCTION_PATTERN = Pattern.compile("%\\{(.+?)\\}");
+    public static final List<Function> FUNCTIONS;
+
+    static {
+        FUNCTIONS = new ArrayList<>();
+        FUNCTIONS.add(new BoldFunction());
+        FUNCTIONS.add(new ItalicFunction());
+        FUNCTIONS.add(new UnderlineFunction());
+        FUNCTIONS.add(new DoubleStrikeFunction());
+        FUNCTIONS.add(new SuperscriptFunction());
+        FUNCTIONS.add(new SubscriptFunction());
+        FUNCTIONS.add(new PageNoFunction());
+        FUNCTIONS.add(new AsciiFunction());
+        FUNCTIONS.add(new AutoIncrementFunction());
+        FUNCTIONS.add(new GlobalLineNoFunction());
+        FUNCTIONS.add(new LineNoFunction());
+    }
 
     protected Report report;
     protected DataSource[] dataSources;
@@ -68,8 +101,54 @@ public class FillJob {
         scriptEngineManager.setBindings(new DataSourceBinding(this.dataSources));
         this.scriptEngine = scriptEngineManager.getEngineByName("groovy");
         if (this.scriptEngine == null) {
+            LOG.info("Can't find Groovy script engine, will use JavaScript script engine.");
             this.scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
         }
+
+        // Reset functions
+        for (Function function : FUNCTIONS) {
+            function.reset();
+        }
+    }
+
+    /**
+     * Register a new global function.  This function will have a lower priority compared to built-in function.
+     *
+     * @param function a new function that will be available for current and subsequent executions.
+     */
+    public static void addFunction(Function function) {
+        if (!FUNCTIONS.contains(function)) {
+            FUNCTIONS.add(function);
+        }
+    }
+
+    /**
+     * Remove a registered global function.
+     *
+     * @param function an existing function that will be removed from list available of functions.
+     */
+    public static void removeFunction(Function function) {
+        FUNCTIONS.remove(function);
+    }
+
+    /**
+     * Add a new variable to current script engine that can be used by script placeholders later.
+     *
+     * @param variableName the new variable's name.
+     * @param value the value of this new variable.
+     */
+    public void addScriptVariable(String variableName, Object value) {
+        scriptEngine.put(variableName, value);
+    }
+
+    /**
+     * Remove a variable from current script engine.  This method will remove variable that was in engine scope.
+     * It can't be used to remove built-in variables in global scope.
+     *
+     * @param variableName the name of variable that will be removed.
+     */
+    public void removeScriptVariable(String variableName) {
+        scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove(variableName);
     }
 
     /**
@@ -111,28 +190,6 @@ public class FillJob {
     }
 
     /**
-     * This method will evaluate functions.
-     *
-     * @param text the source text that has functions.
-     * @param page the associated <code>Page</code> for source text.
-     * @return source with functions replaced by evaluated value.
-     */
-    protected String fillFunction(String text, Page page) {
-        StringBuffer result = new StringBuffer();
-        Matcher matcher = FUNCTION_PATTERN.matcher(text);
-        while (matcher.find()) {
-            String function = matcher.group(1);
-
-            // PAGE_NO
-            if ("PAGE_NO".equals(function)) {
-                matcher.appendReplacement(result, String.valueOf(page.getPageNumber()));
-            }
-        }
-        matcher.appendTail(result);
-        return result.toString();
-    }
-
-    /**
      * This method will fill placeholders with value from both supplied <code>Map</code> and Java Bean object.
      *
      * @param text the source text that has placeholders.
@@ -143,6 +200,7 @@ public class FillJob {
         Matcher matcher = BASIC_PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
             String placeholderText = matcher.group(1);
+            LOG.fine("Found basic placeholder text [" + placeholderText + "]");
             Placeholder placeholder = placeholders.get(placeholderText);
             if (placeholder == null) {
                 placeholder = new BasicPlaceholder(placeholderText);
@@ -165,6 +223,7 @@ public class FillJob {
         Matcher matcher = SCRIPT_PLACEHOLDER_PATTERN.matcher(text);
         while (matcher.find()) {
             String placeholderText = matcher.group(1);
+            LOG.fine("Found script placeholder text [" + placeholderText + "]");
             Placeholder placeholder = placeholders.get(placeholderText);
             if (placeholder == null) {
                 placeholder = new ScriptPlaceholder(placeholderText, scriptEngine);
@@ -184,25 +243,33 @@ public class FillJob {
      * @return a <code>String</code> that may contains ESC/P commands and can be printed.
      */
     public String fill() {
-        Report parsedReport = report;
+        Report parsedReport = new Report(report);
         if (parsedReport.hasDynamicLine()) {
-            parsedReport = new Report(report);
+            LOG.fine("This report has dynamic line.");
             TableFillJob tableFillJob = new TableFillJob(parsedReport, dataSources);
             ListFillJob listFillJob = new ListFillJob(parsedReport, dataSources);
             tableFillJob.fill();
             listFillJob.fill();
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         boolean isAutoLineFeed = parsedReport.getPageFormat().isAutoLineFeed();
         boolean isAutoFormFeed = parsedReport.getPageFormat().isAutoFormFeed();
         result.append(parsedReport.getPageFormat().build());
+
+        // process functions
+        for (Function function : FUNCTIONS) {
+            LOG.fine("Executing function [" + function + "]");
+            function.process(parsedReport);
+        }
+
+        // process placeholders
         for (Page page : parsedReport) {
             String pageText = page.convertToString(isAutoLineFeed, isAutoFormFeed);
             pageText = fillBasicPlaceholder(pageText);
             pageText = fillScriptPlaceholder(pageText);
-            pageText = fillFunction(pageText, page);
             result.append(pageText);
         }
+
         if (isAutoFormFeed && !result.toString().endsWith(EscpUtil.CRFF)) {
             result.append(EscpUtil.CRFF);
         }

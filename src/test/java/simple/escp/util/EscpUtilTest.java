@@ -111,6 +111,76 @@ public class EscpUtilTest {
     }
 
     @Test
+    public void escBold() {
+        String result = EscpUtil.escSelectBoldFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 69, result.charAt(1));
+
+        result = EscpUtil.escCancelBoldFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 70, result.charAt(1));
+    }
+
+    @Test
+    public void escItalic() {
+        String result = EscpUtil.escSelectItalicFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 52, result.charAt(1));
+
+        result = EscpUtil.escCancelItalicFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 53, result.charAt(1));
+    }
+
+    @Test
+    public void escDoubleStrike() {
+        String result = EscpUtil.escSelectDoubleStrikeFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 71, result.charAt(1));
+
+        result = EscpUtil.escCancelDoubleStrikeFont();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 72, result.charAt(1));
+    }
+
+    @Test
+    public void escUnderline() {
+        String result = EscpUtil.escSelectUnderline();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 45, result.charAt(1));
+        assertEquals((char)  1, result.charAt(2));
+
+        result = EscpUtil.escCancelUnderline();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 45, result.charAt(1));
+        assertEquals((char)  0, result.charAt(2));
+    }
+
+    @Test
+    public void escSubscript() {
+        String result = EscpUtil.escSelectSubscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 83, result.charAt(1));
+        assertEquals((char)  1, result.charAt(2));
+
+        result = EscpUtil.escCancelSuperscriptOrSubscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 84, result.charAt(1));
+    }
+
+    @Test
+    public void escSuperscript() {
+        String result = EscpUtil.escSelectSuperscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 83, result.charAt(1));
+        assertEquals((char)  0, result.charAt(2));
+
+        result = EscpUtil.escCancelSuperscriptOrSubscript();
+        assertEquals((char) 27, result.charAt(0));
+        assertEquals((char) 84, result.charAt(1));
+    }
+
+    @Test
     public void crlf() {
         String result = EscpUtil.CR;
         assertEquals(1, result.length());

@@ -16,7 +16,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 sourceCompatibility = 1.7
-version = '0.3'
+version = '0.4'
 group = 'jockihendry'
 
 repositories {

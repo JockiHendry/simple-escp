@@ -6,19 +6,20 @@
     },
     "template": {
         "header": [
-            "   ###       Company Name                 Page %{PAGE_NO}",
-            " #######                                                 ",
-            "#########    Invoice No: ${invoiceNo:10}                 ",
-            " #######                                                 ",
-            "   ###                                                   "
+            "   %{176 R3}       Company Name                 Page %{PAGE_NO}",
+            " %{176 R7}      ",
+            "%{176 R9}    Invoice No: ${invoiceNo:10}",
+            "  %{176 R5}       ",
+            "   %{176 R3}        "
         ],
         "detail": [
             {
                 "table": "table_source",
                 "border": true,
                 "columns": [
+                    { "source": "row :: right", "width": 4 },
                     { "source": "code", "width": 9  },
-                    { "source": "name", "width": 34 },
+                    { "source": "name", "width": 30, "wrap": true },
                     { "source": "qty",  "width": 6  }
                 ]
             },

@@ -8,6 +8,7 @@ import simple.escp.util.EscpUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * DOM class to represent one page.  A <code>Page</code> may contains header and footer.
@@ -15,11 +16,31 @@ import java.util.List;
  */
 public class Page {
 
+    private static final Logger LOG = Logger.getLogger("simple.escp");
+
     private TextLine[] header;
     private TextLine[] footer;
     private List<Line> content;
     private Integer pageNumber;
     private Integer pageLength;
+
+    /**
+     * Create a clone from another Page.
+     *
+     * @param anotherPage a <code>Page</code> to clone.
+     * @param pageLength maximum number of lines for this page.  Set <code>null</code> for unlimited lines in this
+     *                   page.
+     */
+    public Page(Page anotherPage, Integer pageLength) {
+        content = new ArrayList<>();
+        for (Line line : anotherPage.content) {
+            content.add(line);
+        }
+        header = Arrays.copyOf(anotherPage.getHeader(), anotherPage.getHeader().length);
+        footer = Arrays.copyOf(anotherPage.getFooter(), anotherPage.getFooter().length);
+        pageNumber = anotherPage.getPageNumber();
+        this.pageLength = pageLength;
+    }
 
     /**
      * Create a new <code>Page</code>.
@@ -225,9 +246,29 @@ public class Page {
         content.add(lineNumber - header.length - 1, line);
         if (isOverflow()) {
             result = content.get(content.size() - 1);
+            LOG.fine("Content overflow and the last line will be removed [" + result + "]");
             content.remove(content.size() - 1);
         }
         return result;
+    }
+
+    /**
+     * Change the content of a line.  Line number for the first line (starting from header) is <code>1</code>.
+     *
+     * @param lineNumber the line number position in which the new line will be replaced.
+     * @param line a new line to replace old line.
+     */
+    public void setLine(int lineNumber, Line line) {
+        if (lineNumber < 1 || lineNumber > getNumberOfLines()) {
+            throw new IllegalArgumentException("Invalid line number: " + lineNumber);
+        }
+        if (lineNumber <= header.length) {
+            header[lineNumber - 1] = (TextLine) line;
+        } else if (lineNumber > header.length + content.size()) {
+            footer[lineNumber - header.length - content.size() - 1] = (TextLine) line;
+        } else {
+            content.set(lineNumber - header.length - 1, line);
+        }
     }
 
     /**
@@ -248,12 +289,15 @@ public class Page {
         Line[] result = new Line[getNumberOfLines()];
         int index = 0;
         for (TextLine line : header) {
+            line.setLineNumber(index + 1);
             result[index++] = line;
         }
         for (Line line : content) {
+            line.setLineNumber(index + 1);
             result[index++] = line;
         }
         for (Line line : footer) {
+            line.setLineNumber(index + 1);
             result[index++] = line;
         }
         return result;
@@ -317,7 +361,7 @@ public class Page {
      * @return conversion result that may contains ESC/P string.
      */
     public String convertToString(boolean autoLinefeed, boolean autoFormfeed) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (Line line: getLines()) {
             if (line instanceof TextLine) {
                 result.append(((TextLine) line).getText());

@@ -1,12 +1,14 @@
 package simple.escp.placeholder;
 
 import simple.escp.data.DataSource;
-
+import simple.escp.exception.InvalidPlaceholder;
+import simple.escp.util.StringUtil;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 /**
  *  <code>Placeholder</code> represent a placeholder in template, such as <code>${name}</code> or
@@ -28,12 +30,14 @@ import java.util.Collection;
  */
 public abstract class Placeholder {
 
+    private static final Logger LOG = Logger.getLogger("simple.escp");
+
     protected String text;
     protected Format format;
     protected int width = 0;
     protected boolean sum;
     protected boolean count;
-    protected Alignment alignment;
+    protected StringUtil.ALIGNMENT alignment;
 
     /**
      * Create a new instance of placeholder.
@@ -140,10 +144,10 @@ public abstract class Placeholder {
     /**
      * Get the alignment for this placeholder.
      *
-     * @return an instance of <code>Alignment</code> or <code>null</code> if no alignment is specified for this
+     * @return alignment for this placeholder or <code>null</code> if no alignment is specified for this
      *         placeholder.
      */
-    public Alignment getAlignment() {
+    public StringUtil.ALIGNMENT getAlignment() {
         return alignment;
     }
 
@@ -152,7 +156,7 @@ public abstract class Placeholder {
      *
      * @param alignment the new alignment for this placeholder.
      */
-    public void setAlignment(Alignment alignment) {
+    public void setAlignment(StringUtil.ALIGNMENT alignment) {
         this.alignment = alignment;
     }
 
@@ -193,24 +197,52 @@ public abstract class Placeholder {
      */
     public Object getFormatted(Object value) {
         Object result = value;
+        LOG.fine("Formatting [" + value + "]");
+        if (value != null) {
+            if (isSum()) {
+                LOG.fine("Calculating sum for [" + value + "]");
+                if (!(value instanceof Collection)) {
+                    LOG.warning("Can't calculate sum for [" + value + "] because it is not a Collection.");
+                    throw new InvalidPlaceholder("Expected collection for placeholder [" + getText() + "] for " +
+                        "sum operation but received value [" + value + "].");
+                } else {
+                    result = getSumValue((Collection) value);
+                }
+            } else if (isCount()) {
+                LOG.fine("Calculating count for [" + value + "]");
+                if (!(value instanceof Collection)) {
+                    LOG.warning("Can't calculate count for [" + value + "] because it is not a Collection.");
+                    throw new InvalidPlaceholder("Expected collection for placeholder [" + getText() + "] for " +
+                        "count operation but received value [" + value + "].");
+                } else {
+                    result = getCountValue((Collection) value);
+                }
+            }
 
-        if (isSum()) {
-            result = getSumValue((Collection) value);
-        } else if (isCount()) {
-            result = getCountValue((Collection) value);
-        }
-
-        if (getFormat() != null) {
-            result = getFormat().format(result);
-        }
-        if (getWidth() > 0) {
-            if (getAlignment() == null) {
-                result = LEFT_ALIGNMENT.process(result.toString(), getWidth());
-            } else {
-                result = getAlignment().process(result.toString(), getWidth());
+            if (getFormat() != null) {
+                try {
+                    LOG.fine("Formatting [" + result + "] as [" + getFormat() + "]");
+                    result = getFormat().format(result);
+                } catch (IllegalArgumentException e) {
+                    LOG.warning("Can't format [" + result + "] as [" + getFormat() + "]");
+                    throw new InvalidPlaceholder("Can't format value [" + result + "] for placeholder [" +
+                            getText() + "].", e);
+                }
             }
         }
-        return result;
+
+        if (getWidth() > 0) {
+            result = (result != null) ? result : "";
+            if (getAlignment() == null) {
+                LOG.fine("Left-align for [" + result + "] in width [" + getWidth() + "]");
+                result = StringUtil.alignLeft(result.toString(), getWidth());
+            } else {
+                LOG.fine(getAlignment() + " for [" + result + "] in width [" + getWidth() + "]");
+                result = StringUtil.align(result.toString(), getWidth(), getAlignment());
+            }
+        }
+
+        return (result != null) ? result : "";
     }
 
     /**
@@ -258,6 +290,7 @@ public abstract class Placeholder {
         try {
             width = Integer.valueOf(text);
         } catch (NumberFormatException e) {
+            LOG.warning("Can't convert [" + text + "] to number");
             return;
         }
     }
@@ -270,11 +303,11 @@ public abstract class Placeholder {
      */
     protected void parseAlignment(String text) {
         if ("left".equals(text)) {
-            setAlignment(LEFT_ALIGNMENT);
+            setAlignment(StringUtil.ALIGNMENT.LEFT);
         } else if ("right".equals(text)) {
-            setAlignment(RIGHT_ALIGNMENT);
+            setAlignment(StringUtil.ALIGNMENT.RIGHT);
         } else if ("center".equals(text)) {
-            setAlignment(CENTER_ALIGNMENT);
+            setAlignment(StringUtil.ALIGNMENT.CENTER);
         }
     }
 
@@ -287,6 +320,7 @@ public abstract class Placeholder {
     protected void parseText(String[] text) {
         for (String part: text) {
             part = part.trim();
+            LOG.fine("Processing part [" + part + "]");
             parseFormula(part);
             parseFormatter(part);
             parseWidth(part);
@@ -325,97 +359,6 @@ public abstract class Placeholder {
      */
     public Object getFormattedValue(DataSource[] dataSources) {
         return getFormatted(getValue(dataSources));
-    }
-
-    /**
-     * Representation of utility class that add alignment to text.
-     */
-    private static interface Alignment {
-
-        /**
-         * Add alignmen to <code>text</code> based on <code>width</code>.  If length of <code>text</code> is
-         * more than <code>width</code>, it should be truncated.
-         *
-         * @param text the text that will be aligned.
-         * @param width maximum number of characters available for this text.
-         * @return aligned text.
-         */
-        public String process(String text, int width);
-    }
-
-    private static LeftAlignment LEFT_ALIGNMENT = new LeftAlignment();
-    private static RightAlignment RIGHT_ALIGNMENT = new RightAlignment();
-    private static CenterAlignment CENTER_ALIGNMENT = new CenterAlignment();
-
-    /**
-     * Represent a left alignment process.
-     */
-    private static class LeftAlignment implements Alignment {
-
-        @Override
-        public String process(String text, int width) {
-            if (text.length() < width) {
-                StringBuilder tmp = new StringBuilder(text);
-                int numOfSpaces = width - text.length() + 1;
-                for (int i = 1; i < numOfSpaces; i++) {
-                    tmp.append(' ');
-                }
-                return tmp.toString();
-            } else if (text.length() > width) {
-                return text.substring(0, width);
-            }
-            return text;
-        }
-
-    }
-
-    /**
-     * Represent a right alignment process.
-     */
-    private static class RightAlignment implements  Alignment {
-
-        @Override
-        public String process(String text, int width) {
-            if (text.length() < width) {
-                StringBuilder tmp = new StringBuilder();
-                int numOfSpaces = width - text.length() + 1;
-                for (int i = 1; i < numOfSpaces; i++) {
-                    tmp.append(' ');
-                }
-                tmp.append(text);
-                return tmp.toString();
-            } else if (text.length() > width) {
-                return text.substring(0, width);
-            }
-            return text;
-        }
-
-    }
-
-    /**
-     * Represent a center alignment process.
-     */
-    private static class CenterAlignment implements Alignment {
-
-        @Override
-        public String process(String text, int width) {
-            if (text.length() < width) {
-                StringBuilder tmp = new StringBuilder();
-                int numOfSpaces = (width - text.length()) / 2;
-                for (int i = 0; i < numOfSpaces; i++) {
-                    tmp.append(' ');
-                }
-                tmp.append(text);
-                while (tmp.length() < width) {
-                    tmp.append(' ');
-                }
-                return tmp.toString();
-            } else if (text.length() > width) {
-                return text.substring(0, width);
-            }
-            return text;
-        }
-
     }
 
 }

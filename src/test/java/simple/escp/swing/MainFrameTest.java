@@ -41,7 +41,7 @@ public class MainFrameTest extends JFrame {
         for (int i=0; i<5; i++) {
             Map<String, Object> line = new HashMap<>();
             line.put("code", String.format("CODE-%d", i));
-            line.put("name", String.format("Product Random %d", i));
+            line.put("name", String.format("Product Random AAA-BBBCC-DDDDD-EEEE-FFFFF-GGG-%d", i));
             line.put("qty", String.format("%d", i*i));
             tables.add(line);
         }

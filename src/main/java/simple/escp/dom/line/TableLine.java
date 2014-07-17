@@ -2,7 +2,9 @@ package simple.escp.dom.line;
 
 import simple.escp.dom.Line;
 import simple.escp.dom.TableColumn;
+import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.util.EscpUtil;
+import simple.escp.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,11 +13,10 @@ import java.util.List;
 /**
  * DOM class to represent table.  A table consists of one or more {@link simple.escp.dom.TableColumn}.
  */
-public class TableLine implements Line, Iterable<TableColumn> {
+public class TableLine extends Line implements Iterable<TableColumn> {
 
     private List<TableColumn> columns = new ArrayList<>();
     private String source;
-    private Integer lineNumber;
     private boolean drawBorder;
     private TextLine[] header;
     private TextLine[] footer;
@@ -94,25 +95,6 @@ public class TableLine implements Line, Iterable<TableColumn> {
     }
 
     /**
-     * Set a line number for this table line.  See also {@link #getLineNumber()}.
-     *
-     * @param lineNumber the line number starting from <code>1</code>.
-     */
-    public void setLineNumber(Integer lineNumber) {
-        this.lineNumber = lineNumber;
-    }
-
-    /**
-     * Retrieve line number for this table line.
-     *
-     * @return line number starting from <code>1</code>.  The first line number is counted from header if it is
-     *         exists.  This method will return <code>null</code> if line number hasn't been set previously.
-     */
-    public Integer getLineNumber() {
-        return this.lineNumber;
-    }
-
-    /**
      * Determine if this table line should have border drawn around it.  Drawing border will reduce the
      * width of every columns by one character.  It also will increase number of lines required by the table.
      *
@@ -154,7 +136,7 @@ public class TableLine implements Line, Iterable<TableColumn> {
     public TextLine[] getHeader() {
         if (header == null) {
             List<TextLine> tmp = new ArrayList<>();
-            StringBuffer line = new StringBuffer();
+            StringBuilder line = new StringBuilder();
 
             // draw header upper border if necessary
             if (isDrawBorder()) {
@@ -174,26 +156,26 @@ public class TableLine implements Line, Iterable<TableColumn> {
             }
 
             // draw column name
-            line = new StringBuffer();
+            line = new StringBuilder();
             if (isDrawBorder()) {
                 line.append(EscpUtil.CP347_LIGHT_VERTICAL);
             }
             for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
                 TableColumn column = columns.get(columnIndex);
-                line.append(column.getCaption());
-                int width = column.getWidth() - column.getCaption().length() - (isDrawBorder() ? 1 : 0);
-                for (int i = 0; i < width; i++) {
-                    line.append(' ');
+                int width = column.getWidth() - (isDrawBorder() ? 1 : 0);
+                StringUtil.ALIGNMENT alignment = (new BasicPlaceholder(column.getText())).getAlignment();
+                if (alignment == null) {
+                    alignment = StringUtil.ALIGNMENT.LEFT;
                 }
+                line.append(StringUtil.align(column.getCaption(), width, alignment));
                 if (isDrawBorder()) {
                     line.append(EscpUtil.CP347_LIGHT_VERTICAL);
                 }
-
             }
             tmp.add(new TextLine(line.toString()));
 
             // draw lower border if necessary
-            line = new StringBuffer();
+            line = new StringBuilder();
             if (isDrawBorder()) {
                 line.append(EscpUtil.CP347_LIGHT_VERTICAL_RIGHT);
                 for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
@@ -222,7 +204,7 @@ public class TableLine implements Line, Iterable<TableColumn> {
     public TextLine[] getFooter() {
         if (footer == null) {
             List<TextLine> tmp = new ArrayList<>();
-            StringBuffer line = new StringBuffer();
+            StringBuilder line = new StringBuilder();
 
             // draw lower border if necessary
             if (isDrawBorder()) {

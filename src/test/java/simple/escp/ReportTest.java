@@ -534,4 +534,32 @@ public class ReportTest {
         assertEquals("This is footer.", ((TextLine)results.get(5)).getText());
     }
 
+    @Test
+    public void getGlobalLineNumber() {
+        PageFormat pageFormat = new PageFormat();
+        pageFormat.setPageLength(4);
+        pageFormat.setUsePrinterPageLength(false);
+        TextLine[] header = new TextLine[] { new TextLine("This is header.") };
+        TextLine[] footer = new TextLine[] { new TextLine("This is footer.") };
+        Report report = new Report(pageFormat, header, footer);
+        report.append(new TextLine("This is line"), false);
+        report.newPage(false);
+        report.append(new TextLine("This is line"), false);
+
+        assertEquals(2, report.getNumberOfPages());
+        for (Page page : report) {
+            if (page.getPageNumber() == 1) {
+                assertEquals(3, page.getNumberOfLines());
+                assertEquals(1, page.getLine(1).getGlobalLineNumber().intValue());
+                assertEquals(2, page.getLine(2).getGlobalLineNumber().intValue());
+                assertEquals(3, page.getLine(3).getGlobalLineNumber().intValue());
+            } else if (page.getPageNumber() == 2) {
+                assertEquals(3, page.getNumberOfLines());
+                assertEquals(4, page.getLine(1).getGlobalLineNumber().intValue());
+                assertEquals(5, page.getLine(2).getGlobalLineNumber().intValue());
+                assertEquals(6, page.getLine(3).getGlobalLineNumber().intValue());
+            }
+        }
+    }
+
 }

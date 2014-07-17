@@ -60,7 +60,7 @@ import java.util.logging.Logger;
  */
 public class SimpleEscp {
 
-    private static Logger logger = Logger.getLogger("simple.escp.SimpleEscp");
+    private static final Logger LOG = Logger.getLogger("simple.escp");
 
     private PrintService printService;
 
@@ -94,7 +94,7 @@ public class SimpleEscp {
         if (services.length == 0) {
             throw new IllegalArgumentException("Printer not found.");
         } else if (services.length > 1) {
-            logger.log(Level.WARNING, "Found more than one printer. Only the first printer will be used.");
+            LOG.warning("Found more than one printer. Only the first printer will be used.");
         }
         printService = services[0];
     }
@@ -122,7 +122,7 @@ public class SimpleEscp {
         try {
             job.print(doc, null);
         } catch (PrintException e) {
-            logger.log(Level.SEVERE, "Error during printing.", e);
+            LOG.log(Level.SEVERE, "Error during printing.", e);
             throw new RuntimeException("Error during printing", e);
         }
         return job;
