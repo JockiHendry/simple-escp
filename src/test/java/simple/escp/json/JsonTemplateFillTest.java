@@ -494,6 +494,29 @@ public class JsonTemplateFillTest {
         );
     }
 
+    @Test
+    public void customVariable() {
+        String jsonString =
+        "{" +
+            "\"template\": [" +
+                "\"Your first name is {{firstName}} {{custom}}.\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, Object> source = new HashMap<>();
+        source.put("firstName", "Jocki");
+        source.put("custom", "Hendry");
+        FillJob fillJob = new FillJob(jsonTemplate.parse(), DataSources.from(source));
+        fillJob.addScriptVariable("custom", "ABCDEF");
+        fillJob.removeScriptVariable("firstName");
+        String result = fillJob.fill();
+        assertEquals(
+            INIT +
+            "Your first name is Jocki ABCDEF." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
 
     public static class PersonAggregate {
         private List<Person> persons = new ArrayList<>();

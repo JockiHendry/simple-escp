@@ -19,6 +19,7 @@ import simple.escp.placeholder.BasicPlaceholder;
 import simple.escp.placeholder.Placeholder;
 import simple.escp.placeholder.ScriptPlaceholder;
 import simple.escp.util.EscpUtil;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
@@ -128,6 +129,26 @@ public class FillJob {
      */
     public static void removeFunction(Function function) {
         FUNCTIONS.remove(function);
+    }
+
+    /**
+     * Add a new variable to current script engine that can be used by script placeholders later.
+     *
+     * @param variableName the new variable's name.
+     * @param value the value of this new variable.
+     */
+    public void addScriptVariable(String variableName, Object value) {
+        scriptEngine.put(variableName, value);
+    }
+
+    /**
+     * Remove a variable from current script engine.  This method will remove variable that was in engine scope.
+     * It can't be used to remove built-in variables in global scope.
+     *
+     * @param variableName the name of variable that will be removed.
+     */
+    public void removeScriptVariable(String variableName) {
+        scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove(variableName);
     }
 
     /**
