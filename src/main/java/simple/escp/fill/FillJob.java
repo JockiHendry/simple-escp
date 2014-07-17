@@ -251,7 +251,7 @@ public class FillJob {
             tableFillJob.fill();
             listFillJob.fill();
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         boolean isAutoLineFeed = parsedReport.getPageFormat().isAutoLineFeed();
         boolean isAutoFormFeed = parsedReport.getPageFormat().isAutoFormFeed();
         result.append(parsedReport.getPageFormat().build());

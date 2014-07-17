@@ -271,7 +271,7 @@ public class JsonTemplateFillTest {
     }
 
     private String times(char c, int times) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i=0; i<times; i++) {
             result.append(c);
         }

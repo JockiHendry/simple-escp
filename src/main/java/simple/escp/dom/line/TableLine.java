@@ -136,7 +136,7 @@ public class TableLine extends Line implements Iterable<TableColumn> {
     public TextLine[] getHeader() {
         if (header == null) {
             List<TextLine> tmp = new ArrayList<>();
-            StringBuffer line = new StringBuffer();
+            StringBuilder line = new StringBuilder();
 
             // draw header upper border if necessary
             if (isDrawBorder()) {
@@ -156,7 +156,7 @@ public class TableLine extends Line implements Iterable<TableColumn> {
             }
 
             // draw column name
-            line = new StringBuffer();
+            line = new StringBuilder();
             if (isDrawBorder()) {
                 line.append(EscpUtil.CP347_LIGHT_VERTICAL);
             }
@@ -175,7 +175,7 @@ public class TableLine extends Line implements Iterable<TableColumn> {
             tmp.add(new TextLine(line.toString()));
 
             // draw lower border if necessary
-            line = new StringBuffer();
+            line = new StringBuilder();
             if (isDrawBorder()) {
                 line.append(EscpUtil.CP347_LIGHT_VERTICAL_RIGHT);
                 for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
@@ -204,7 +204,7 @@ public class TableLine extends Line implements Iterable<TableColumn> {
     public TextLine[] getFooter() {
         if (footer == null) {
             List<TextLine> tmp = new ArrayList<>();
-            StringBuffer line = new StringBuffer();
+            StringBuilder line = new StringBuilder();
 
             // draw lower border if necessary
             if (isDrawBorder()) {

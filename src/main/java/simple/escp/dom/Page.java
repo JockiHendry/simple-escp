@@ -361,7 +361,7 @@ public class Page {
      * @return conversion result that may contains ESC/P string.
      */
     public String convertToString(boolean autoLinefeed, boolean autoFormfeed) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (Line line: getLines()) {
             if (line instanceof TextLine) {
                 result.append(((TextLine) line).getText());

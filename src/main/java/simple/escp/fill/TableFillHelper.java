@@ -65,14 +65,14 @@ public class TableFillHelper {
     }
 
     /**
-     * Add new text to a <code>StringBuffer</code> that represents the content of a line.
+     * Add new text to a string builder that represents the content of a line.
      *
-     * @param result new text will be appended to this <code>StringBuffer</code>.
+     * @param result new text will be appended to this builder.
      * @param text the content that will be appended.
      * @param index the position of this column (start from <code>0</code> for the left-most column).  This value
      *              is required to determine what borders to print if table border is enabled.
      */
-    private void appendLine(StringBuffer result, String text, int index) {
+    private void appendLine(StringBuilder result, String text, int index) {
         if (index == 0 && tableLine.isDrawBorder()) {
             result.append(EscpUtil.CP347_LIGHT_VERTICAL);
         }
@@ -91,7 +91,7 @@ public class TableFillHelper {
         int rowNumber = 1;
         for (Object entry: source) {
             LOG.fine("Row number [" + rowNumber + "] Source [" + entry + "]");
-            StringBuffer text = new StringBuffer();
+            StringBuilder text = new StringBuilder();
             DataSource[] entryDataSources = DataSources.from(new Object[]{entry});
             DataSourceBinding lineContext = new DataSourceBinding(entryDataSources);
             lineContext.put("row", rowNumber++);
@@ -229,7 +229,7 @@ public class TableFillHelper {
          */
         public void flush() {
             while (!isEmpty()) {
-                StringBuffer result = new StringBuffer();
+                StringBuilder result = new StringBuilder();
                 for (int i = 0; i < buffer.length; i++) {
                     appendLine(result, consume(i), i);
                 }

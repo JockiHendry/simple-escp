@@ -72,7 +72,7 @@ public class EscpUtil {
      * @return ESC/P in form of a string.
      */
     public static String esc(int command, int... value) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append((char) ESC);
         result.append((char) command);
         if (value != null) {
