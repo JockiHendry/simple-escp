@@ -25,6 +25,24 @@ public class Page {
     private Integer pageLength;
 
     /**
+     * Create a clone from another Page.
+     *
+     * @param anotherPage a <code>Page</code> to clone.
+     * @param pageLength maximum number of lines for this page.  Set <code>null</code> for unlimited lines in this
+     *                   page.
+     */
+    public Page(Page anotherPage, Integer pageLength) {
+        content = new ArrayList<>();
+        for (Line line : anotherPage.content) {
+            content.add(line);
+        }
+        header = Arrays.copyOf(anotherPage.getHeader(), anotherPage.getHeader().length);
+        footer = Arrays.copyOf(anotherPage.getFooter(), anotherPage.getFooter().length);
+        pageNumber = anotherPage.getPageNumber();
+        this.pageLength = pageLength;
+    }
+
+    /**
      * Create a new <code>Page</code>.
      *
      * @param content the content of this <code>Page</code>.
@@ -232,6 +250,25 @@ public class Page {
             content.remove(content.size() - 1);
         }
         return result;
+    }
+
+    /**
+     * Change the content of a line.  Line number for the first line (starting from header) is <code>1</code>.
+     *
+     * @param lineNumber the line number position in which the new line will be replaced.
+     * @param line a new line to replace old line.
+     */
+    public void setLine(int lineNumber, Line line) {
+        if (lineNumber < 1 || lineNumber > getNumberOfLines()) {
+            throw new IllegalArgumentException("Invalid line number: " + lineNumber);
+        }
+        if (lineNumber <= header.length) {
+            header[lineNumber - 1] = (TextLine) line;
+        } else if (lineNumber > header.length + content.size()) {
+            footer[lineNumber - header.length - content.size() - 1] = (TextLine) line;
+        } else {
+            content.set(lineNumber - header.length - 1, line);
+        }
     }
 
     /**

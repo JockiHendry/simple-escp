@@ -111,6 +111,26 @@ public class FillJob {
     }
 
     /**
+     * Register a new global function.  This function will have a lower priority compared to built-in function.
+     *
+     * @param function a new function that will be available for current and subsequent executions.
+     */
+    public static void addFunction(Function function) {
+        if (!FUNCTIONS.contains(function)) {
+            FUNCTIONS.add(function);
+        }
+    }
+
+    /**
+     * Remove a registered global function.
+     *
+     * @param function an existing function that will be removed from list available of functions.
+     */
+    public static void removeFunction(Function function) {
+        FUNCTIONS.remove(function);
+    }
+
+    /**
      * Retrieve the report that will be filled by this <code>FillJob</code>.
      *
      * @return an instance of <code>Report</code>.
@@ -202,10 +222,9 @@ public class FillJob {
      * @return a <code>String</code> that may contains ESC/P commands and can be printed.
      */
     public String fill() {
-        Report parsedReport = report;
+        Report parsedReport = new Report(report);
         if (parsedReport.hasDynamicLine()) {
             LOG.fine("This report has dynamic line.");
-            parsedReport = new Report(report);
             TableFillJob tableFillJob = new TableFillJob(parsedReport, dataSources);
             ListFillJob listFillJob = new ListFillJob(parsedReport, dataSources);
             tableFillJob.fill();

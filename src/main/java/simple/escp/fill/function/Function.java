@@ -69,7 +69,8 @@ public abstract class Function {
      */
     public void process(Report report) {
         for (Page page : report) {
-            for (Line line : page.getLines()) {
+            for (int i = 1; i <= page.getNumberOfLines(); i++) {
+                Line line = page.getLine(i);
                 if (line instanceof TextLine) {
                     String text = ((TextLine) line).getText();
                     StringBuffer result = new StringBuffer();
@@ -78,7 +79,7 @@ public abstract class Function {
                         matcher.appendReplacement(result, process(matcher, report, page, line));
                     }
                     matcher.appendTail(result);
-                    ((TextLine) line).setText(result.toString());
+                    page.setLine(i, new TextLine(result.toString()));
                 }
             }
         }

@@ -28,15 +28,18 @@ public class Report implements Iterable<Page> {
     /**
      * Create a clone from another report.
      *
-     * @param report a <code>Report</code> to clone.
+     * @param anotherReport a <code>Report</code> to clone.
      */
-    public Report(Report report) {
-        init(report.getPageFormat(), report.getHeader(), report.getFooter());
-        for (Page page : report) {
-            for (Line line : page.getContent()) {
-                append(line, false);
-            }
+    public Report(Report anotherReport) {
+        init(anotherReport.getPageFormat(), anotherReport.getHeader(), anotherReport.getFooter());
+        pages = new ArrayList<>();
+        for (Page page : anotherReport) {
+            pages.add(new Page(page, anotherReport.getPageFormat().getPageLength()));
         }
+        if (!pages.isEmpty()) {
+            currentPage = pages.get(pages.size() - 1);
+        }
+        lastPageNumber = anotherReport.getLastPageNumber();
     }
 
     /**
@@ -76,8 +79,8 @@ public class Report implements Iterable<Page> {
             throw new IllegalArgumentException("Invalid page format with pageLength undefined when " +
                     "isUsePageLengthFromPrinter is false.");
         }
-        this.header = (header == null) ? new TextLine[0] : header;
-        this.footer = (footer == null) ? new TextLine[0] : footer;
+        this.header = (header == null) ? new TextLine[0] : Arrays.copyOf(header, header.length);
+        this.footer = (footer == null) ? new TextLine[0] : Arrays.copyOf(footer, footer.length);
         this.lineBreak = false;
     }
 

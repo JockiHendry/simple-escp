@@ -1,8 +1,13 @@
 package simple.escp.json;
 
 import org.junit.Test;
+import simple.escp.dom.Line;
+import simple.escp.dom.Page;
+import simple.escp.dom.Report;
 import simple.escp.fill.FillJob;
+import simple.escp.fill.function.Function;
 import simple.escp.util.EscpUtil;
+import java.util.regex.Matcher;
 import static simple.escp.util.EscpUtil.*;
 import static org.junit.Assert.*;
 
@@ -336,5 +341,36 @@ public class FunctionTest {
         );
     }
 
+    @Test
+    public void customFunction() {
+        Function function = new CustomFunction();
+        FillJob.addFunction(function);
+        String jsonString =
+        "{" +
+            "\"template\": [\"Result: %{MY_CUSTOM}\"]" +
+        "}";
+
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        assertEquals(INIT + "Result: MyCustomResult" + CRLF + CRFF + INIT, new FillJob(jsonTemplate.parse()).fill());
+
+        FillJob.removeFunction(function);
+        assertEquals(INIT + "Result: %{MY_CUSTOM}" + CRLF + CRFF + INIT, new FillJob(jsonTemplate.parse()).fill());
+    }
+
+    private static class CustomFunction extends Function {
+
+        public CustomFunction() {
+            super("%\\{\\s*(MY_CUSTOM)\\s*\\}");
+        }
+        @Override
+        public String process(Matcher matcher, Report report, Page page, Line line) {
+            return "MyCustomResult";
+        }
+
+        @Override
+        public void reset() {
+            // do nothing
+        }
+    }
 
 }
