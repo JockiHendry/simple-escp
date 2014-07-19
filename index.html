@@ -1,1 +1,1269 @@
-Test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.0.preview.7">
+<title>simple-escp Documentation</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+<link rel="stylesheet" href="./coderay-asciidoctor.css">
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>simple-escp Documentation</h1>
+<span id="revnumber">version 0.4</span>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_getting_started">1. Getting Started</a></li>
+<li><a href="#_template">2. Template</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_page_format">2.1. Page Format</a></li>
+<li><a href="#_template_2">2.2. Template</a></li>
+<li><a href="#_line">2.3. Line</a></li>
+<li><a href="#_table">2.4. Table</a></li>
+<li><a href="#_list">2.5. List</a></li>
+</ul>
+</li>
+<li><a href="#_placeholder">3. Placeholder</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_basic_placeholder">3.1. Basic Placeholder</a></li>
+<li><a href="#_script_placeholder">3.2. Script Placeholder</a></li>
+</ul>
+</li>
+<li><a href="#_function">4. Function</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_numbering_functions">4.1. Numbering Functions</a></li>
+<li><a href="#_styling_functions">4.2. Styling Functions</a></li>
+<li><a href="#_miscellaneous_functions">4.3. Miscellaneous Functions</a></li>
+<li><a href="#_custom_function">4.4. Custom Function</a></li>
+</ul>
+</li>
+<li><a href="#_data_source">5. Data Source</a></li>
+<li><a href="#_reference">6. Reference</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://jockihendry.github.io/simple-escp/simple-escp-doc.pdf">Download PDF version</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_getting_started">1. Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>simple-escp is a small library for simplyfing ESC/P text-mode printing in Java.  Many modern reporting libraries for
+Java works in graphic mode.  While modern dot-matrix and receipt printers can print in graphics mode, printing graphic
+is slow.  It is also cumbersome to print at exact position in graphic mode.</p>
+</div>
+<div class="paragraph">
+<p>Such problems can be avoided by using text mode printing.  In text mode printing, printers will print ASCII
+characters one by one.  They will usually use fonts stored inside their RAM and accept control characters for
+manipulating printing process.</p>
+</div>
+<div class="paragraph">
+<p>ESC/P (Espon Standard Code for Printers) is a printer control language mainly used in dot matrix and receipt printers.
+ESC/P commands can be used to configure page length, change font styles, and many more configurations.
+simple-escp supports ESC/P for 9-pin printers.</p>
+</div>
+<div class="paragraph">
+<p>To use simple-escp in Gradle, add the following lines to <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay"><code class="groovy language-groovy">repositories {
+    maven {
+        url <span class="string"><span class="delimiter">&quot;</span><span class="content">http://dl.bintray.com/jockihendry/maven</span><span class="delimiter">&quot;</span></span>
+    }
+}
+dependencies {
+    compile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">jockihendry</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">simple-escp</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">0.4</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To include simple-escp manually to a Java project, download simple-escp&#8217;s binary distribution from
+<a href="https://github.com/JockiHendry/simple-escp/releases">https://github.com/JockiHendry/simple-escp/releases</a>.</p>
+</div>
+<div class="paragraph">
+<p>The first step in using simple-escp is creating a template in JSON format.  This template contains page format
+attributes and placeholders that will be filled later in application.  For example, create <code>template.json</code> that has
+ the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">template.json</div>
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">pageFormat</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">pageWidth</span><span class="delimiter">&quot;</span></span>: <span class="integer">50</span>,                                                   <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">pageLength</span><span class="delimiter">&quot;</span></span>: <span class="integer">13</span>,                                                  <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">usePageLengthFromPrinter</span><span class="delimiter">&quot;</span></span>: <span class="value">false</span>                                  <i class="conum" data-value="3"></i><b>(3)</b>
+    },
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">header</span><span class="delimiter">&quot;</span></span>: [
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">   ###       Company Name                 Page %{PAGE_NO}</span><span class="delimiter">&quot;</span></span>,   <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content"> #######                                                 </span><span class="delimiter">&quot;</span></span>,
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">#########    Invoice No: ${invoiceNo:10}                 </span><span class="delimiter">&quot;</span></span>    <i class="conum" data-value="5"></i><b>(5)</b>
+        ],
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">detail</span><span class="delimiter">&quot;</span></span>: [
+            {
+                <span class="key"><span class="delimiter">&quot;</span><span class="content">table</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">table_source</span><span class="delimiter">&quot;</span></span>,                                   <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="key"><span class="delimiter">&quot;</span><span class="content">border</span><span class="delimiter">&quot;</span></span>: <span class="value">true</span>,
+                <span class="key"><span class="delimiter">&quot;</span><span class="content">columns</span><span class="delimiter">&quot;</span></span>: [
+                    { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">code</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">9</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">caption</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Code</span><span class="delimiter">&quot;</span></span> },   <i class="conum" data-value="7"></i><b>(7)</b>
+                    { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">34</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">caption</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Name</span><span class="delimiter">&quot;</span></span> },
+                    { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">qty</span><span class="delimiter">&quot;</span></span>,  <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">6</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">caption</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Qty</span><span class="delimiter">&quot;</span></span>  }
+                ]
+            },
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">                                                  </span><span class="delimiter">&quot;</span></span>,
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">   (Signature)                  (Signature)       </span><span class="delimiter">&quot;</span></span>
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This report&#8217;s width is 50 characters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Every page consists of 13 lines.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Overrides page length settings in printer&#8217;s ROM so that form feed will work as expected.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>%{PAGE_NO}</code> is a function that will be replaced by page number.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><code>${invoiceNo:10}</code> is a placeholder that will be replaced by value from data source.  It will be exactly 10 characters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>This will create a table based on a collection.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>This is used to configure every table&#8217;s column.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The next step is to read the JSON template form Java code, for example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Main.java</div>
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">JsonTemplate template = <span class="keyword">new</span> JsonTemplate(getClass().getResource(<span class="string"><span class="delimiter">&quot;</span><span class="content">/template.json</span><span class="delimiter">&quot;</span></span>).toURI();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Template need to be filled with values from one or more data sources (unless it doesn&#8217;t contains any
+placeholders).  Data source can be stored as <code>Map</code> or JavaBean object.  For example, the following code
+will define a <code>Map</code> data source:</p>
+</div>
+<div class="listingblock">
+<div class="title">Main.java</div>
+<div class="content">
+<pre class="CodeRay"><code class="java language-java"><span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; map = <span class="keyword">new</span> <span class="predefined-type">HashMap</span>&lt;&gt;();
+map.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">invoiceNo</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">INVC-00001</span><span class="delimiter">&quot;</span></span>);                            <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;&gt; tables = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;();
+<span class="keyword">for</span> (<span class="type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">5</span>; i++) {
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; line = <span class="keyword">new</span> <span class="predefined-type">HashMap</span>&lt;&gt;();
+    line.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">code</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.format(<span class="string"><span class="delimiter">&quot;</span><span class="content">CODE-%d</span><span class="delimiter">&quot;</span></span>, i));
+    line.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.format(<span class="string"><span class="delimiter">&quot;</span><span class="content">Product Random %d</span><span class="delimiter">&quot;</span></span>, i));
+    line.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">qty</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.format(<span class="string"><span class="delimiter">&quot;</span><span class="content">%d</span><span class="delimiter">&quot;</span></span>, i*i));
+    tables.add(line);
+}
+map.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">table_source</span><span class="delimiter">&quot;</span></span>, tables);                               <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This value will be used to fill <code>${invoiceNo:10}</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This is used by <code>"table": "table_source"</code>.  Every items in this collection will represent a line in table.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The last step is to fill the template and print the result to printer:</p>
+</div>
+<div class="listingblock">
+<div class="title">Main.java</div>
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">SimpleEscp simpleEscp = <span class="keyword">new</span> SimpleEscp();
+simpleEscp.print(template.parse(), map);  <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Print directly to default printer.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>simple-escp has a preview panel that can be used in Swing application to preview the result.  For example, the
+following is a complete code that will read a JSON template, fill it with data and displays the result:</p>
+</div>
+<div class="listingblock">
+<div class="title">MainFrame.java</div>
+<div class="content">
+<pre class="CodeRay"><code class="java language-java"><span class="keyword">import</span> <span class="include">simple.escp.Template</span>;
+<span class="keyword">import</span> <span class="include">simple.escp.json.JsonTemplate</span>;
+<span class="keyword">import</span> <span class="include">javax.swing.JFrame</span>;
+<span class="keyword">import</span> <span class="include">java.awt.BorderLayout</span>;
+<span class="keyword">import</span> <span class="include">java.awt.Dimension</span>;
+<span class="keyword">import</span> <span class="include">java.io.IOException</span>;
+<span class="keyword">import</span> <span class="include">java.net.URISyntaxException</span>;
+<span class="keyword">import</span> <span class="include">java.util.ArrayList</span>;
+<span class="keyword">import</span> <span class="include">java.util.HashMap</span>;
+<span class="keyword">import</span> <span class="include">java.util.List</span>;
+<span class="keyword">import</span> <span class="include">java.util.Map</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MainFrameTest</span> <span class="directive">extends</span> <span class="predefined-type">JFrame</span> {
+
+    <span class="directive">public</span> MainFrameTest() <span class="directive">throws</span> <span class="exception">URISyntaxException</span>, <span class="exception">IOException</span> {
+        <span class="local-variable">super</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Preview</span><span class="delimiter">&quot;</span></span>);
+
+        Template template = <span class="keyword">new</span> JsonTemplate(<span class="predefined-type">Thread</span>.currentThread().
+            getContextClassLoader().getResource(<span class="string"><span class="delimiter">&quot;</span><span class="content">report.json</span><span class="delimiter">&quot;</span></span>).toURI());  <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; value = <span class="keyword">new</span> <span class="predefined-type">HashMap</span>&lt;&gt;();                      <i class="conum" data-value="2"></i><b>(2)</b>
+        value.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">invoiceNo</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">INVC-00001</span><span class="delimiter">&quot;</span></span>);
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;&gt; tables = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;();
+        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">5</span>; i++) {
+            <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; line = <span class="keyword">new</span> <span class="predefined-type">HashMap</span>&lt;&gt;();
+            line.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">code</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.format(<span class="string"><span class="delimiter">&quot;</span><span class="content">CODE-%d</span><span class="delimiter">&quot;</span></span>, i));
+            line.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.format(<span class="string"><span class="delimiter">&quot;</span><span class="content">Product Random %d</span><span class="delimiter">&quot;</span></span>, i));
+            line.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">qty</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.format(<span class="string"><span class="delimiter">&quot;</span><span class="content">%d</span><span class="delimiter">&quot;</span></span>, i*i));
+            tables.add(line);
+        }
+        value.put(<span class="string"><span class="delimiter">&quot;</span><span class="content">table_source</span><span class="delimiter">&quot;</span></span>, tables);
+
+        PrintPreviewPane printPreview = <span class="keyword">new</span> PrintPreviewPane(template,
+            value, <span class="predefined-constant">null</span>);                                                 <i class="conum" data-value="3"></i><b>(3)</b>
+        getContentPane().setLayout(<span class="keyword">new</span> <span class="predefined-type">BorderLayout</span>());
+        getContentPane().add(printPreview, <span class="predefined-type">BorderLayout</span>.CENTER);          <i class="conum" data-value="4"></i><b>(4)</b>
+
+        setPreferredSize(<span class="keyword">new</span> <span class="predefined-type">Dimension</span>(<span class="integer">500</span>, <span class="integer">500</span>));
+        pack();
+        setDefaultCloseOperation(<span class="predefined-type">JFrame</span>.EXIT_ON_CLOSE);
+        setVisible(<span class="predefined-constant">true</span>);
+    }
+
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main (<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        <span class="keyword">try</span> {
+            <span class="keyword">new</span> MainFrameTest();
+        } <span class="keyword">catch</span> (<span class="exception">Exception</span> e) {
+            e.printStackTrace();
+        }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Read the JSON template.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Prepare data.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Create a preview panel.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Add the preview panel to this frame.</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://cloud.githubusercontent.com/assets/3104399/3528849/699d5c80-0793-11e4-8f92-22299c7eabca.PNG" alt="699d5c80 0793 11e4 8f92 22299c7eabca">
+</div>
+<div class="title">Figure 1. The Preview Panel</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_template">2. Template</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>JSON template consists of 2 keys: <code>pageFormat</code> and <code>template</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_page_format">2.1. Page Format</h3>
+<div class="paragraph">
+<p>The value of <code>pageFormat</code> must be a JSON object.  The following keys are available for <code>pageFormat</code>:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Value Type</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"autoFormFeed"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"autoLineFeed"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"bottomMargin"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>undefined</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"characterPitch"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number, string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"10 cpi"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"leftMargin"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>undefined</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"lineSpacing"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"1/6"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"pageLength"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>undefined</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"pageWidth"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>undefined</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"rightMargin"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>undefined</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"typeface"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>undefined</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"usePageLengthFromPrinter"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">pageFormat</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">characterPitch</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">5</span><span class="delimiter">&quot;</span></span>,
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">lineSpacing</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1/8</span><span class="delimiter">&quot;</span></span>,
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">typeface</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">roman</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Page format can also be created programmatically, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java"><span class="predefined-type">PageFormat</span> pageFormat = <span class="keyword">new</span> <span class="predefined-type">PageFormat</span>();
+pageFormat.setCharacterPitch(<span class="string"><span class="delimiter">&quot;</span><span class="content">5</span><span class="delimiter">&quot;</span></span>);
+pageFormat.setLineSpacing(<span class="string"><span class="delimiter">&quot;</span><span class="content">1/8</span><span class="delimiter">&quot;</span></span>);
+pageFormat.setTypeface(<span class="string"><span class="delimiter">&quot;</span><span class="content">roman</span><span class="delimiter">&quot;</span></span>);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_template_2">2.2. Template</h3>
+<div class="paragraph">
+<p>The value of <code>template</code> can be JSON object or JSON array.</p>
+</div>
+<div class="paragraph">
+<p>If <code>template</code> is a JSON array, every elements of the array is a single line.  The first element of the array is
+the first line, the second element is the second line, and so on.  For example, the following <code>template</code> consists of
+three lines:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Line #1</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Line #2</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Line #3</span><span class="delimiter">&quot;</span></span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The template above can also be create programmatically by using the following code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">Report report = <span class="keyword">new</span> Report(pageFormat, <span class="predefined-constant">null</span>, <span class="predefined-constant">null</span>);
+report.append(<span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">Line #1</span><span class="delimiter">&quot;</span></span>), <span class="predefined-constant">false</span>);
+report.append(<span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">Line #2</span><span class="delimiter">&quot;</span></span>), <span class="predefined-constant">false</span>);
+report.append(<span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">Line #3</span><span class="delimiter">&quot;</span></span>), <span class="predefined-constant">false</span>);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If <code>template</code> is a JSON object, every members of the object represents a report section.  The following keys are
+ available for <code>template</code>:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 30%;">
+<col style="width: 70%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"detail"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Put the content of the report in this section.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"firstPage"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This section will be displayed as the first page of the report.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"footer"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This section will be added at the bottom of every page in <code>"detail"</code> section.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"header"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This section will be added at the top of every page in <code>"detail"</code> section.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"lastPage"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This section will be displayed as the last page of the report.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>All sections must have a JSON array as value.  Every elements of the array is a single line in that section.  Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">firstPage</span><span class="delimiter">&quot;</span></span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">First page only.</span><span class="delimiter">&quot;</span></span>],
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">header</span><span class="delimiter">&quot;</span></span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Header line #1</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Header line #2</span><span class="delimiter">&quot;</span></span>],
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">detail</span><span class="delimiter">&quot;</span></span>: [
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">First line of detail</span><span class="delimiter">&quot;</span></span>,
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">Second line of detail</span><span class="delimiter">&quot;</span></span>
+        ],
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">footer</span><span class="delimiter">&quot;</span></span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">The footer.</span><span class="delimiter">&quot;</span></span>],
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">lastPage</span><span class="delimiter">&quot;</span></span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Last page only.</span><span class="delimiter">&quot;</span></span>]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The template above can also be create programmatically by using the following code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">TextLine<span class="type">[]</span> firstPage = <span class="keyword">new</span> TextLine<span class="type">[]</span> { <span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">First page only.</span><span class="delimiter">&quot;</span></span>) };
+TextLine<span class="type">[]</span> lastPage = <span class="keyword">new</span> TextLine<span class="type">[]</span> { <span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">Last page only.</span><span class="delimiter">&quot;</span></span>) };
+TextLine<span class="type">[]</span> header = <span class="keyword">new</span> TextLine<span class="type">[]</span> {
+    <span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">Header line #1</span><span class="delimiter">&quot;</span></span>),
+    <span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">Header line #2</span><span class="delimiter">&quot;</span></span>)
+};
+TextLine<span class="type">[]</span> footer = <span class="keyword">new</span> TextLine<span class="type">[]</span> { <span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">The footer.</span><span class="delimiter">&quot;</span></span>) };
+Report report = <span class="keyword">new</span> Report(pageFormat, header, footer);
+report.appendSinglePage(firstPage, <span class="predefined-constant">true</span>);
+report.append(<span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">First line of detail</span><span class="delimiter">&quot;</span></span>), <span class="predefined-constant">false</span>);
+report.append(<span class="keyword">new</span> TextLine(<span class="string"><span class="delimiter">&quot;</span><span class="content">Second line of detail</span><span class="delimiter">&quot;</span></span>), <span class="predefined-constant">false</span>);
+report.appendSinglePage(lastPage, <span class="predefined-constant">true</span>);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_line">2.3. Line</h3>
+<div class="paragraph">
+<p><code>template</code> and all sections accept an array that represent lines.  The elements inside this array should be a string or
+JSON object.  String will be converted to <code>TextLine</code>.  All <code>TextLine</code> may contains placeholders and/or functions.
+JSON object will be converted to either <code>TableLine</code> or <code>ListLine</code> depending on their keys.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><code>detail</code> section allows mixing multiple <code>TextLine</code>, <code>TableLine</code> and <code>ListLine</code> in any position inside the array.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_table">2.4. Table</h3>
+<div class="paragraph">
+<p>Table is a JSON object that contains <code>table</code> key.  The value for <code>table</code> is script placeholder that must be evaluated
+to <code>Collection</code>.  All valid keys for table are:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 16%;">
+<col style="width: 16%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Value Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"border"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>true</code>, simple-escp will add CP437 border to this table. Default value is <code>false</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"columns"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="icon green"><i class="icon-check"></i></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The columns for this table.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"table"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="icon green"><i class="icon-check"></i></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A script that should return <code>Collection</code> as the content of this table.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Every element in <code>columns</code> array is a JSON object.  The valid keys for this JSON object are:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 16%;">
+<col style="width: 16%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Value Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"caption"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The column name.  Default value is the same as value of <code>"source"</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"source"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="icon green"><i class="icon-check"></i></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A script that will be executed for members of Collection to return the value for this column.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"width"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="icon green"><i class="icon-check"></i></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Width of this column in number of characters.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"wrap"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>true</code>, value that exceeds column&#8217;s width will be advanced to next line. Default value is <code>false</code>.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example of table in JSON template:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">pageFormat</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">pageLength</span><span class="delimiter">&quot;</span></span>: <span class="integer">10</span>
+    },
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">This is a text line</span><span class="delimiter">&quot;</span></span>,                                          <i class="conum" data-value="1"></i><b>(1)</b>
+        {                                                               <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">table</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">persons</span><span class="delimiter">&quot;</span></span>,
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">columns</span><span class="delimiter">&quot;</span></span>: [
+                { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">10</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">wrap</span><span class="delimiter">&quot;</span></span>: <span class="value">true</span> },
+                { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">20</span> },
+                { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">nickname</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">10</span> }
+            ]
+        },
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">This is a text line</span><span class="delimiter">&quot;</span></span>                                           <i class="conum" data-value="3"></i><b>(3)</b>
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A normal text line that will be displayed before the table.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Table is a JSON object that have <code>"table"</code> as key.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A normal text line that will be displayed after the table.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If table can&#8217;t fit in one page, following pages that display the rest of table will have column&#8217;s name and
+full border (if border is enabled).</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>A report can have more than one table.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>source</code> key in table&#8217;s column can have the following predefined value:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Value Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"col"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The column number for current column, starting from <code>1</code> for the first column.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"row"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The row number for current row, starting from <code>1</code> for the first row.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">pageFormat</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">pageLength</span><span class="delimiter">&quot;</span></span>: <span class="integer">10</span>
+    },
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: [
+        {
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">table</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">persons</span><span class="delimiter">&quot;</span></span>,
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">columns</span><span class="delimiter">&quot;</span></span>: [
+                { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">row</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">4</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">caption</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">No</span><span class="delimiter">&quot;</span></span> },       <i class="conum" data-value="1"></i><b>(1)</b>
+                { <span class="key"><span class="delimiter">&quot;</span><span class="content">source</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">width</span><span class="delimiter">&quot;</span></span>: <span class="integer">10</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">wrap</span><span class="delimiter">&quot;</span></span>: <span class="value">true</span> }
+            ]
+        }
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>"row"</code> will be evaluated to the current row number.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_list">2.5. List</h3>
+<div class="paragraph">
+<p>Like table, list is also used to display collection.  The difference is list doesn&#8217;t have columnar layout.  It can
+ be treated as a collection of similiar lines.  All valid keys for list are:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 16%;">
+<col style="width: 16%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Value Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"footer"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Footer that will be displayed in the end of each page if list spans multiple pages.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"header"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Header that will be displayed in the beginning of each page if list spans multiple pages.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"line"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="icon green"><i class="icon-check"></i></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text line that will be used to evaluate every lines of this list.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"list"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="icon green"><i class="icon-check"></i></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A script that should return <code>Collection</code> as the content of this list.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example of list in JSON template:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">pageFormat</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">pageLength</span><span class="delimiter">&quot;</span></span>: <span class="integer">10</span>
+    },
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">This is a text line</span><span class="delimiter">&quot;</span></span>,                                     <i class="conum" data-value="1"></i><b>(1)</b>
+        {                                                          <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">list</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">persons</span><span class="delimiter">&quot;</span></span>,
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">line</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${firstName} ${lastname} or ${nickname}</span><span class="delimiter">&quot;</span></span>,
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">header</span><span class="delimiter">&quot;</span></span>: [ <span class="string"><span class="delimiter">&quot;</span><span class="content">List of persons:</span><span class="delimiter">&quot;</span></span> ]
+        },
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">This is a text line</span><span class="delimiter">&quot;</span></span>                                      <i class="conum" data-value="3"></i><b>(3)</b>
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A normal text line that will be displayed before the list.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>List is a JSON object that have <code>"list"</code> as key.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A normal text line that will be displayed after the list.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_placeholder">3. Placeholder</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All text lines may contain a placeholder in form of <code>${&#8230;}</code>.  Placeholders will be substituted by values from
+data sources during filling process.  simple-escp supports two kinds of placeholder: basic placeholder and script
+placeholder.</p>
+</div>
+<div class="paragraph">
+<p>All placeholders supports common configurations.  In basic placeholder, the common configurations are separated by
+<code>:</code> such as <code>${name:10:left}</code>.  In script placeholder, they are separated by <code>::</code> such as <code>{{firstName + " " + lastName::10::left}}</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following is list of available configurations for placeholder:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 33%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Possible Value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Aggregation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sum</code>, <code>count</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Can be used only in collection that contains number.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Alignment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>left</code>, <code>right</code>, <code>center</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Determine the alignment of value if number of characters is less than width.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Format</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>number</code>, <code>integer</code>, <code>currency</code>, <code>date_full</code>, <code>date_long</code>, <code>date_medium</code>, <code>date_short</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Format the value based on the specified formatter.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Width</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of characters for value.  If number of characters is less than this number, value will be filled by spaces.  If number of characters is more than this number, value will be truncated.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The configurations can be in any orders.  For example, <code>${name:20:left}</code> is equals to <code>${name:left:20}</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_basic_placeholder">3.1. Basic Placeholder</h3>
+<div class="paragraph">
+<p>Basic placeholder is defined by using the following syntax: <code>${&#8230;}</code>.</p>
+</div>
+<div class="paragraph">
+<p>The content of basic placeholder is simply a string that refers to a member of data source.  For example, <code>${name}</code>
+will refer to <code>map.get("name")</code> if the data source is a map or <code>object.getName()</code> if the data source is a JavaBean
+object.</p>
+</div>
+<div class="paragraph">
+<p>For JavaBean object data source, basic placeholder supports nested attributes.  For example, <code>${name.firstName}</code> will
+refer to <code>object.getName().getFirstName()</code>.  Basic placeholder also supports method call by prepending the method&#8217;s name
+ with <code>@</code>.  For example, <code>${@fullName}</code> will refer to <code>object.fullName()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">pageFormat</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">pageLength</span><span class="delimiter">&quot;</span></span>: <span class="integer">10</span>
+    },
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">First name  :  ${firstName:20}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Last name   :  ${lastName:20}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Address 1   :  ${address.line1:20}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Address 2   :  ${address.line2:20}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Total       :  ${@total:20:currency}</span><span class="delimiter">&quot;</span></span>
+    ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_script_placeholder">3.2. Script Placeholder</h3>
+<div class="paragraph">
+<p>Script placeholder is defined by using the following syntax: <code>{{&#8230;}}</code>.</p>
+</div>
+<div class="paragraph">
+<p>The content of script placeholder will be evaluated by script engine. simple-escp uses JSR 223: Scripting for the
+Java Platform API to evaluates the content of script placeholder.  If Groovy script engine is available, simple-escp
+will use it.  Otherwise simple-escp will use the default JavaScript engine bundled in JDK.</p>
+</div>
+<div class="paragraph">
+<p>Script can refer to any members of data source by their name.  Script may use special variable <code>bean</code> to refer to
+JavaBean data source if it is available.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">First name  :  {{ firstName :: 20 }}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Last name   :  {{ lastName :: 20 }}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Address 1   :  {{ address.getLine1() :: 20 }}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Address 2   :  {{ address.getLine2() :: 20 }}</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Total       :  {{ bean.total() :: 20 :: currency}}</span><span class="delimiter">&quot;</span></span>
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>User can also add custom variables to script&#8217;s engine context, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">FillJob job = <span class="keyword">new</span> FillJob(report, dataSource);
+job.addScriptVariable(<span class="string"><span class="delimiter">&quot;</span><span class="content">prefix</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Mr</span><span class="delimiter">&quot;</span></span>);           <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="predefined-type">String</span> result = job.fill();</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Can be used in script placeholder, for example:  <code>{{prefix + " " + firstName}}</code></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_function">4. Function</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To call function in text lines, use the following syntax: <code>%{&#8230;}</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_numbering_functions">4.1. Numbering Functions</h3>
+<div class="paragraph">
+<p>The following is list of functions that return number.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 30%;">
+<col style="width: 30%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GLOBAL_LINE_NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{GLOBAL_LINE_NO}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return the current global line number.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{INC A}</code>, <code>%{INC B}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create a global number variable that start from <code>1</code> and return its value.  The subsequent invocations of this function will increase the variable by <code>1</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LINE_NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{LINE_NO}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return the current line number.  Line number will reset to <code>1</code> when encountering a new page.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PAGE_NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{PAGE_NO}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return the current page number.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">header</span><span class="delimiter">&quot;</span></span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Page %{PAGE_NO}</span><span class="delimiter">&quot;</span></span>],
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">detail</span><span class="delimiter">&quot;</span></span>: [
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">%{LINE_NO} This is the content.</span><span class="delimiter">&quot;</span></span>
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_styling_functions">4.2. Styling Functions</h3>
+<div class="paragraph">
+<p>Styling functions are used to generate ESC/P codes to change font style for a portion of text.  They are commonly used
+in form of <code>%{&#8230;} text %{&#8230;}</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following is list of functions used for changing font style:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 50%;">
+<col style="width: 30%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BOLD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{BOLD}text{%BOLD}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bold font style.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DOUBLE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{DOUBLE}text{%DOUBLE}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double-strike font style.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ITALIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{ITALIC}text{%ITALIC}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Italic font style.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{SUB}text{%SUB}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subscript font style.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{SUP}text{%SUP}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Superscript font style.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UNDERLINE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%{UNDERLINE}text%{UNDERLINE}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Underline font style.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">detail</span><span class="delimiter">&quot;</span></span>: [
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">%{BOLD}bold text{%BOLD} and %{ITALIC}italic text{%ITALIC}.</span><span class="delimiter">&quot;</span></span>
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_miscellaneous_functions">4.3. Miscellaneous Functions</h3>
+<div class="paragraph">
+<p>To generate an ASCII character, call function with ASCII number.  For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">detail</span><span class="delimiter">&quot;</span></span>: [
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">%{176} %{177} %{178}</span><span class="delimiter">&quot;</span></span>
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ASCII function can also be used to repeat characters.  For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="json language-json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">template</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">detail</span><span class="delimiter">&quot;</span></span>: [
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">%{177 R10}.</span><span class="delimiter">&quot;</span></span>    <i class="conum" data-value="1"></i><b>(1)</b>
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create 10 characters that consist of ASCII character 177.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_custom_function">4.4. Custom Function</h3>
+<div class="paragraph">
+<p>User can also create custom functions by extending <code>Function</code> class.  The following is an example of custom function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java"><span class="directive">public</span> <span class="type">class</span> <span class="class">CustomFunction</span> <span class="directive">extends</span> Function {
+
+    <span class="directive">public</span> CustomFunction() {
+        <span class="local-variable">super</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">%</span><span class="char">\\</span><span class="content">{</span><span class="char">\\</span><span class="content">s*(MY_CUSTOM)</span><span class="char">\\</span><span class="content">s*</span><span class="char">\\</span><span class="content">}</span><span class="delimiter">&quot;</span></span>);                                          <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> process(<span class="predefined-type">Matcher</span> matcher, Report report, Page page, <span class="predefined-type">Line</span> line) {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">MyCustomResult</span><span class="delimiter">&quot;</span></span>;                                                      <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> reset() {
+        <span class="comment">// do nothing</span>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This function will replace all occurences of <code>%{MY_CUSTOM}</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>It always return <code>MyCustomResult</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To make simple-escp recognize this function , it must be added to <code>FillJob</code> by using code such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">CustomFunction customFunction = <span class="keyword">new</span> CustomFunction();
+FillJob.addFunction(customFunction);                   <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>customFunction</code> will be available globally.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_data_source">5. Data Source</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In simple-escp, a data source is an implementation of <code>DataSource</code>.  By default, simple-escp shipped
+with two default implementation: <code>MapDataSource</code> to retrieve value from Map and <code>BeanDataSource</code> to retrieve value
+from JavaBean object.</p>
+</div>
+<div class="paragraph">
+<p>The following code shows how to create data source:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">MapDataSource mapDataSource = <span class="keyword">new</span> MapDataSource(map);
+BeanDataSource beanDataSource = <span class="keyword">new</span> BeanDataSource(bean);
+FillJob fillWithMap = <span class="keyword">new</span> FillJob(report, mapDataSource);
+FillJob fillWithBean = <span class="keyword">new</span> FillJob(report, beanDataSource);
+FillJob fillMultipleSources = <span class="keyword">new</span> FillJob(report,
+    <span class="keyword">new</span> <span class="predefined-type">DataSource</span><span class="type">[]</span>{mapDataSource, beanDataSource});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>User can also directly create <code>DataSource</code> from Map or JavaBean object by using <code>DataSources</code> factory, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">FillJob fillWithMap = <span class="keyword">new</span> FillJob(report, DataSources.from(map));
+FillJob fillWithMap = <span class="keyword">new</span> FillJob(report, DataSources.from(bean));
+FillJob fillMultipleSources = <span class="keyword">new</span> FillJob(report, DataSources.from(map, bean));</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_reference">6. Reference</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Source code: <a href="https://github.com/JockiHendry/simple-escp">https://github.com/JockiHendry/simple-escp</a></p>
+</li>
+<li>
+<p>Javadoc: <a href="http://jockihendry.github.io/simple-escp/javadoc/index.html">http://jockihendry.github.io/simple-escp/javadoc/index.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 0.4<br>
+Last updated 2014-07-19 19:52:35 ICT
+</div>
+</div>
+</body>
+</html>
