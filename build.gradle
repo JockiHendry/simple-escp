@@ -4,6 +4,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.4.1'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.7.3'
     }
 }
 
@@ -14,6 +15,7 @@ apply plugin: 'java-library-distribution'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'org.asciidoctor.gradle.asciidoctor'
 
 sourceCompatibility = 1.7
 version = '0.4'
@@ -101,3 +103,6 @@ bintray {
     }
 }
 
+asciidoctor {
+    backends = ['html5','docbook']
+}
