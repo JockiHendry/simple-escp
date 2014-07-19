@@ -1,6 +1,9 @@
 simple-escp [ ![Download](https://api.bintray.com/packages/jockihendry/maven/simple-escp/images/download.png) ](https://bintray.com/jockihendry/maven/simple-escp/_latestVersion)
 ===========
 
+For more information, visit [documentation site](http://jockihendry.github.io/simple-escp) or download 
+[PDF documentation](http://jockihendry.github.io/simple-escp/simple-escp-doc.pdf).
+
 Getting Started
 ---------------
 
