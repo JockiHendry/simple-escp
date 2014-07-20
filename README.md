@@ -118,22 +118,25 @@ simple-escp also supports sections such as header, footer, and detail.  It also 
     },
     "template": {
         "header": [
-            "   ###       Company Name                 Page %{PAGE_NO}",
-            " #######                                                 ",
-            "#########    Invoice No: ${invoiceNo:10}                 "
+            " %{176 R3} Company Name Page %{PAGE_NO}",
+            " %{176 R7} ",
+            "%{176 R9} Invoice No: ${invoiceNo:10}",
+            " %{176 R5} ",
+            " %{176 R3} "
         ],
         "detail": [
             {
                 "table": "table_source",
                 "border": true,
                 "columns": [
-                    { "source": "code", "width": 9, "caption": "Code" },
-                    { "source": "name", "width": 34, "caption": "Name" },
-                    { "source": "qty",  "width": 6, "caption": "Qty"  }
+                    { "source": "row :: right", "width": 4 },
+                    { "source": "code", "width": 9 },
+                    { "source": "name", "width": 30, "wrap": true },
+                    { "source": "qty", "width": 6 }
                 ]
             },
-            "                                                  ",
-            "   (Signature)                  (Signature)       "
+            " ",
+            " (Signature) (Signature) "
         ]
     }
 }
@@ -141,7 +144,7 @@ simple-escp also supports sections such as header, footer, and detail.  It also 
 
 The output is:
 
-![preview](https://cloud.githubusercontent.com/assets/3104399/3528849/699d5c80-0793-11e4-8f92-22299c7eabca.PNG)
+![preview](https://cloud.githubusercontent.com/assets/3104399/3616034/9505d74e-0dce-11e4-9d0a-2a7e24dfed61.PNG)
 
 Development
 -----------
