@@ -86,7 +86,7 @@ public class BasicPlaceholder extends Placeholder {
             }
         }
         LOG.warning("Can't find datasource that has member [" + name + "]");
-        throw new InvalidPlaceholder("Can't find data source's member for [" + name + "]");
+        return "";
     }
 
 }

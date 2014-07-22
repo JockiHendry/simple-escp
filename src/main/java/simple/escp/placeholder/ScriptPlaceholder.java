@@ -75,7 +75,7 @@ public class ScriptPlaceholder extends Placeholder {
             return scriptEngine.eval(script);
         } catch (ScriptException e) {
             LOG.log(Level.WARNING, "Error durring executing script.", e);
-            throw new InvalidPlaceholder("Can't execute script [" + script + "]", e);
+            return "";
         }
     }
 
