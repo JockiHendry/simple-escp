@@ -1,5 +1,4 @@
 = simple-escp Documentation
-:revnumber: 0.4
 :linkcss:
 :numbered:
 :icons: font
