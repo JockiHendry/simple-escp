@@ -36,7 +36,7 @@ public class ScriptPlaceholderTest {
         assertEquals(10, new ScriptPlaceholder("rate * 0.5::10         ", null).getWidth());
         assertEquals(10, new ScriptPlaceholder("rate * 0.5 ::10", null).getWidth());
         assertEquals(10, new ScriptPlaceholder(" rate * 0.5 :: 10", null).getWidth());
-        assertEquals(20, new ScriptPlaceholder("rate * 0.5::currency:20", null).getWidth());
+        assertEquals(20, new ScriptPlaceholder("rate * 0.5::currency::20", null).getWidth());
     }
 
     @Test

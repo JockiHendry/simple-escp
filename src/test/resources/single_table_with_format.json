@@ -8,9 +8,9 @@
         {
             "table": "bean.add(new Packages.simple.escp.json.JsonTemplateFillTest.Person('newNick', 'newFirstName', 'newLastName'))",
             "columns": [
-                { "source": "firstName:right", "width": 10, "caption": "firstName" },
+                { "source": "firstName::right", "width": 10, "caption": "firstName" },
                 { "source": "lastName", "width": 20, "caption": "lastName"  },
-                { "source": "nickname:center", "width": 10, "caption": "nickname" }
+                { "source": "nickname::center", "width": 10, "caption": "nickname" }
             ]
         },
         "This is detail 2."
