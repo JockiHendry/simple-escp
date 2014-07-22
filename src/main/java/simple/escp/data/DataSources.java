@@ -25,6 +25,35 @@ public abstract class DataSources {
     }
 
     /**
+     * Register a custom data source so that <code>DataSources</code> can build the custom data source from
+     * provided value.
+     *
+     * @param supportedType class of object that can be handled by this data source.
+     * @param dataSourceType an implementation of <code>DataSource</code> that will be created by this entry.
+     */
+    public static void register(Class supportedType, Class dataSourceType) {
+        for (DataSourceEntry entry : DATA_SOURCES) {
+            if (entry.getSupportedType().equals(supportedType)) {
+                throw new IllegalArgumentException("Data source for [" + supportedType + "] already registered!");
+            }
+        }
+        DATA_SOURCES.add(new DataSourceEntry(supportedType, dataSourceType));
+    }
+
+    /**
+     * Unregister a custom data source.
+     *
+     * @param dataSourceType an implementation of <code>DataSource</code> that will be created by this entry.
+     */
+    public static void unregister(Class dataSourceType) {
+        for (DataSourceEntry entry : DATA_SOURCES.toArray(new DataSourceEntry[0])) {
+            if (entry.getDataSourceType().equals(dataSourceType)) {
+                DATA_SOURCES.remove(entry);
+            }
+        }
+    }
+
+    /**
      * Create a new <code>DataSource</code> from an <code>Object</code>.  This method will select the
      * appropriate <code>DataSouce</code> based on the class type of <code>Object</code>.
      *
