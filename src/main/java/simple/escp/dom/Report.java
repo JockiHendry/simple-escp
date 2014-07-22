@@ -427,7 +427,9 @@ public class Report implements Iterable<Page> {
         int globalLineNumber = 1;
         for (Page page : pages) {
             for (Line line : page.getLines()) {
-                line.setGlobalLineNumber(globalLineNumber++);
+                if (line != null) {
+                    line.setGlobalLineNumber(globalLineNumber++);
+                }
             }
         }
         return pages.iterator();

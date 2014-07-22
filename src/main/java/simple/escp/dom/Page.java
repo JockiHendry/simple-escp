@@ -293,7 +293,9 @@ public class Page {
             result[index++] = line;
         }
         for (Line line : content) {
-            line.setLineNumber(index + 1);
+            if (line != null) {
+                line.setLineNumber(index + 1);
+            }
             result[index++] = line;
         }
         for (Line line : footer) {
@@ -381,7 +383,7 @@ public class Page {
      */
     public boolean hasDynamicLine() {
         for (Line line: content) {
-            if (line.isDynamic()) {
+            if (line != null && line.isDynamic()) {
                 return true;
             }
         }
