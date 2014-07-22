@@ -7,6 +7,7 @@ import simple.escp.dom.Page;
 import simple.escp.dom.Report;
 import simple.escp.dom.line.ListLine;
 import simple.escp.dom.line.TextLine;
+import simple.escp.exception.InvalidPlaceholder;
 import simple.escp.placeholder.ScriptPlaceholder;
 import javax.script.ScriptContext;
 import java.util.Arrays;
@@ -78,14 +79,20 @@ public class ListFillJob extends FillJob {
         DataSource[] globalDataSources = Arrays.copyOf(dataSources, dataSources.length);
         while ((page = report.getFirstPageWithListLines()) != null) {
             ListLine listLine = page.getListLines().get(0);
-            Collection dataSource = (Collection) (new ScriptPlaceholder(listLine.getSource(), scriptEngine)).
-                getValue(globalDataSources);
-            List<Line> results = fillListLine(listLine, dataSource);
-            Collections.reverse(results);
             page.removeLine(listLine);
-            for (Line result : results) {
-                LOG.fine("Add new line [" + result.toString() + "]");
-                report.insert(result, page.getPageNumber(), listLine.getLineNumber());
+            Object dataSource = (new ScriptPlaceholder(listLine.getSource(), scriptEngine)).getValue(globalDataSources);
+            if (dataSource instanceof Collection) {
+                List<Line> results = fillListLine(listLine, (Collection) dataSource);
+                Collections.reverse(results);
+                for (Line result : results) {
+                    LOG.fine("Add new line [" + result.toString() + "]");
+                    report.insert(result, page.getPageNumber(), listLine.getLineNumber());
+                }
+            } else if (dataSource == null) {
+                LOG.warning("List was skipped because data source was null.");
+            } else {
+                throw new InvalidPlaceholder("Data source must be a Collection but found [" + dataSource +
+                        "] as a [" + dataSource.getClass() + "].");
             }
         }
         return null;

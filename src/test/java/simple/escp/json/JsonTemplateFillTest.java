@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import simple.escp.dom.Report;
 import simple.escp.dom.line.TableLine;
+import simple.escp.exception.InvalidPlaceholder;
 import simple.escp.fill.FillJob;
 import simple.escp.data.BeanDataSource;
 import simple.escp.data.DataSources;
@@ -515,6 +516,115 @@ public class JsonTemplateFillTest {
             "Your first name is Jocki ABCDEF." + CRLF +
             CRFF + INIT,
             result
+        );
+    }
+
+    @Test
+    public void fillEmptyTable() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": [" +
+                "\"First Line\"," +
+                "{" +
+                    "\"table\": \"tables\"," +
+                    "\"columns\": [ {\"source\": \"test\", \"width\": 10} ]" +
+                "}," +
+                "\"Second Line\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("tables", null);
+        assertEquals( INIT +
+            "First Line" + CRLF +
+            "Second Line" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
+        );
+    }
+
+    @Test(expected = InvalidPlaceholder.class)
+    public void fillEmptyTable2() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": [" +
+                "\"First Line\"," +
+                "{" +
+                    "\"table\": \"tables\"," +
+                    "\"columns\": [ {\"source\": \"test\", \"width\": 10} ]" +
+                "}," +
+                "\"Second Line\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        assertEquals( INIT +
+            "First Line" + CRLF +
+            "Second Line" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
+        );
+    }
+
+    @Test
+    public void fillEmptyList() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": [" +
+                "\"First Line\"," +
+                "{" +
+                    "\"list\": \"lists\"," +
+                    "\"line\": \"This is ${line}\"" +
+                "}," +
+                "\"Second Line\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("lists", null);
+        assertEquals( INIT +
+            "First Line" + CRLF +
+            "Second Line" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
+        );
+    }
+
+    @Test
+    public void fillEmptyListWithHeaderAndFooter() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": [" +
+                "\"First Line\"," +
+                "{" +
+                    "\"list\": \"lists\"," +
+                    "\"line\": \"This is ${line}\"," +
+                    "\"header\": [ \"This is header\" ]," +
+                    "\"footer\": [ \"This is footer\" ]" +
+                "}," +
+                "\"Second Line\"" +
+            "]" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("lists", null);
+        assertEquals( INIT +
+            "First Line" + CRLF +
+            "Second Line" + CRLF +
+            CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
         );
     }
 
