@@ -13,7 +13,7 @@
 <body class="article toc2 toc-left">
 <div id="header">
 <h1>simple-escp Documentation</h1>
-<span id="revnumber">version 0.4</span>
+<span id="revnumber">version 0.5</span>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -45,7 +45,8 @@
 </ul>
 </li>
 <li><a href="#_data_source">5. Data Source</a></li>
-<li><a href="#_reference">6. Reference</a></li>
+<li><a href="#_swing">6. Swing</a></li>
+<li><a href="#_reference">7. Reference</a></li>
 </ul>
 </div>
 </div>
@@ -87,7 +88,7 @@ simple-escp supports ESC/P for 9-pin printers.</p>
     }
 }
 dependencies {
-    compile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">jockihendry</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">simple-escp</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">0.4</span><span class="delimiter">'</span></span>
+    compile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">jockihendry</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">simple-escp</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">0.5</span><span class="delimiter">'</span></span>
 }</code></pre>
 </div>
 </div>
@@ -1244,7 +1245,55 @@ FillJob fillMultipleSources = <span class="keyword">new</span> FillJob(report, D
 </div>
 </div>
 <div class="sect1">
-<h2 id="_reference">6. Reference</h2>
+<h2 id="_swing">6. Swing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>simple-escp provides <code>PrintPreviewPane</code> that can be used to preview and print a report from
+Swing-based user interface.  The following code shows how to use <code>PrintPreviewPane</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay"><code class="java language-java">printPreviewPane = <span class="keyword">new</span> PrintPreviewPane();
+printPreviewPane.display(template, dataSources);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>simple-escp also shipped with a small editor that can be used to test Json template.  This editor consists of three
+tabs.</p>
+</div>
+<div class="paragraph">
+<p>Use the first tab to enter Json template.  Default shortcut for first tab is <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>1</kbd></span>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://cloud.githubusercontent.com/assets/3104399/3674823/d6dad606-1279-11e4-99d1-723e4ed0b4a0.PNG" alt="d6dad606 1279 11e4 99d1 723e4ed0b4a0">
+</div>
+<div class="title">Figure 2. Json template editor</div>
+</div>
+<div class="paragraph">
+<p>Use the second tab to enter data source.  This will be used as source value for <code>JsonDataSource</code>.  Default shortcut
+for second tab is <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>2</kbd></span>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://cloud.githubusercontent.com/assets/3104399/3674833/e61cf1bc-1279-11e4-9c0e-3c1c225bb21b.PNG" alt="e61cf1bc 1279 11e4 9c0e 3c1c225bb21b">
+</div>
+<div class="title">Figure 3. Json data source editor</div>
+</div>
+<div class="paragraph">
+<p>The third tab is used to display the print preview for current template and data source.  Default shortcut for third
+tab is <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>3</kbd></span>.  This tab will refresh itself whenever it is opened.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://cloud.githubusercontent.com/assets/3104399/3674837/eb930398-1279-11e4-8bd0-b2aef3fbb04b.PNG" alt="eb930398 1279 11e4 8bd0 b2aef3fbb04b">
+</div>
+<div class="title">Figure 4. Preview pane</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_reference">7. Reference</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -1261,8 +1310,8 @@ FillJob fillMultipleSources = <span class="keyword">new</span> FillJob(report, D
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.4<br>
-Last updated 2014-07-19 19:52:35 ICT
+Version 0.5<br>
+Last updated 2014-07-23 22:40:30 ICT
 </div>
 </div>
 <script>
