@@ -1,5 +1,6 @@
 package simple.escp.data;
 
+import javax.json.JsonObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public abstract class DataSources {
         List<DataSourceEntry> newDataSource = new ArrayList<>();
         newDataSource.add(new DataSourceEntry(Object.class, BeanDataSource.class));
         newDataSource.add(new DataSourceEntry(Map.class, MapDataSource.class));
+        newDataSource.add(new DataSourceEntry(String.class, JsonDataSource.class));
+        newDataSource.add(new DataSourceEntry(JsonObject.class, JsonDataSource.class));
         DATA_SOURCES = newDataSource;
     }
 
@@ -32,11 +35,6 @@ public abstract class DataSources {
      * @param dataSourceType an implementation of <code>DataSource</code> that will be created by this entry.
      */
     public static void register(Class supportedType, Class dataSourceType) {
-        for (DataSourceEntry entry : DATA_SOURCES) {
-            if (entry.getSupportedType().equals(supportedType)) {
-                throw new IllegalArgumentException("Data source for [" + supportedType + "] already registered!");
-            }
-        }
         DATA_SOURCES.add(new DataSourceEntry(supportedType, dataSourceType));
     }
 

@@ -57,18 +57,11 @@ public class CustomDataSourceTest {
         );
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void customDataSource_02() {
-        DataSources.register(String.class, CustomJsonDataSource.class);
-    }
-
     @Test
-    public void customDataSource_03() {
+    public void customDataSource_02() {
         DataSources.unregister(CustomJsonDataSource.class);
         List<DataSources.DataSourceEntry> dataSources = DataSources.DATA_SOURCES;
-        assertEquals(2, dataSources.size());
-        assertEquals(BeanDataSource.class, dataSources.get(0).getDataSourceType());
-        assertEquals(MapDataSource.class, dataSources.get(1).getDataSourceType());
+        assertEquals(4, dataSources.size());
     }
 
 }

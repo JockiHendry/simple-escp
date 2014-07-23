@@ -54,6 +54,9 @@ import java.util.Vector;
  */
 public class PrintPreviewPane extends JPanel implements ActionListener {
 
+    public static final int DEFAULT_PAGE_LENGTH = 50;
+    public static final int DEFAULT_PAGE_WIDTH = 80;
+
     private String text;
     private JScrollPane scrollPane;
     private OutputPane outputPane;
@@ -134,13 +137,32 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
     /**
      * Set the data that will be displayed by this <code>PrintPreviewPane</code> and display it.
      *
+     * @param text the string that will be displayed.
+     * @param pageFormat the page format that contains information about this report.
+     */
+    private void display(String text, PageFormat pageFormat) {
+        this.text = text;
+        int pageLength = DEFAULT_PAGE_LENGTH;
+        if (pageFormat.getPageLength() != null) {
+            pageLength = pageFormat.getPageLength();
+        }
+        int pageWidth = DEFAULT_PAGE_WIDTH;
+        if (pageFormat.getPageWidth() != null) {
+            pageWidth = pageFormat.getPageWidth();
+        }
+        outputPane.display(text, pageLength, pageWidth);
+        scrollPane.revalidate();
+    }
+
+    /**
+     * Set the data that will be displayed by this <code>PrintPreviewPane</code> and display it.
+     *
      * @param template an instance of <code>Template</code>.
      * @param dataSource the data source to fill this template.
      */
     public void display(Template template, DataSource dataSource) {
         PageFormat pageFormat = template.getPageFormat();
-        display(new FillJob(template.parse(), dataSource).fill(), pageFormat.getPageLength(),
-            pageFormat.getPageWidth());
+        display(new FillJob(template.parse(), dataSource).fill(), pageFormat);
     }
 
     /**
@@ -151,8 +173,7 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
      */
     public void display(Template template, DataSource[] dataSources) {
         PageFormat pageFormat = template.getPageFormat();
-        display(new FillJob(template.parse(), dataSources).fill(), pageFormat.getPageLength(),
-            pageFormat.getPageWidth());
+        display(new FillJob(template.parse(), dataSources).fill(), pageFormat);
     }
 
     /**
