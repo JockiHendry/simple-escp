@@ -799,8 +799,11 @@ FillJob.addFunction(customFunction);                   //<1>
 == Data Source
 
 In simple-escp, a data source is an implementation of +DataSource+.  By default, simple-escp shipped
-with two default implementation: +MapDataSource+ to retrieve value from Map and +BeanDataSource+ to retrieve value
-from JavaBean object.
+with following implementations:
+
+* +MapDataSource+
+* +BeanDataSource+
+* +JsonDataSource+
 
 The following code shows how to create data source:
 
