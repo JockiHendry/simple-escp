@@ -1,5 +1,6 @@
 = simple-escp Documentation
 :linkcss:
+:experimental:
 :numbered:
 :icons: font
 :source-highlighter: coderay
@@ -825,6 +826,34 @@ FillJob fillWithMap = new FillJob(report, DataSources.from(map));
 FillJob fillWithMap = new FillJob(report, DataSources.from(bean));
 FillJob fillMultipleSources = new FillJob(report, DataSources.from(map, bean));
 ----
+
+== Swing
+
+simple-escp provides +PrintPreviewPane+ that can be used to preview and print a report from
+Swing-based user interface.  The following code shows how to use +PrintPreviewPane+:
+
+[source,java]
+----
+printPreviewPane = new PrintPreviewPane();
+printPreviewPane.display(template, dataSources);
+----
+
+simple-escp also shipped with a small editor that can be used to test Json template.  This editor consists of three
+tabs.
+
+Use the first tab to enter Json template.  Default shortcut for first tab is kbd:[Ctrl+1].
+
+image::https://cloud.githubusercontent.com/assets/3104399/3674823/d6dad606-1279-11e4-99d1-723e4ed0b4a0.PNG[title="Json template editor"]
+
+Use the second tab to enter data source.  This will be used as source value for +JsonDataSource+.  Default shortcut
+for second tab is kbd:[Ctrl+2].
+
+image::https://cloud.githubusercontent.com/assets/3104399/3674833/e61cf1bc-1279-11e4-9c0e-3c1c225bb21b.PNG[title="Json data source editor"]
+
+The third tab is used to display the print preview for current template and data source.  Default shortcut for third
+tab is kbd:[Ctrl+3].  This tab will refresh itself whenever it is opened.
+
+image::https://cloud.githubusercontent.com/assets/3104399/3674837/eb930398-1279-11e4-8bd0-b2aef3fbb04b.PNG[title="Preview pane"]
 
 == Reference
 
