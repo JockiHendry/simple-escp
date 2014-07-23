@@ -154,49 +154,12 @@ public class BasicPlaceholderTest {
 
         placeholder = new BasicPlaceholder("rate:10");
         assertEquals("5         ", placeholder.getValueAsString(dataSources));
+
+        placeholder = new BasicPlaceholder("unknown");
+        assertEquals("", placeholder.getValueAsString(dataSources));
+
+        placeholder = new BasicPlaceholder("unknown:10");
+        assertEquals("          ", placeholder.getValueAsString(dataSources));
     }
 
-
-    public static class Employee {
-        private String id;
-        private String name;
-        private double salary;
-        private double taxes;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public double getSalary() {
-            return salary;
-        }
-
-        public void setSalary(double salary) {
-            this.salary = salary;
-        }
-
-        public double getTaxes() {
-            return taxes;
-        }
-
-        public void setTaxes(double taxes) {
-            this.taxes = taxes;
-        }
-
-        public double takeHomePay() {
-            return salary - (salary * taxes / 100);
-        }
-    }
 }

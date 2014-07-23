@@ -17,24 +17,53 @@
 package simple.escp.swing;
 
 import simple.escp.Template;
+import simple.escp.data.DataSources;
 import simple.escp.json.JsonTemplate;
-import javax.swing.JFrame;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainFrameTest extends JFrame {
+public class MainFrameTest extends JFrame implements ActionListener {
 
-    public MainFrameTest() throws URISyntaxException, IOException {
+    private PrintPreviewPane printPreview;
+
+    public MainFrameTest() {
         super("Preview");
 
-        Template template = new JsonTemplate(Thread.currentThread().getContextClassLoader().getResource("report.json").toURI());
+        JPanel panelButtons = new JPanel();
+        JButton btnRefresh = new JButton("Refresh");
+        btnRefresh.addActionListener(this);
+        panelButtons.setLayout(new FlowLayout());
+        panelButtons.add(btnRefresh);
 
+        printPreview = new PrintPreviewPane();
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(panelButtons, BorderLayout.PAGE_START);
+        getContentPane().add(printPreview, BorderLayout.CENTER);
+
+        setPreferredSize(new Dimension(500, 500));
+        pack();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+    public static void main (String[] args) {
+        new MainFrameTest();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Template template = null;
+        try {
+            template = new JsonTemplate(Thread.currentThread().getContextClassLoader().getResource("report.json").toURI());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         Map<String, Object> value = new HashMap<>();
         value.put("invoiceNo", "INVC-00001");
         List<Map<String, Object>> tables = new ArrayList<>();
@@ -47,24 +76,6 @@ public class MainFrameTest extends JFrame {
         }
         value.put("table_source", tables);
 
-        PrintPreviewPane printPreview = new PrintPreviewPane(template, value, null);
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(printPreview, BorderLayout.CENTER);
-
-        setPreferredSize(new Dimension(500, 500));
-        pack();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+        printPreview.display(template, DataSources.from(value));
     }
-
-    public static void main (String[] args) {
-        try {
-            new MainFrameTest();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

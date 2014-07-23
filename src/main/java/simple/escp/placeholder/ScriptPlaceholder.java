@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public class ScriptPlaceholder extends Placeholder {
 
     private static final Logger LOG = Logger.getLogger("simple.escp");
+    public static final String SEPARATOR = "::";
 
     private String script;
     private ScriptEngine scriptEngine;
@@ -38,10 +39,10 @@ public class ScriptPlaceholder extends Placeholder {
      */
     private void parseText(String text) {
         LOG.fine("Parsing [" + text + "]");
-        if (text.contains(":")) {
-            String[] parts = text.split(":", 2);
+        if (text.contains(SEPARATOR)) {
+            String[] parts = text.split(SEPARATOR, 2);
             this.script = parts[0].trim();
-            parseText(parts[1].split(":"));
+            parseText(parts[1].split(SEPARATOR));
         } else {
             this.script = text;
         }
@@ -74,7 +75,7 @@ public class ScriptPlaceholder extends Placeholder {
             return scriptEngine.eval(script);
         } catch (ScriptException e) {
             LOG.log(Level.WARNING, "Error durring executing script.", e);
-            throw new InvalidPlaceholder("Can't execute script [" + script + "]", e);
+            return "";
         }
     }
 

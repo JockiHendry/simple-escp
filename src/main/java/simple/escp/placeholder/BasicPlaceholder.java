@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 public class BasicPlaceholder extends Placeholder {
 
     private static final Logger LOG = Logger.getLogger("simple.escp");
+    public static final String SEPARATOR = ":";
 
     private String name;
 
@@ -46,10 +47,10 @@ public class BasicPlaceholder extends Placeholder {
      */
     private void parseText(String text) {
         LOG.fine("Parsing [" + text + "]");
-        if (text.contains(":")) {
-            String[] parts = text.split(":", 2);
+        if (text.contains(SEPARATOR)) {
+            String[] parts = text.split(SEPARATOR, 2);
             this.name = parts[0].trim();
-            parseText(parts[1].split(":"));
+            parseText(parts[1].split(SEPARATOR));
         } else {
             this.name = text;
         }
@@ -85,7 +86,7 @@ public class BasicPlaceholder extends Placeholder {
             }
         }
         LOG.warning("Can't find datasource that has member [" + name + "]");
-        throw new InvalidPlaceholder("Can't find data source's member for [" + name + "]");
+        return "";
     }
 
 }

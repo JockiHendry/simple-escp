@@ -83,14 +83,21 @@ public class OutputPane extends JPanel {
     private static final int CIRCLE_SPACING = 25;
     private static final int CIRCLE_LINE_MARGIN = 5;
     private static final float X_START = 10.0f, Y_START = 10.0f;
+    private static final int DEFAULT_WIDTH = 100;
+    private static final int DEFAULT_HEIGHT = 100;
 
-    private String[] lines;
+    private String[] lines = new String[0];
     private int pageLength;
     private int pageWidth;
     private int pages;
 
-    private List<Shape> backgrounds;
+    private List<Shape> backgrounds = new ArrayList<>();
     private Dimension prefferedSize;
+
+    /**
+     * Create new instance of <code>OutputPane</code>.
+     */
+    public OutputPane() { }
 
     /**
      * Construct a new instance of <code>OutputPane</code>.
@@ -100,6 +107,17 @@ public class OutputPane extends JPanel {
      * @param pageWidth number of characters per line.
      */
     public OutputPane(String text, int pageLength, int pageWidth) {
+        display(text, pageLength, pageWidth);
+    }
+
+    /**
+     * Set the data that will be displayed by this <code>OutputPane</code> and display it.
+     *
+     * @param text the string that should be displayed.  It may contains ESC/P commands.
+     * @param pageLength number of lines per page.
+     * @param pageWidth number of characters per line.
+     */
+    public void display(String text, int pageLength, int pageWidth) {
         this.pageLength = pageLength;
         this.pageWidth = pageWidth;
 
@@ -121,8 +139,8 @@ public class OutputPane extends JPanel {
             }
         }
 
-        this.lines = result.toString().split("(" + EscpUtil.CRLF + ")");
-        this.pages = this.lines.length / pageLength;
+        lines = result.toString().split("(" + EscpUtil.CRLF + ")");
+        pages = lines.length / pageLength;
         for (int i = 0; i < lines.length; i++) {
             // Ignore ESC Sequences that didn't have effect in preview
             lines[i] = lines[i].replaceAll(EscpUtil.esc(EscpUtil.COMMAND_INITIALIZE), "");
@@ -138,7 +156,6 @@ public class OutputPane extends JPanel {
         }
 
         // Create background shapes
-        backgrounds = new ArrayList<>();
         float x = X_START, y = Y_START;
         float xWidth = MARGIN_LEFT + MARGIN_RIGHT + (pageWidth * CHAR_WIDTH);
         for (int page = 0; page <= pages; page++) {
@@ -149,25 +166,27 @@ public class OutputPane extends JPanel {
                 backgrounds.add(circleEnd);
                 y += CIRCLE_SPACING;
             }
-            Shape lineBreak = new Line2D.Float(X_START, y, X_START + xWidth + CIRCLE_SIZE,
-                y);
+            Shape lineBreak = new Line2D.Float(X_START, y, X_START + xWidth + CIRCLE_SIZE, y);
             backgrounds.add(lineBreak);
         }
         Shape horLineLeft1 = new Line2D.Float(X_START + CIRCLE_SIZE + CIRCLE_LINE_MARGIN, Y_START,
-            X_START + CIRCLE_SIZE + CIRCLE_LINE_MARGIN, y);
+                X_START + CIRCLE_SIZE + CIRCLE_LINE_MARGIN, y);
         Shape horLineLeft2 = new Line2D.Float(X_START - CIRCLE_LINE_MARGIN, Y_START,
-            X_START - CIRCLE_LINE_MARGIN, y);
+                X_START - CIRCLE_LINE_MARGIN, y);
         Shape horLineRight1 = new Line2D.Float(X_START + xWidth - CIRCLE_LINE_MARGIN, Y_START,
-            X_START + xWidth - CIRCLE_LINE_MARGIN, y);
+                X_START + xWidth - CIRCLE_LINE_MARGIN, y);
         Shape horLineRight2 = new Line2D.Float(X_START + xWidth + CIRCLE_SIZE + CIRCLE_LINE_MARGIN , Y_START,
-            X_START + xWidth + CIRCLE_SIZE + CIRCLE_LINE_MARGIN, y);
+                X_START + xWidth + CIRCLE_SIZE + CIRCLE_LINE_MARGIN, y);
         backgrounds.add(horLineLeft1);
         backgrounds.add(horLineLeft2);
         backgrounds.add(horLineRight1);
         backgrounds.add(horLineRight2);
 
         prefferedSize = new Dimension((int)(X_START + xWidth + CIRCLE_SIZE + CIRCLE_SPACING),
-                                      (int)(y + CIRCLE_SIZE + CIRCLE_SPACING));
+                (int)(y + CIRCLE_SIZE + CIRCLE_SPACING));
+
+        revalidate();
+        repaint();
     }
 
     /**
@@ -214,7 +233,7 @@ public class OutputPane extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return prefferedSize;
+        return prefferedSize == null ? new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT) : prefferedSize;
     }
 
 }

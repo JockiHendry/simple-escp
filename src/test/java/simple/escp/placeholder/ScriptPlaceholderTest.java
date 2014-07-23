@@ -1,6 +1,10 @@
 package simple.escp.placeholder;
 
 import org.junit.Test;
+import simple.escp.data.DataSources;
+import simple.escp.fill.DataSourceBinding;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -36,7 +40,7 @@ public class ScriptPlaceholderTest {
         assertEquals(10, new ScriptPlaceholder("rate * 0.5::10         ", null).getWidth());
         assertEquals(10, new ScriptPlaceholder("rate * 0.5 ::10", null).getWidth());
         assertEquals(10, new ScriptPlaceholder(" rate * 0.5 :: 10", null).getWidth());
-        assertEquals(20, new ScriptPlaceholder("rate * 0.5::currency:20", null).getWidth());
+        assertEquals(20, new ScriptPlaceholder("rate * 0.5::currency::20", null).getWidth());
     }
 
     @Test
@@ -86,4 +90,44 @@ public class ScriptPlaceholderTest {
         assertEquals(NumberFormat.getCurrencyInstance().format(2), new BasicPlaceholder("total::count::currency").getFormatted(data2));
     }
 
+    @Test
+    public void getNullValue() {
+        Student student = new Student("student");
+        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+        scriptEngineManager.setBindings(new DataSourceBinding(DataSources.from(new Object[]{student})));
+        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
+
+        ScriptPlaceholder placeholder = new ScriptPlaceholder("bean.name", scriptEngine);
+        assertEquals("student", placeholder.getValueAsString(null));
+
+        placeholder = new ScriptPlaceholder("name::10", scriptEngine);
+        assertEquals("student   ", placeholder.getValueAsString(null));
+
+        placeholder = new ScriptPlaceholder("bean.name::10", scriptEngine);
+        assertEquals("student   ", placeholder.getValueAsString(null));
+
+        placeholder = new ScriptPlaceholder("unknown", scriptEngine);
+        assertEquals("", placeholder.getValueAsString(null));
+
+        placeholder = new ScriptPlaceholder("unknown::10", scriptEngine);
+        assertEquals("          ", placeholder.getValueAsString(null));
+    }
+
+    public static class Student {
+
+        private String name;
+
+        public Student(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+    }
 }

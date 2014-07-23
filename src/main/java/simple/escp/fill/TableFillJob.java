@@ -67,15 +67,21 @@ public class TableFillJob extends FillJob {
         Page page;
         while ((page = report.getFirstPageWithTableLines()) != null) {
             TableLine tableLine = page.getTableLines().get(0);
-            Collection dataSource = (Collection) (new ScriptPlaceholder(tableLine.getSource(), scriptEngine)).
-                getValue(dataSources);
-            LOG.fine("Datasource is [" + dataSource + "]");
-            List<Line> results = fillTableLine(tableLine, dataSource);
-            Collections.reverse(results);
             page.removeLine(tableLine);
-            for (Line result : results) {
-                LOG.fine("Add new line [" + result.toString() + "]");
-                report.insert(result, page.getPageNumber(), tableLine.getLineNumber());
+            Object dataSource = (new ScriptPlaceholder(tableLine.getSource(), scriptEngine)).getValue(dataSources);
+            if (dataSource instanceof Collection) {
+                LOG.fine("Datasource is [" + dataSource + "]");
+                List<Line> results = fillTableLine(tableLine, (Collection) dataSource);
+                Collections.reverse(results);
+                for (Line result : results) {
+                    LOG.fine("Add new line [" + result.toString() + "]");
+                    report.insert(result, page.getPageNumber(), tableLine.getLineNumber());
+                }
+            } else if (dataSource == null) {
+                LOG.warning("Table was skipped because data source was null.");
+            } else {
+                throw new InvalidPlaceholder("Data source must be a Collection but found [" + dataSource +
+                        "] as a [" + dataSource.getClass() + "]");
             }
         }
         return null;

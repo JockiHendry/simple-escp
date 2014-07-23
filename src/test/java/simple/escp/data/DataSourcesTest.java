@@ -50,4 +50,13 @@ public class DataSourcesTest {
         assertEquals(emp, ds[1].getSource());
     }
 
+    @Test
+    public void fromNull() {
+        Object object = null;
+        DataSource dataSource = DataSources.from(object);
+
+        assertEquals(EmptyDataSource.class, dataSource.getClass());
+        assertEquals("", dataSource.get("anything"));
+    }
+
 }
