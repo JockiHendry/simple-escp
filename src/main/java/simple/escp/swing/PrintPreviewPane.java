@@ -16,6 +16,8 @@
 
 package simple.escp.swing;
 
+import simple.escp.data.DataSource;
+import simple.escp.dom.PageFormat;
 import simple.escp.fill.FillJob;
 import simple.escp.SimpleEscp;
 import simple.escp.Template;
@@ -60,6 +62,34 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
     private JComboBox<String> printerNameComboBox;
 
     /**
+     * Create a new instance of this class.
+     */
+    public PrintPreviewPane() {
+        outputPane = new OutputPane();
+        MouseHandler mouseHandler = new MouseHandler();
+        outputPane.addMouseListener(mouseHandler);
+        outputPane.addMouseMotionListener(mouseHandler);
+        scrollPane = new JScrollPane(outputPane);
+        toolbar = new JToolBar();
+        printButton = new JButton("Print");
+        printButton.addActionListener(this);
+        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+        Vector<String> printerName = new Vector<>();
+        printerName.add(PrintServiceLookup.lookupDefaultPrintService().getName());
+        for (PrintService printService: printServices) {
+            if (!printerName.contains(printService.getName())) {
+                printerName.add(printService.getName());
+            }
+        }
+        printerNameComboBox = new JComboBox<>(printerName);
+        toolbar.add(printerNameComboBox);
+        toolbar.add(printButton);
+        setLayout(new BorderLayout());
+        add(toolbar, BorderLayout.PAGE_START);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    /**
      * Create a new instance of <code>PrintPreviewPane</code> based on a <code>Template</code> and its
      * value (a <code>Map</code> and/or an object).  Template <strong>must</strong> have a valid value
      * for <code>pageLength</code> and <code>pageWidth</code> in its <code>pageFormat</code>.
@@ -84,30 +114,45 @@ public class PrintPreviewPane extends JPanel implements ActionListener {
      * @param pageWidth page width in number of characters.
      */
     public PrintPreviewPane(String text, int pageLength, int pageWidth) {
-        this.text = text;
-        outputPane = new OutputPane(text, pageLength, pageWidth);
-        MouseHandler mouseHandler = new MouseHandler();
-        outputPane.addMouseListener(mouseHandler);
-        outputPane.addMouseMotionListener(mouseHandler);
-        scrollPane = new JScrollPane(outputPane);
-        toolbar = new JToolBar();
-        printButton = new JButton("Print");
-        printButton.addActionListener(this);
-        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
-        Vector<String> printerName = new Vector<>();
-        printerName.add(PrintServiceLookup.lookupDefaultPrintService().getName());
-        for (PrintService printService: printServices) {
-            if (!printerName.contains(printService.getName())) {
-                printerName.add(printService.getName());
-            }
-        }
-        printerNameComboBox = new JComboBox<>(printerName);
-        toolbar.add(printerNameComboBox);
-        toolbar.add(printButton);
+        this();
+        display(text, pageLength, pageWidth);
+    }
 
-        setLayout(new BorderLayout());
-        add(toolbar, BorderLayout.PAGE_START);
-        add(scrollPane, BorderLayout.CENTER);
+    /**
+     * Set the data that will be displayed by this <code>PrintPreviewPane</code> and display it.
+     *
+     * @param text the string that will be displayed.
+     * @param pageLength page length in number of lines.
+     * @param pageWidth page width in number of characters.
+     */
+    public void display(String text, int pageLength, int pageWidth) {
+        this.text = text;
+        outputPane.display(text, pageLength, pageWidth);
+        scrollPane.revalidate();
+    }
+
+    /**
+     * Set the data that will be displayed by this <code>PrintPreviewPane</code> and display it.
+     *
+     * @param template an instance of <code>Template</code>.
+     * @param dataSource the data source to fill this template.
+     */
+    public void display(Template template, DataSource dataSource) {
+        PageFormat pageFormat = template.getPageFormat();
+        display(new FillJob(template.parse(), dataSource).fill(), pageFormat.getPageLength(),
+            pageFormat.getPageWidth());
+    }
+
+    /**
+     * Set the data that will be displayed by this <code>PrintPreviewPane</code> and display it.
+     *
+     * @param template an instance of <code>Template</code>.
+     * @param dataSources the data source to fill this template.
+     */
+    public void display(Template template, DataSource[] dataSources) {
+        PageFormat pageFormat = template.getPageFormat();
+        display(new FillJob(template.parse(), dataSources).fill(), pageFormat.getPageLength(),
+            pageFormat.getPageWidth());
     }
 
     /**
