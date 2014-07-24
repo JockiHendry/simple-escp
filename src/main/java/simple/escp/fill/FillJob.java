@@ -101,7 +101,7 @@ public class FillJob {
         scriptEngineManager.setBindings(new DataSourceBinding(this.dataSources));
         this.scriptEngine = scriptEngineManager.getEngineByName("groovy");
         if (this.scriptEngine == null) {
-            LOG.info("Can't find Groovy script engine, will use JavaScript script engine.");
+            LOG.fine("Can't find Groovy script engine, will use JavaScript script engine.");
             this.scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
         }
 

@@ -290,8 +290,7 @@ public abstract class Placeholder {
         try {
             width = Integer.valueOf(text);
         } catch (NumberFormatException e) {
-            LOG.warning("Can't convert [" + text + "] to number");
-            return;
+            LOG.fine("Can't convert [" + text + "] to number.");
         }
     }
 

@@ -1,7 +1,8 @@
 package simple.escp.swing;
 
 import simple.escp.data.DataSource;
-import simple.escp.data.DataSources;
+import simple.escp.data.EmptyDataSource;
+import simple.escp.data.JsonDataSource;
 import simple.escp.json.JsonTemplate;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -14,11 +15,13 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.PlainDocument;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -36,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 public class Editor extends JFrame {
 
     private static final int DEFAULT_FONT_SIZE = 12;
+    private static final Color EDITOR_BACKGROUND_COLOR = new Color(240, 240, 240);
     public static final int TAB_SIZE = 4;
     public static final double SPLIT_WEIGHT = 0.85;
 
@@ -61,12 +65,8 @@ public class Editor extends JFrame {
         }
 
         printPreviewPane = new PrintPreviewPane();
-        templateEditor = new JEditorPane();
-        templateEditor.setFont(editorFont);
-        templateEditor.getDocument().putProperty(PlainDocument.tabSizeAttribute, TAB_SIZE);
-        dataSourceEditor = new JEditorPane();
-        dataSourceEditor.setFont(editorFont);
-        dataSourceEditor.getDocument().putProperty(PlainDocument.tabSizeAttribute, TAB_SIZE);
+        templateEditor = createEditor();
+        dataSourceEditor = createEditor();
         tabbedPane = new JTabbedPane();
         tabbedPane.addChangeListener(new TabbedPaneChange());
         tabbedPane.addTab("Template Editor", new JScrollPane(templateEditor));
@@ -106,6 +106,23 @@ public class Editor extends JFrame {
     }
 
     /**
+     * Create editor.
+     *
+     * @return an instance of <code>JEditorPane</code>.
+     */
+    private JEditorPane createEditor() {
+        JEditorPane editor = new JEditorPane();
+        editor.setFont(editorFont);
+        editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, TAB_SIZE);
+        UIDefaults defaults = new UIDefaults();
+        defaults.put("EditorPane[Enabled].backgroundPainter", EDITOR_BACKGROUND_COLOR);
+        editor.putClientProperty("Nimbus.Overrides", defaults);
+        editor.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+        editor.setBackground(EDITOR_BACKGROUND_COLOR);
+        return editor;
+    }
+
+    /**
      * Everything starts from this method.
      *
      * @param args the arguments passed from command line.
@@ -141,7 +158,8 @@ public class Editor extends JFrame {
         public void stateChanged(ChangeEvent e) {
             if (tabbedPane.getSelectedIndex() == 2) {
                 JsonTemplate template = new JsonTemplate(templateEditor.getText());
-                DataSource ds = DataSources.from(dataSourceEditor.getText());
+                String jsonSource = dataSourceEditor.getText().trim();
+                DataSource ds = "".equals(jsonSource) ? new EmptyDataSource() : new JsonDataSource(jsonSource);
                 printPreviewPane.display(template, ds);
             }
         }
