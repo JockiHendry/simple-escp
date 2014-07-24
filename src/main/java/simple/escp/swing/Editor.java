@@ -3,25 +3,12 @@ package simple.escp.swing;
 import simple.escp.data.DataSource;
 import simple.escp.data.DataSources;
 import simple.escp.json.JsonTemplate;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.PlainDocument;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontFormatException;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -61,12 +48,8 @@ public class Editor extends JFrame {
         }
 
         printPreviewPane = new PrintPreviewPane();
-        templateEditor = new JEditorPane();
-        templateEditor.setFont(editorFont);
-        templateEditor.getDocument().putProperty(PlainDocument.tabSizeAttribute, TAB_SIZE);
-        dataSourceEditor = new JEditorPane();
-        dataSourceEditor.setFont(editorFont);
-        dataSourceEditor.getDocument().putProperty(PlainDocument.tabSizeAttribute, TAB_SIZE);
+        templateEditor = createEditor();
+        dataSourceEditor = createEditor();
         tabbedPane = new JTabbedPane();
         tabbedPane.addChangeListener(new TabbedPaneChange());
         tabbedPane.addTab("Template Editor", new JScrollPane(templateEditor));
@@ -103,6 +86,23 @@ public class Editor extends JFrame {
         splitPane.setResizeWeight(SPLIT_WEIGHT);
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    /**
+     * Create editor.
+     *
+     * @return an instance of <code>JEditorPane</code>.
+     */
+    private JEditorPane createEditor() {
+        JEditorPane editor = new JEditorPane();
+        editor.setFont(editorFont);
+        editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, TAB_SIZE);
+        UIDefaults defaults = new UIDefaults();
+        defaults.put("EditorPane[Enabled].backgroundPainter", new Color(240,240,240));
+        editor.putClientProperty("Nimbus.Overrides", defaults);
+        editor.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+        editor.setBackground(new Color(240,240,240));
+        return editor;
     }
 
     /**
