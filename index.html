@@ -13,7 +13,7 @@
 <body class="article toc2 toc-left">
 <div id="header">
 <h1>simple-escp Documentation</h1>
-<span id="revnumber">version 0.5</span>
+<span id="revnumber">version 0.5.2</span>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -88,7 +88,7 @@ simple-escp supports ESC/P for 9-pin printers.</p>
     }
 }
 dependencies {
-    compile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">jockihendry</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">simple-escp</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">0.5</span><span class="delimiter">'</span></span>
+    compile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">jockihendry</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">simple-escp</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">0.5.2</span><span class="delimiter">'</span></span>
 }</code></pre>
 </div>
 </div>
@@ -582,6 +582,12 @@ to <code>Collection</code>.  All valid keys for table are:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><span class="icon green"><i class="icon-check"></i></span></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The columns for this table.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"lineSeparator"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>true</code>, simple-escp will add CP437 line separator for each line in this table.  Default value is <code>false</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"table"</code></p></td>
@@ -1216,8 +1222,20 @@ FillJob.addFunction(customFunction);                   <i class="conum" data-val
 <div class="sectionbody">
 <div class="paragraph">
 <p>In simple-escp, a data source is an implementation of <code>DataSource</code>.  By default, simple-escp shipped
-with two default implementation: <code>MapDataSource</code> to retrieve value from Map and <code>BeanDataSource</code> to retrieve value
-from JavaBean object.</p>
+with following implementations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>MapDataSource</code></p>
+</li>
+<li>
+<p><code>BeanDataSource</code></p>
+</li>
+<li>
+<p><code>JsonDataSource</code></p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>The following code shows how to create data source:</p>
@@ -1310,8 +1328,8 @@ tab is <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>3</kbd></span>.  This tab will 
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.5<br>
-Last updated 2014-07-23 22:40:30 ICT
+Version 0.5.2<br>
+Last updated 2014-10-01 22:58:25 ICT
 </div>
 </div>
 <script>
@@ -1323,6 +1341,6 @@ Last updated 2014-07-23 22:40:30 ICT
   ga('create', 'UA-53018302-1', 'auto');
   ga('send', 'pageview');
 
-</script>
+</script> 
 </body>
 </html>
