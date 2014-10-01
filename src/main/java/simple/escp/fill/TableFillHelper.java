@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Jocki Hendry
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package simple.escp.fill;
 
 import simple.escp.data.DataSource;
@@ -83,6 +99,32 @@ public class TableFillHelper {
     }
 
     /**
+     * Create line separator.
+     *
+     * @return a <code>String</code> that represents line separator for this table.
+     */
+    private String lineSeparator() {
+        StringBuilder result = new StringBuilder();
+        if (tableLine.isDrawBorder()) {
+            result.append(EscpUtil.CP347_LIGHT_VERTICAL_RIGHT);
+        }
+        for (int i = 1; i <= tableLine.getNumberOfColumns(); i++) {
+            TableColumn column = tableLine.getColumnAt(i);
+            int columnWidth = column.getWidth() - (tableLine.isDrawBorder() ? 1 : 0);
+            for (int j = 0; j < columnWidth; j++) {
+                result.append(EscpUtil.CP347_LIGHT_HORIZONTAL);
+            }
+            if (tableLine.isDrawBorder() && (i != tableLine.getNumberOfColumns())) {
+                result.append(EscpUtil.CP347_LIGHT_VERTICAL_HORIZONTAL);
+            }
+        }
+        if (tableLine.isDrawBorder()) {
+            result.append(EscpUtil.CP347_LIGHT_VERTICAL_LEFT);
+        }
+        return result.toString();
+    }
+
+    /**
      * Execute this helper function.
      *
      * @return a collection of <code>Line</code>.
@@ -94,7 +136,7 @@ public class TableFillHelper {
             StringBuilder text = new StringBuilder();
             DataSource[] entryDataSources = DataSources.from(new Object[]{entry});
             DataSourceBinding lineContext = new DataSourceBinding(entryDataSources);
-            lineContext.put("row", rowNumber++);
+            lineContext.put("row", rowNumber);
             scriptEngine.setBindings(lineContext, ScriptContext.ENGINE_SCOPE);
             for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
                 lineContext.put("col", i + 1);
@@ -108,6 +150,10 @@ public class TableFillHelper {
             }
             report.append(new TextLine(text.toString()), false);
             wrappedBuffer.flush();
+            if (rowNumber < source.size() && tableLine.isDrawLineSeparator()) {
+                report.append(new TextLine(lineSeparator()), false);
+            }
+            rowNumber++;
         }
         return report.getFlatLines();
     }

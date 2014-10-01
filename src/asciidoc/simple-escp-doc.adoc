@@ -384,6 +384,11 @@ to +Collection+.  All valid keys for table are:
 |icon:check[role="green"]
 | The columns for this table.
 
+|+"lineSeparator"+
+| boolean
+|
+|If +true+, simple-escp will add CP437 line separator for each line in this table.  Default value is +false+.
+
 |+"table"+
 | string
 |icon:check[role="green"]

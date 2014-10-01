@@ -163,6 +163,9 @@ public class Parser {
         if (table.containsKey("border")) {
             tableLine.setDrawBorder(table.getBoolean("border", false));
         }
+        if (table.containsKey("lineSeparator")) {
+            tableLine.setDrawLineSeparator(table.getBoolean("lineSeparator", false));
+        }
         JsonArray columns = table.getJsonArray("columns");
         if (columns == null) {
             throw new IllegalArgumentException("Table must have 'columns'.");

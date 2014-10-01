@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Jocki Hendry
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package simple.escp.dom.line;
 
 import simple.escp.dom.Line;
@@ -18,6 +34,7 @@ public class TableLine extends Line implements Iterable<TableColumn> {
     private List<TableColumn> columns = new ArrayList<>();
     private String source;
     private boolean drawBorder;
+    private boolean drawLineSeparator;
     private TextLine[] header;
     private TextLine[] footer;
 
@@ -111,6 +128,24 @@ public class TableLine extends Line implements Iterable<TableColumn> {
      */
     public void setDrawBorder(boolean drawBorder) {
         this.drawBorder = drawBorder;
+    }
+
+    /**
+     * Determine if an extra line that contains solid line as line separator should be drawn for this table.
+     *
+     * @return <code>true</code> if line separator should be drawn.
+     */
+    public boolean isDrawLineSeparator() {
+        return drawLineSeparator;
+    }
+
+    /**
+     * Set wether to enable line separator for this table line or not.
+     *
+     * @param drawLineSeparator <code>true</code> to enable line separator for this table.
+     */
+    public void setDrawLineSeparator(boolean drawLineSeparator) {
+        this.drawLineSeparator = drawLineSeparator;
     }
 
     /**

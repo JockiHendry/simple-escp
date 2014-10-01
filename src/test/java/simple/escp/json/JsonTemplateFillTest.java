@@ -313,6 +313,67 @@ public class JsonTemplateFillTest {
     }
 
     @Test
+    public void fillTableWithBorderAndLineSeparator() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None", "David", "None"));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        Report report = jsonTemplate.parse();
+        report.getPageFormat().setPageLength(10);
+        ((TableLine) report.getPage(1).getLine(2)).setDrawBorder(true);
+        ((TableLine) report.getPage(1).getLine(2)).setDrawLineSeparator(true);
+        String result = new FillJob(report, DataSources.from(source)).fill();
+        assertEquals(
+                INIT + escPageLength(10) +
+                        "This is detail 1." + CRLF +
+                        CP347_LIGHT_DOWN_RIGHT + times(CP347_LIGHT_HORIZONTAL, 9) +  CP347_LIGHT_DOWN_HORIZONTAL +  times( CP347_LIGHT_HORIZONTAL, 19) +  CP347_LIGHT_DOWN_HORIZONTAL +  times( CP347_LIGHT_HORIZONTAL, 9) +  CP347_LIGHT_DOWN_LEFT + CRLF +
+                        CP347_LIGHT_VERTICAL + "firstName" + CP347_LIGHT_VERTICAL + "lastName           " +  CP347_LIGHT_VERTICAL + "nickname " +  CP347_LIGHT_VERTICAL + CRLF +
+                        CP347_LIGHT_VERTICAL_RIGHT + times(CP347_LIGHT_HORIZONTAL, 9) + CP347_LIGHT_VERTICAL_HORIZONTAL + times( CP347_LIGHT_HORIZONTAL, 19) +  CP347_LIGHT_VERTICAL_HORIZONTAL + times( CP347_LIGHT_HORIZONTAL, 9) +  CP347_LIGHT_VERTICAL_LEFT + CRLF +
+                        CP347_LIGHT_VERTICAL + "David    " + CP347_LIGHT_VERTICAL + "None               " +  CP347_LIGHT_VERTICAL + "None     " +  CP347_LIGHT_VERTICAL + CRLF +
+                        CP347_LIGHT_VERTICAL_RIGHT + times(CP347_LIGHT_HORIZONTAL, 9) + CP347_LIGHT_VERTICAL_HORIZONTAL + times(CP347_LIGHT_HORIZONTAL, 19) + CP347_LIGHT_VERTICAL_HORIZONTAL + times(CP347_LIGHT_HORIZONTAL, 9) + CP347_LIGHT_VERTICAL_LEFT + CRLF +
+                        CP347_LIGHT_VERTICAL + "Solid    " + CP347_LIGHT_VERTICAL + "Snake              " +  CP347_LIGHT_VERTICAL + "David    " +  CP347_LIGHT_VERTICAL + CRLF +
+                        CP347_LIGHT_VERTICAL_RIGHT + times(CP347_LIGHT_HORIZONTAL, 9) + CP347_LIGHT_VERTICAL_HORIZONTAL + times(CP347_LIGHT_HORIZONTAL, 19) + CP347_LIGHT_VERTICAL_HORIZONTAL + times(CP347_LIGHT_HORIZONTAL, 9) + CP347_LIGHT_VERTICAL_LEFT + CRLF +
+                        CP347_LIGHT_VERTICAL + "Jocki    " + CP347_LIGHT_VERTICAL + "Hendry             " +  CP347_LIGHT_VERTICAL + "Snake    " +  CP347_LIGHT_VERTICAL + CRLF +
+                        CP347_LIGHT_UP_RIGHT + times(CP347_LIGHT_HORIZONTAL, 9) + CP347_LIGHT_UP_HORIZONTAL + times( CP347_LIGHT_HORIZONTAL, 19) +  CP347_LIGHT_UP_HORIZONTAL + times( CP347_LIGHT_HORIZONTAL, 9) +  CP347_LIGHT_UP_LEFT + CRLF +
+                        CRFF +
+                        "This is detail 2." + CRLF +
+                        CRFF + INIT,
+                result
+        );
+    }
+
+    @Test
+    public void fillTableWithLineSeparator() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None", "David", "None"));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        Report report = jsonTemplate.parse();
+        report.getPageFormat().setPageLength(10);
+        ((TableLine) report.getPage(1).getLine(2)).setDrawLineSeparator(true);
+        String result = new FillJob(report, DataSources.from(source)).fill();
+        assertEquals(
+            INIT + escPageLength(10) +
+            "This is detail 1." + CRLF +
+            "firstName lastName            nickname  " + CRLF +
+            "David     None                None      " + CRLF +
+            times(CP347_LIGHT_HORIZONTAL, 10) + times(CP347_LIGHT_HORIZONTAL, 20) + times(CP347_LIGHT_HORIZONTAL, 10) + CRLF +
+            "Solid     Snake               David     " + CRLF +
+            times(CP347_LIGHT_HORIZONTAL, 10) + times(CP347_LIGHT_HORIZONTAL, 20) + times(CP347_LIGHT_HORIZONTAL, 10) + CRLF +
+            "Jocki     Hendry              Snake     " + CRLF +
+            "This is detail 2." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
     public void fillTwoTable() throws URISyntaxException, IOException {
         JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/multiple_table.json").toURI());
         List<Person> persons1 = new ArrayList<>();
