@@ -311,6 +311,9 @@ If +template+ is a JSON object, every members of the object represents a report 
 |+"footer"+
 |This section will be added at the bottom of every page in +"detail"+ section.
 
+|+"lastPageFooter"+
+|This section will be added at the bottom of the last page only.
+
 |+"header"+
 |This section will be added at the top of every page in +"detail"+ section.
 

@@ -22,7 +22,11 @@
                     { "source": "name", "width": 30, "wrap": true },
                     { "source": "qty",  "width": 6  }
                 ]
-            },
+            }
+        ],
+        "lastPageFooter": [
+            "",
+            "    Signed By                   Received By       ",
             "                                                  ",
             "   (Signature)                  (Signature)       "
         ]

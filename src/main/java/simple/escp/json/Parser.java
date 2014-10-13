@@ -42,6 +42,7 @@ public class Parser {
     private JsonArray lastPage;
     private JsonArray header;
     private JsonArray footer;
+    private JsonArray lastPageFooter;
     private JsonArray detail;
 
     /**
@@ -85,6 +86,18 @@ public class Parser {
             throw new IllegalArgumentException("Can't use 'footer' if 'pageLength' is not defined.");
         }
         this.footer = footer;
+    }
+
+    /**
+     * Set the "lastPageFooter" section.
+     *
+     * @param lastPageFooter a <code>JsonArray</code> or <code>null</code> if it is not available.
+     */
+    public void setLastPageFooter(JsonArray lastPageFooter) {
+        if (pageLength == null) {
+            throw new IllegalArgumentException("Can't use 'lastPageFooter' if 'pageLength' is not defined.");
+        }
+        this.lastPageFooter = lastPageFooter;
     }
 
     /**
@@ -250,7 +263,7 @@ public class Parser {
      * @return result of parsing in <code>Pages</code>.
      */
     public Report parse() {
-        result = new Report(pageFormat, jsonToTextLine(header), jsonToTextLine(footer));
+        result = new Report(pageFormat, jsonToTextLine(header), jsonToTextLine(footer), jsonToTextLine(lastPageFooter));
         if (firstPage != null) {
             LOG.fine("Parsing firstPage section");
             result.appendSinglePage(jsonToLine(firstPage), true);

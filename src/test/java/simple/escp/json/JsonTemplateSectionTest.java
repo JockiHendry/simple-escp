@@ -250,4 +250,94 @@ public class JsonTemplateSectionTest {
         );
     }
 
+    @Test
+    public void parseFooterAndLastPageFooter() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"footer\": [\"This is footer.\"]," +
+                "\"lastPageFooter\": [\"This is last page footer.\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
+        assertEquals(
+            INIT + "Line1" + CRLF + "Line2" + CRLF + "This is footer." + CRLF + CRFF +
+            "Line3" + CRLF + "Your id is 007" + CRLF + "This is footer." + CRLF + CRFF +
+            "Mr. Snake." + CRLF + "This is last page footer." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
+        );
+    }
+
+    @Test
+    public void parseLastPageFooterOnly() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"lastPageFooter\": [\"This is last page footer.\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Your id is ${id}\"," +
+                    "\"Mr. ${nickname}.\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
+        assertEquals(
+            INIT + "Line1" + CRLF + "Line2" + CRLF + "Line3" + CRLF + CRFF +
+            "Your id is 007" + CRLF + "Mr. Snake." + CRLF + "This is last page footer." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
+        );
+    }
+
+    @Test
+    public void parseLastPageFooterWithDifferentLength() {
+        String jsonString =
+        "{" +
+            "\"pageFormat\": {" +
+                "\"pageLength\": 3" +
+            "}," +
+            "\"template\": {" +
+                "\"lastPageFooter\": [" +
+                    "\"This is last page footer1.\"," +
+                    "\"This is last page footer2.\"" +
+                "]," +
+                "\"footer\": [\"This is footer.\"]," +
+                "\"detail\": [" +
+                    "\"Line1\"," +
+                    "\"Line2\"," +
+                    "\"Line3\"," +
+                    "\"Line4\"]" +
+            "}" +
+        "}";
+        JsonTemplate jsonTemplate = new JsonTemplate(jsonString);
+        Map<String, String> source = new HashMap<>();
+        source.put("id", "007");
+        source.put("nickname", "Snake");
+        assertEquals(
+            INIT + "Line1" + CRLF + "Line2" + CRLF + "This is footer." + CRLF + CRFF +
+            "Line3" + CRLF + "Line4" + CRLF + "This is footer." + CRLF + CRFF +
+            "This is last page footer1." + CRLF + "This is last page footer2." + CRLF + CRFF + INIT,
+            new FillJob(jsonTemplate.parse(), new MapDataSource(source)).fill()
+        );
+    }
+
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Jocki Hendry
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package simple.escp.dom;
 
 import simple.escp.dom.line.EmptyLine;
@@ -73,12 +89,28 @@ public class Page {
     }
 
     /**
+     * Set a new header for this page.
+     * @param header new header for this page.
+     */
+    public void setHeader(TextLine[] header) {
+        this.header = Arrays.copyOf(header, header.length);
+    }
+
+    /**
      * Get the footer for this page.
      *
      * @return footer for this page.
      */
     public TextLine[] getFooter() {
         return Arrays.copyOf(footer, footer.length);
+    }
+
+    /**
+     * Set a new footer for this page.
+     * @param footer new footer for this page.
+     */
+    public void setFooter(TextLine[] footer) {
+        this.footer = Arrays.copyOf(footer, footer.length);
     }
 
     /**

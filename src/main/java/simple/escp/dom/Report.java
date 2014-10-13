@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Jocki Hendry
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package simple.escp.dom;
 
 import simple.escp.dom.line.EmptyLine;
@@ -23,6 +39,7 @@ public class Report implements Iterable<Page> {
     private Page currentPage;
     private TextLine[] header;
     private TextLine[] footer;
+    private TextLine[] lastPageFooter;
     private boolean lineBreak;
 
     /**
@@ -31,7 +48,8 @@ public class Report implements Iterable<Page> {
      * @param anotherReport a <code>Report</code> to clone.
      */
     public Report(Report anotherReport) {
-        init(anotherReport.getPageFormat(), anotherReport.getHeader(), anotherReport.getFooter());
+        init(anotherReport.getPageFormat(), anotherReport.getHeader(), anotherReport.getFooter(),
+            anotherReport.getLastPageFooter());
         pages = new ArrayList<>();
         for (Page page : anotherReport) {
             pages.add(new Page(page, anotherReport.getPageFormat().getPageLength()));
@@ -45,12 +63,41 @@ public class Report implements Iterable<Page> {
     /**
      * Create a new instance of <code>Report</code>.
      *
+     * @see #Report(PageFormat, simple.escp.dom.line.TextLine[],
+            simple.escp.dom.line.TextLine[], simple.escp.dom.line.TextLine[])
      * @param pageFormat the <code>PageFormat</code> for this <code>Report</code>.
      * @param header header for all pages in this <code>Report</code>.
      * @param footer footer for all pages in this <code>Report</code>.
+     *
      */
     public Report(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
-        init(pageFormat, header, footer);
+        this(pageFormat, header, footer, null);
+    }
+
+    /**
+     * Create a new instance of <code>Report</code>.
+     *
+     * @param pageFormat the <code>PageFormat</code> for this <code>Report</code>.
+     * @param header header for all pages in this <code>Report</code>.
+     * @param footer footer for all pages in this <code>Report</code>.
+     * @param lastPageFooter footer for the last page in this <code>Report</code>.
+     */
+    public Report(PageFormat pageFormat, TextLine[] header, TextLine[] footer, TextLine[] lastPageFooter) {
+        init(pageFormat, header, footer, lastPageFooter);
+    }
+
+    /**
+     * Create a new instance of <code>Report</code>.
+     *
+     * @see #Report(int, simple.escp.dom.line.TextLine[], simple.escp.dom.line.TextLine[],
+                    simple.escp.dom.line.TextLine[])
+     *
+     * @param pageLength length of every pages in this report in number of lines.
+     * @param header header for all pages in this <code>Report</code>.
+     * @param footer footer for all pages in this <code>Report</code>.
+     */
+    public Report(int pageLength, TextLine[] header, TextLine[] footer) {
+        this(pageLength, header, footer, null);
     }
 
     /**
@@ -59,11 +106,12 @@ public class Report implements Iterable<Page> {
      * @param pageLength length of every pages in this report in number of lines.
      * @param header header for all pages in this <code>Report</code>.
      * @param footer footer for all pages in this <code>Report</code>.
+     * @param lastPageFooter footer for the last page in this <code>Report</code>.
      */
-    public Report(int pageLength, TextLine[] header, TextLine[] footer) {
+    public Report(int pageLength, TextLine[] header, TextLine[] footer, TextLine[] lastPageFooter) {
         pageFormat = new PageFormat();
         pageFormat.setPageLength(pageLength);
-        init(pageFormat, header, footer);
+        init(pageFormat, header, footer, lastPageFooter);
     }
 
     /**
@@ -72,8 +120,9 @@ public class Report implements Iterable<Page> {
      * @param pageFormat the <code>PageFormat</code> for this <code>Report</code>.
      * @param header header for all of pages in this <code>Report</code>.
      * @param footer footer for all of pages in this <code>Report</code>.
+     * @param lastPageFooter footer that will be displayed only in the last page of this <code>Report</code>.
      */
-    private void init(PageFormat pageFormat, TextLine[] header, TextLine[] footer) {
+    private void init(PageFormat pageFormat, TextLine[] header, TextLine[] footer, TextLine[] lastPageFooter) {
         this.pageFormat = pageFormat;
         if ((pageFormat.getPageLength() == null) && (!pageFormat.isUsePageLengthFromPrinter())) {
             throw new IllegalArgumentException("Invalid page format with pageLength undefined when " +
@@ -81,6 +130,8 @@ public class Report implements Iterable<Page> {
         }
         this.header = (header == null) ? new TextLine[0] : Arrays.copyOf(header, header.length);
         this.footer = (footer == null) ? new TextLine[0] : Arrays.copyOf(footer, footer.length);
+        this.lastPageFooter = (lastPageFooter == null) ? new TextLine[0] :
+            Arrays.copyOf(lastPageFooter, lastPageFooter.length);
         this.lineBreak = false;
     }
 
@@ -135,6 +186,29 @@ public class Report implements Iterable<Page> {
         TextLine[] result = new TextLine[footer.length];
         for (int i = 0; i < result.length; i++) {
             result[i] = new TextLine(footer[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Get the footer for the last page of this <code>Report</code>.
+     *
+     * @return last page footer.
+     */
+    public TextLine[] getLastPageFooter() {
+        return Arrays.copyOf(lastPageFooter, lastPageFooter.length);
+    }
+
+    /**
+     * Create a copy of every <code>TextLine</code> in last page footer.  The modification to the copy will not
+     * affect the original footer stored in this report.
+     *
+     * @return the copy of current last page footer.
+     */
+    public TextLine[] copyLastPageFooter() {
+        TextLine[] result = new TextLine[lastPageFooter.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new TextLine(lastPageFooter[i]);
         }
         return result;
     }
