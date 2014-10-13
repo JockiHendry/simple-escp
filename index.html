@@ -9,11 +9,21 @@
 <link rel="stylesheet" href="./asciidoctor.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
 <link rel="stylesheet" href="./coderay-asciidoctor.css">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-53018302-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
 <h1>simple-escp Documentation</h1>
-<span id="revnumber">version 0.5.2</span>
+<span id="revnumber">version 0.5.3</span>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -88,7 +98,7 @@ simple-escp supports ESC/P for 9-pin printers.</p>
     }
 }
 dependencies {
-    compile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">jockihendry</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">simple-escp</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">0.5.2</span><span class="delimiter">'</span></span>
+    compile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">jockihendry</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">simple-escp</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">0.5.3</span><span class="delimiter">'</span></span>
 }</code></pre>
 </div>
 </div>
@@ -479,6 +489,10 @@ report.append(<span class="keyword">new</span> TextLine(<span class="string"><sp
 <td class="tableblock halign-left valign-top"><p class="tableblock">This section will be added at the bottom of every page in <code>"detail"</code> section.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"lastPageFooter"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This section will be added at the bottom of the last page only.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"header"</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">This section will be added at the top of every page in <code>"detail"</code> section.</p></td>
 </tr>
@@ -588,6 +602,12 @@ to <code>Collection</code>.  All valid keys for table are:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">If <code>true</code>, simple-escp will add CP437 line separator for each line in this table.  Default value is <code>false</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"underlineSeparator"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>true</code>, simpe-escp will add underline format to the last line of each row.  Default value is <code>false</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"table"</code></p></td>
@@ -1328,19 +1348,9 @@ tab is <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>3</kbd></span>.  This tab will 
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.5.2<br>
-Last updated 2014-10-01 22:58:25 ICT
+Version 0.5.3<br>
+Last updated 2014-10-14 01:02:38 ICT
 </div>
 </div>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-53018302-1', 'auto');
-  ga('send', 'pageview');
-
-</script> 
 </body>
 </html>
