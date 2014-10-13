@@ -35,6 +35,7 @@ public class TableLine extends Line implements Iterable<TableColumn> {
     private String source;
     private boolean drawBorder;
     private boolean drawLineSeparator;
+    private boolean drawUnderlineSeparator;
     private TextLine[] header;
     private TextLine[] footer;
 
@@ -146,6 +147,25 @@ public class TableLine extends Line implements Iterable<TableColumn> {
      */
     public void setDrawLineSeparator(boolean drawLineSeparator) {
         this.drawLineSeparator = drawLineSeparator;
+    }
+
+    /**
+     * Determine if the last line of a row in table should be underlined.  This is more compact than creating
+     * a new line consists of box characters.
+     *
+     * @return <code>true</code> if underline should be applied to last line of a row.
+     */
+    public boolean isDrawUnderlineSeparator() {
+        return drawUnderlineSeparator;
+    }
+
+    /**
+     * Set wether to underline the last line of a row in this table.
+     *
+     * @param drawUnderlineSeparator <code>true</code> to underline last line of each row.
+     */
+    public void setDrawUnderlineSeparator(boolean drawUnderlineSeparator) {
+        this.drawUnderlineSeparator = drawUnderlineSeparator;
     }
 
     /**

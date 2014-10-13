@@ -138,14 +138,27 @@ public class TableFillHelper {
             DataSourceBinding lineContext = new DataSourceBinding(entryDataSources);
             lineContext.put("row", rowNumber);
             scriptEngine.setBindings(lineContext, ScriptContext.ENGINE_SCOPE);
+
+            // Prepare values before actually add them to the result.
+            String[] values = new String[tableLine.getNumberOfColumns()];
             for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
                 lineContext.put("col", i + 1);
                 TableColumn column = tableLine.getColumnAt(i + 1);
                 String value = placeholders[i].getValueAsString(entryDataSources);
                 if (column.isWrap()) {
-                    appendLine(text, wrappedBuffer.add(i, value), i);
+                    values[i] = wrappedBuffer.add(i, value);
                 } else {
-                    appendLine(text, value, i);
+                    values[i] = value;
+                }
+            }
+
+            // Add calculated value to the result
+            boolean needUnderline = wrappedBuffer.isEmpty();
+            for (int i = 0; i < tableLine.getNumberOfColumns(); i++) {
+                if (needUnderline && tableLine.isDrawUnderlineSeparator()) {
+                    appendLine(text, EscpUtil.escSelectUnderline() + values[i] + EscpUtil.escCancelUnderline(), i);
+                } else {
+                    appendLine(text, values[i], i);
                 }
             }
             report.append(new TextLine(text.toString()), false);
@@ -276,8 +289,20 @@ public class TableFillHelper {
         public void flush() {
             while (!isEmpty()) {
                 StringBuilder result = new StringBuilder();
+
+                // Store the value first so we can determine to draw underline or not
+                String[] values = new String[buffer.length];
                 for (int i = 0; i < buffer.length; i++) {
-                    appendLine(result, consume(i), i);
+                    values[i] = consume(i);
+                }
+
+                for (int i = 0; i < buffer.length; i++) {
+                    if (isEmpty() && tableLine.isDrawUnderlineSeparator()) {
+                        appendLine(result, EscpUtil.escSelectUnderline() + values[i] + EscpUtil.escCancelUnderline(),
+                            i);
+                    } else {
+                        appendLine(result, values[i], i);
+                    }
                 }
                 report.append(new TextLine(result.toString()), false);
             }

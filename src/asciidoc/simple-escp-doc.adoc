@@ -392,6 +392,11 @@ to +Collection+.  All valid keys for table are:
 |
 |If +true+, simple-escp will add CP437 line separator for each line in this table.  Default value is +false+.
 
+|+"underlineSeparator"+
+| boolean
+|
+|If +true+, simpe-escp will add underline format to the last line of each row.  Default value is +false+.
+
 |+"table"+
 | string
 |icon:check[role="green"]

@@ -40,6 +40,8 @@ public class JsonTemplateFillTest {
 
     private String jsonStringBasic, jsonStringScriptMap, jsonStringScriptBean;
     private final String INIT = EscpUtil.escInitalize();
+    private final String SELECT_UNDERLINE = EscpUtil.escSelectUnderline();
+    private final String CANCEL_UNDERLINE = EscpUtil.escCancelUnderline();
 
     @Before
     public void setup() {
@@ -367,6 +369,32 @@ public class JsonTemplateFillTest {
             "Solid     Snake               David     " + CRLF +
             times(CP347_LIGHT_HORIZONTAL, 10) + times(CP347_LIGHT_HORIZONTAL, 20) + times(CP347_LIGHT_HORIZONTAL, 10) + CRLF +
             "Jocki     Hendry              Snake     " + CRLF +
+            "This is detail 2." + CRLF +
+            CRFF + INIT,
+            result
+        );
+    }
+
+    @Test
+    public void fillTableWithUnderlineSeparator() throws URISyntaxException, IOException {
+        JsonTemplate jsonTemplate = new JsonTemplate(getClass().getResource("/single_table.json").toURI());
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("None", "David", "None"));
+        persons.add(new Person("David", "Solid", "Snake"));
+        persons.add(new Person("Snake", "Jocki", "Hendry"));
+        Map<String, Object> source = new HashMap<>();
+        source.put("persons", persons);
+        Report report = jsonTemplate.parse();
+        report.getPageFormat().setPageLength(10);
+        ((TableLine) report.getPage(1).getLine(2)).setDrawUnderlineSeparator(true);
+        String result = new FillJob(report, DataSources.from(source)).fill();
+        assertEquals(
+            INIT + escPageLength(10) +
+            "This is detail 1." + CRLF +
+            "firstName lastName            nickname  " + CRLF +
+            SELECT_UNDERLINE + "David     " + CANCEL_UNDERLINE + SELECT_UNDERLINE + "None                " + CANCEL_UNDERLINE + SELECT_UNDERLINE + "None      " + CANCEL_UNDERLINE + CRLF +
+            SELECT_UNDERLINE + "Solid     " + CANCEL_UNDERLINE + SELECT_UNDERLINE + "Snake               " + CANCEL_UNDERLINE + SELECT_UNDERLINE + "David     " + CANCEL_UNDERLINE + CRLF +
+            SELECT_UNDERLINE + "Jocki     " + CANCEL_UNDERLINE + SELECT_UNDERLINE + "Hendry              " + CANCEL_UNDERLINE + SELECT_UNDERLINE + "Snake     " + CANCEL_UNDERLINE + CRLF +
             "This is detail 2." + CRLF +
             CRFF + INIT,
             result
