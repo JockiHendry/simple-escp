@@ -18,7 +18,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'org.asciidoctor.gradle.asciidoctor'
 
 sourceCompatibility = 1.7
-version = '0.5.2'
+version = '0.5.3'
 group = 'jockihendry'
 
 repositories {
