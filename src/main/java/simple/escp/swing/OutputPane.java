@@ -44,6 +44,8 @@ public class OutputPane extends JPanel {
     private static final int DEFAULT_FONT_SIZE = 20;
     private static final String[] CP437_TO_UNICODE;
     private static final int CP437_ASCII_START = 128;
+    public static final int CR = 13;
+    public static final int FF = 12;
 
     static {
         Font defaultFont;
@@ -159,7 +161,6 @@ public class OutputPane extends JPanel {
             lines[i] = lines[i].replaceAll(EscpUtil.esc(EscpUtil.COMMAND_RIGHT_MARGIN) + "(.|\\r|\\n)", "");
             lines[i] = lines[i].replaceAll(EscpUtil.esc(EscpUtil.COMMAND_BOTTOM_MARGIN) + "(.|\\r|\\n)", "");
             lines[i] = lines[i].replaceAll(EscpUtil.esc(EscpUtil.COMMAND_PAGE_LENGTH) + "(.|\\r|\\n)", "");
-            lines[i] = lines[i].replaceAll(EscpUtil.CRFF, "");
         }
 
         // Create background shapes
@@ -222,6 +223,7 @@ public class OutputPane extends JPanel {
         g2.setFont(FONT);
         g2.setColor(Color.BLACK);
         int charWidth = g2.getFontMetrics().charWidth('X');
+        int lineNumber = 0;
         float y = Y_START + CIRCLE_SIZE;
         for (String line: lines) {
             float x = X_START + CIRCLE_SIZE + MARGIN_LEFT;
@@ -251,12 +253,23 @@ public class OutputPane extends JPanel {
                             g2.setFont(FONT);
                             break;
                     }
+                } else if (c == CR) {
+                    c = line.charAt(i++);
+                    if (c == FF) {
+                        while (lineNumber < pageLength) {
+                            y += CHAR_HEIGHT;
+                            lineNumber++;
+                        }
+                    }
                 } else {
                     g2.drawString(Character.toString(c), x, y);
                     x += charWidth;
                 }
             }
             y += CHAR_HEIGHT;
+            if (++lineNumber > pageLength) {
+                lineNumber = 1;
+            }
         }
 
     }
