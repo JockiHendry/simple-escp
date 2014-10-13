@@ -6,8 +6,8 @@
     },
     "template": {
         "header": [
-            "   %{176 R3}       Company Name                 Page %{PAGE_NO}",
-            " %{176 R7}      ",
+            "   %{176 R3}     A%{BOLD}Company Name%{BOLD}A               Page %{PAGE_NO}",
+            " %{176 R7}  B%{ITALIC}TEST%{ITALIC}B B%{UNDERLINE}TEST%{UNDERLINE}B B%{BOLD}BOLD%{BOLD}B ",
             "%{176 R9}    Invoice No: ${invoiceNo:10}",
             "  %{176 R5}       ",
             "   %{176 R3}        "

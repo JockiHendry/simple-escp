@@ -26,11 +26,14 @@ import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.font.TextAttribute;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  This panel will display string as GUI preview.
@@ -93,6 +96,7 @@ public class OutputPane extends JPanel {
 
     private List<Shape> backgrounds = new ArrayList<>();
     private Dimension prefferedSize;
+    private Map<TextAttribute, Object> underlineAttribute;
 
     /**
      * Create new instance of <code>OutputPane</code>.
@@ -120,6 +124,9 @@ public class OutputPane extends JPanel {
     public void display(String text, int pageLength, int pageWidth) {
         this.pageLength = pageLength;
         this.pageWidth = pageWidth;
+
+        this.underlineAttribute = new HashMap<>();
+        this.underlineAttribute.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 
         // Replace CP347 characters with Unicode
         StringBuilder result = new StringBuilder();
@@ -214,11 +221,41 @@ public class OutputPane extends JPanel {
     private void paintText(Graphics2D g2) {
         g2.setFont(FONT);
         g2.setColor(Color.BLACK);
-
-        float x = X_START + CIRCLE_SIZE + MARGIN_LEFT;
+        int charWidth = g2.getFontMetrics().charWidth('X');
         float y = Y_START + CIRCLE_SIZE;
         for (String line: lines) {
-            g2.drawString(line, x, y);
+            float x = X_START + CIRCLE_SIZE + MARGIN_LEFT;
+            int i = 0;
+            while (i < line.length()) {
+                char c = line.charAt(i++);
+                if (c == EscpUtil.ESC) {
+                    c = line.charAt(i++);
+                    switch (c) {
+                        case EscpUtil.COMMAND_SELECT_BOLD:
+                            g2.setFont(FONT.deriveFont(FONT.BOLD));
+                            break;
+                        case EscpUtil.COMMAND_SELECT_ITALIC:
+                            g2.setFont(FONT.deriveFont(FONT.ITALIC));
+                            break;
+                        case EscpUtil.COMMAND_SELECT_UNDERLINE:
+                            c = line.charAt(i++);
+                            if (c == 1) {
+                                g2.setFont(FONT.deriveFont(underlineAttribute));
+                            } else {
+                                g2.setFont(FONT);
+                            }
+                            break;
+                        case EscpUtil.COMMAND_CANCEL_BOLD:
+                        case EscpUtil.COMMAND_CANCEL_ITALIC:
+                        default:
+                            g2.setFont(FONT);
+                            break;
+                    }
+                } else {
+                    g2.drawString(Character.toString(c), x, y);
+                    x += charWidth;
+                }
+            }
             y += CHAR_HEIGHT;
         }
 
