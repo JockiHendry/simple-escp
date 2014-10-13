@@ -5,6 +5,7 @@
 :icons: font
 :source-highlighter: coderay
 :toc: left
+:docinfo1:
 
 http://jockihendry.github.io/simple-escp/simple-escp-doc.pdf[Download PDF version]
 

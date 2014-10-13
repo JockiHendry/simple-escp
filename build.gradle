@@ -64,6 +64,7 @@ task testRequirePrinter(type: Test) {
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
+    exclude '**/*.ttf'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -105,6 +106,7 @@ bintray {
 
 asciidoctor {
     backends = ['html5','docbook']
+    baseDir = file("${projectDir}/src/asciidoc")
     options = [
         attributes: [
             'revnumber': version
